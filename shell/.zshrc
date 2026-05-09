@@ -46,8 +46,24 @@ alias oc='opencode'
 alias ocl='~/.openclaw/workspace/scripts/opencode-local.sh tui'
 alias oclw='~/.openclaw/workspace/scripts/opencode-local.sh web'
 
-# ── Quick Help ───────────────────────────────────────────────────────────────
+# ── Commands Search ─────────────────────────────────────────────────────────
 alias quickhelp='alias | grep -E "^(llm|sdxl|textgen|oc|llmk)" | sort'
+
+# Search commands/docs — fuzzy search through dotfiles docs
+# Usage: q <term>         (search all doc files)
+#        q                (fzf interactive)
+q() {
+  local docs="$HOME/dotfiles/docs"
+  if [ -d "$docs" ]; then
+    if [ $# -eq 0 ]; then
+      cat "$docs"/*.txt 2>/dev/null | fzf
+    else
+      grep -ri -- "$*" "$docs" 2>/dev/null | grep -v "^Binary" || echo "No matches in docs"
+    fi
+  else
+    echo "dotfiles docs not found at $docs"
+  fi
+}
 
 # ── Completion ───────────────────────────────────────────────────────────────
 zstyle ':completion:*' menu select

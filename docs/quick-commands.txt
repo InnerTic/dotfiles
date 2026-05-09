@@ -1,0 +1,45 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         QUICK START COMMANDS                                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ── LLAMA.CPP (local AI models on port 8080) ──                            ║
+║                                                                              ║
+║    llm            Interactive model selector (dynamic)                       ║
+║    llmk           Kill any running llama‑server                              ║
+║    llmcheck       Check which model is running                               ║
+║    llmstart       Start script wrapper                                       ║
+║                                                                              ║
+║  ── TEXT GEN WEBUI ──                                                        ║
+║                                                                              ║
+║    textgen        Start Text Generation WebUI                                ║
+║    textkill       Kill Text Generation WebUI                                 ║
+║                                                                              ║
+║  ── SDXL / FORGE (sd-webui-forge-neo) ──                                    ║
+║                                                                              ║
+║    sdxl           Start SDXL/Forge WebUI                                     ║
+║    sdxlkill       Kill SDXL/Forge                                            ║
+║                                                                              ║
+║  ── OPENCLAW ──                                                             ║
+║                                                                              ║
+║    openclaw tui              Start TUI                                      ║
+║    openclaw dashboard       Open browser dashboard                         ║
+║    openclaw status          Check status                                     ║
+║    openclaw gateway restart Restart gateway                                 ║
+║                                                                              ║
+║  ── OPENCODE ──                                                             ║
+║                                                                              ║
+║    oc             OpenCode TUI (aliased)                                     ║
+║    ocl            OpenCode with local llama.cpp                              ║
+║    oclw           OpenCode web mode                                          ║
+║                                                                              ║
+║  ── QUICK FILE SEARCH ──                                                    ║
+║                                                                              ║
+║    q <term>       Search commands/docs                                       ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+NOTES:
+- Models: run `llm` to select interactively from /home/ken/Downloads/llm_models/
+- llama-server on port 8080, GPU layers: -ngl 35 (RTX 3060 12GB)
+- All aliases in ~/.zshrc — source ~/.zshrc to activate
+- Dotfiles repo: git@github.com:InnerTic/dotfiles.git

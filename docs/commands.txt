@@ -1,0 +1,135 @@
+# Edit Date: 2026-05-09
+# Last Updated: 2026-05-09
+# Description: Quick reference commands for local AI tools
+# Context: Annotated for AI reading — paths, versions, hardware notes included.
+# NOTE: Per-model aliases removed. Use `llm` (llama-loader) for dynamic model selection.
+
+# =============================================================================
+# OPENCLAW
+# =============================================================================
+# Start OpenClaw Terminal User Interface
+openclaw tui                    
+# Open OpenClaw dashboard in default browser
+openclaw dashboard             
+# Check OpenClaw service status
+openclaw status               
+# Follow OpenClaw logs in real time
+openclaw logs --follow        
+# Restart OpenClaw gateway service
+openclaw gateway restart      
+# OpenClaw webchat: http://172.16.5.1:18789 (LAN accessible)
+
+# =============================================================================
+# LLAMA.CPP — DYNAMIC MODEL LOADER (recommended)
+# =============================================================================
+# Interactive model selector — scans /home/ken/Downloads/llm_models/ for .gguf files
+# and lets you pick one to serve on port 8080.
+# Path: ~/.local/bin/llama-loader
+# Also updates opencode config automatically on model switch.
+llama-loader                    # or just: llm
+
+# Kill running llama-server
+kill-llama                      # or just: llmk
+
+# Check which model is currently running on port 8080
+curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id
+# Alias: llmcheck
+
+# =============================================================================
+# LLAMA.CPP — MANUAL START (when you need specific flags)
+# =============================================================================
+# Hardware: NVIDIA RTX 3060 12GB VRAM, -ngl 35 for 7B-8B models
+# Binary path: /home/ken/llama.cpp/build/bin/llama-server (CUDA build)
+# Port: 8080 | Context: 16384
+
+# Example — start Qwen3-VL-8B manually with different context:
+/home/ken/llama.cpp/build/bin/llama-server \
+  -m /home/ken/Downloads/llm_models/Qwen3-VL-8B-Instruct-abliterated-v2.Q5_K_M.gguf \
+  -c 8192 \
+  -ngl 35 \
+  --host 127.0.0.1 \
+  --port 8080 &
+
+# Start llama server with custom params (via script)
+~/.openclaw/workspace/scripts/llama-start.sh
+# Alias: llmstart
+
+# =============================================================================
+# TEXT GEN WEBUI
+# =============================================================================
+# Path: /workspace/textgen/
+# Start: 
+~/.openclaw/workspace/scripts/textgen-start.sh
+# Alias: textgen
+
+# Kill:
+alias textkill='pkill -f "server.py"'
+
+# =============================================================================
+# SDXL / FORGE (sd-webui-forge-neo)
+# =============================================================================
+# Path: /workspace/sd-webui-forge-neo/
+# Port: 7860 | URL: http://172.16.5.1:7860
+
+# Start:
+~/.openclaw/workspace/scripts/forge-start.sh
+# Alias: sdxl
+
+# Kill:
+alias sdxlkill='pkill -f "launch.py\|webui.py"'
+
+# =============================================================================
+# OPENCODE
+# =============================================================================
+# OpenCode TUI (connects to local llama.cpp server on 8080)
+~/.openclaw/workspace/scripts/opencode-local.sh tui
+# Alias: ocl
+
+# OpenCode web UI
+~/.openclaw/workspace/scripts/opencode-local.sh web
+# Alias: oclw
+
+# OpenCode binary
+opencode                        # Alias: oc
+
+# =============================================================================
+# NETWORK / SYSTEMS
+# =============================================================================
+# MikroTik Switch: 172.16.88.1
+# ZimaBoard (DNS): 172.16.1.1
+# Akuma PC: 172.16.5.1
+# ppihole (ZimaBoard): 172.16.12.1
+
+# SSH shortcuts (from ~/.ssh/config):
+ssh zima        # ZimaBoard (Unbound + ad-block)
+ssh ppihole     # ZimaBoard via LAN IP
+ssh mikrotik    # MikroTik switch
+ssh ai-user@akuma-pc  # This machine as ai-user
+
+# =============================================================================
+# PYTHON VENV (always use, never system Python)
+# =============================================================================
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip freeze > requirements.txt   # Save current state
+
+# =============================================================================
+# GIT (dotfiles repo)
+# =============================================================================
+# Repo: git@github.com:InnerTic/dotfiles.git
+# Bootstrap: cd ~/dotfiles && ./bootstrap.sh
+# Update: cd ~/dotfiles && git pull && ./bootstrap.sh
+
+# =============================================================================
+# DOCKER (AI tools installed in /workspace/)
+# =============================================================================
+# No Docker. All AI tools run natively with CUDA.
+
+# =============================================================================
+# BACKUPS
+# =============================================================================
+# Mega (rclone): ~/.local/bin/rclone
+# Push: ~/.openclaw/workspace/scripts/mega-push.sh
+# Pull: ~/.openclaw/workspace/scripts/mega-pull.sh
+# pihole backup (cron, 3am): /Backups/pihole-configs/ on MEGA
