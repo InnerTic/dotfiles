@@ -1,0 +1,16 @@
+# Secrets
+.env
+*.pem
+*.key
+private/
+
+# Cache and temp
+*.swp
+*.swo
+*~
+.cache/
+session-*
+
+# OS junk
+.DS_Store
+Thumbs.db

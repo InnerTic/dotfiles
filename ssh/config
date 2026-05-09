@@ -1,0 +1,22 @@
+# SSH configuration file
+
+
+Host pihole
+    HostName 172.16.12.1
+    User ken
+
+
+
+Host openclaw2
+    HostName 172.16.13.1
+    User ken
+
+
+Host prox105UbuntuLXC
+    HostName 172.16.12.5
+    User ken
+
+
+Host openclawVM
+    HostName 172.16.12.12
+    User ken
