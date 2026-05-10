@@ -4,6 +4,13 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Path to Oh My Zsh
+# History dedup
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 plugins=(git)
@@ -18,6 +25,10 @@ source $ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
+# History size bounds
+export HISTSIZE=10000
+export SAVEHIST=10000
+
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
 export PATH="/home/ken/.opencode/bin:$PATH"
