@@ -35,6 +35,13 @@
 - AnythingLLMDesktop.AppImage (3.7GB, on ssd_storage/ken/)
 - Duplicate Steam Proton prefix for GW2 (app 1284210) created May 10 on ssd_storage
 
+## GW2 Multi-Box
+See `docs/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requirements:
+- `/workspace` symlink must exist (Z: drive path for Proton prefixes)
+- Two physical GW2 installs on separate drives
+- NVIDIA GPU must be forced, AMD iGPU crashes
+- Two AppIDs: 1284210 (primary, Steam) and 2716098372 (second, non-Steam)
+
 ## Drives
 - `sda` — OS root (119G, Btrfs subvolumes)
 - `sdb` — ssd_storage (465G, ext4)
