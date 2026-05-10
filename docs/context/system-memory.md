@@ -24,7 +24,7 @@
 ```
 ~/ssd_storage  -> /mnt/ssd_storage
 ~/m2_storage   -> /mnt/m2_storage
-~/workspace    -> /mnt/workspace
+~/workspace    -> /mnt/workspace   (also /workspace -> /mnt/workspace for Z: drive compat)
 ~/Models       -> ~/Downloads/llm_models
 ~/Gw2-win      -> /mnt/ssd_storage/ken/Gw2-win
 ```
