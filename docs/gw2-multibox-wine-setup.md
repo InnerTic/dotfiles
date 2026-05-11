@@ -18,10 +18,12 @@
 
 | AppID | Purpose | Location |
 |-------|---------|----------|
-| 1284210 | Primary GW2 | `/mnt/workspace/SteamLibrary/steamapps/compatdata/1284210/pfx` |
+| 1284210 | Primary GW2 (real Steam AppID) | `/mnt/workspace/SteamLibrary/steamapps/compatdata/1284210/pfx` |
 | 2716098372 | Second account | `/home/ken/.local/share/Steam/steamapps/compatdata/2716098372/pfx` |
 | 3489019414 | Non-Steam shortcut (defunct) | Was at `/home/ken/.steam/steam/steamapps/compatdata/3489019414/` |
 | 2390161803 | Non-Steam shortcut (defunct) | Was at `/home/ken/.local/share/Steam/steamapps/compatdata/2390161803/` |
+
+> **Note:** Only `1284210` is the real Steam AppID. The other IDs are assigned dynamically by Steam when non-Steam shortcuts are added and will change if re-added.
 
 ## Known Failure Modes
 
