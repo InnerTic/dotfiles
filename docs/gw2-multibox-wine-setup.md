@@ -1,6 +1,6 @@
-# GW2 Multi-Box Wine/Proton Setup (Distilled)
+# GW2 Multi-Box Wine/Proton Setup
 
-> Source: FixBot chat c4c52839 (2026-04-28). Full log: `fixbot.ifixit.comchatc4c528.txt`
+> Source: FixBot chat c4c52839 (2026-04-28).
 
 ## Architecture
 
@@ -9,10 +9,10 @@
 - **Path**: `Z:\workspace\SteamLibrary\steamapps\common\Guild Wars 2\`
 - **NVIDIA only**: RTX 3060, integrated AMD GPU causes crashes
 
-## Critical Rules (Don't Break These)
+## Critical Rules
 
-1. **Z: drive path must exist** — `/workspace` → nvme mount. All Proton prefixes map Z: to Linux root. If `/workspace` doesn't resolve, everything breaks.
-2. **Second account needs isolated physical copy** — Both instances writing to the same `bin64/cef/` cache = ntdll.dll crash (exception 80000100).
+1. **Z: drive path must exist** — `/workspace` is an nvme mount. All Proton prefixes map Z: to Linux root. If `/workspace` doesn't resolve, nothing works.
+2. **Second account needs an isolated physical copy** — Both instances writing to the same `bin64/cef/` cache causes an ntdll.dll crash (exception 80000100).
 
 ## Prefixes
 
@@ -29,45 +29,58 @@
 Loader can't find `Gw2-64.exe`. Causes:
 - Wrong working directory
 - Case sensitivity (Linux is case-sensitive, GW2 is not)
-- Broken Z: drive path → fix: ensure `/workspace` exists
-
-
-Prefix is incomplete/corrupted. Fix:
-```bash
-WINEPREFIX="$PREFIX" protontricks $APPID corefonts dxvk
-```
+- Broken Z: drive path — ensure `/workspace` exists
 
 ### libEGL warnings (pci id 10de:2504, driver null)
-Wine can't initialize NVIDIA 3D surface. Fix:
+Wine can't initialize the NVIDIA 3D surface. Fix:
 ```bash
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
 ```
 
+## Setup
+
+Launch GW2 once via Steam. Let Vulkan populate. Fully log into the game once, then exit — this installs the default Wine prefix.
+
+In Steam, add a non-Steam game pointing to `/workspace/SteamLibrary/steamapps/common/Guild Wars 2/Gw2-64.exe`. Fully load the client and log in to fill the prefix. Then add another non-Steam game pointing to the loader at `.../addons/LOADER_public/Gw2-Simple-Addon-Loader.exe`. Set everything to GE-Proton10-32 — it works with both GW2 and the loader.
+
+On the desktop, create a link to the addon loader on each drive for each account. Double-click either drive's launcher. Protontricks runs as default and picks up the Steam prefix. Either prefix works with either addon loader. BlishHUD launches with whichever loads first.
+
+The addon loader can launch this way without needing Steam running. Steam won't launch both accounts at the same time, so launch at least one manually and one through Steam.
+
 ## Launch Commands
 
 ### Primary account (via Steam)
-Launch normally from Steam library.
-Let Vulkan populate. Fully log into the game once. exit
-default wine prefix is installed.
-In steam, add a non-steam game /workspace/SteamLibrary/steamapps/common/Guild Wars 2/Gw2-64.exe
-fully load the client login to fill the prefix.
-the add non steam game again, this time the loader /workspace/SteamLibrary/steamapps/common/Guild Wars 2/addons/LOADER_public/Gw2-Simple-Addon-Loader.exe
-set everything to protonGE10-32 it works with gw2 and with the loader.
-on the Desktop create a link to file, point it at the addon loader, on each drive for 2 acounts.
-double click the either drive launcher. protontricks launcher as default. bings up steam prefixes. either steam prefix can used with either addon_loader.  blishhud lauches witht e first to be loaded.
-the addon loader can be launched this way without having to launch steam client. steam wont launch both acounts at the same time so at least one is launched this manual way one launched through steam.
+Launch normally from the Steam library.
 
-## Clean Rebuild Procedure
+### Second account (via protontricks)
+```bash
+export MY_PREFIX="/home/ken/.local/share/Steam/steamapps/compatdata/2716098372/pfx"
+env WINEPREFIX="$MY_PREFIX" \
+    __NV_PRIME_RENDER_OFFLOAD=1 \
+    __GLX_VENDOR_LIBRARY_NAME=nvidia \
+    LD_PRELOAD="" \
+    protontricks 2716098372 run "C:\addons\LOADER_public\Gw2-Simple-Addon-Loader.exe"
+```
 
-1. Delete prefix: `rm -rf $PREFIX`
-2. Launch game once via Steam to recreate prefix structure
-3. Install dependencies: `WINEPREFIX="$PREFIX" protontricks $APPID corefonts dxvk`
-4. Launch with NVIDIA force flags (see above)
-5. If crashing, disable overlay DLL: `mv external_dx11_overlay.dll external_dx11_overlay.dll.bak`
-6. Clear NVIDIA shader cache: `rm -rf ~/.nv/GLCache`
+### Second account (direct wine)
+```bash
+env WINEPREFIX="$MY_PREFIX" \
+    __NV_PRIME_RENDER_OFFLOAD=1 \
+    __GLX_VENDOR_LIBRARY_NAME=nvidia \
+    wine "Z:/workspace/SteamLibrary/steamapps/common/Guild Wars 2/addons/LOADER_public/Gw2-Simple-Addon-Loader.exe"
+```
+
+## Clean Rebuild
+
+1. Delete the prefix: `rm -rf $PREFIX`
+2. Launch the game once via Steam to recreate the prefix structure
+3. Install deps: `WINEPREFIX="$PREFIX" protontricks $APPID corefonts dxvk`
+4. Launch with NVIDIA force flags
+5. If still crashing, disable the overlay DLL: `mv external_dx11_overlay.dll external_dx11_overlay.dll.bak`
+6. Clear the NVIDIA shader cache: `rm -rf ~/.nv/GLCache`
 
 ## Notes
 
 - GE-Proton10-32 was the working version. Wine 11.7 had regressions.
 - Steam library paths in `libraryfolders.vdf` must point to actual mount points (not auto-mount paths).
-- The `-shareArchive` flag is needed for multi-boxing to allow shared Gw2.dat access.
+- Use `-shareArchive` for multi-boxing to allow shared `Gw2.dat` access.
