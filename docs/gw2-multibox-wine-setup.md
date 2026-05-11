@@ -57,7 +57,7 @@ The addon loader can launch this way without needing Steam running. Steam won't 
 
 Set launch option to: `-provider Portal`
 
-This tells GW2 to use ArenaNet login instead of Steam login. Required for the second account.
+This tells GW2 to use ArenaNet login instead of Steam login. Required for all accounts launched through Steam. Once the prefixes are set up, you can load directly from the desktop shortcuts and bypass Steam entirely.
 
 ## Clean Rebuild
 
