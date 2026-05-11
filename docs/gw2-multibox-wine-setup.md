@@ -53,9 +53,9 @@ On the desktop, create a link to the addon loader on each drive for each account
 
 The addon loader can launch this way without needing Steam running. Steam won't launch both accounts at the same time, so launch at least one manually and one through Steam.
 
-## Launch Commands
--provider Portal 
+## Launch Command in Steam
 
+Set launch option to: `-provider Portal`
 
 ## Clean Rebuild
 
