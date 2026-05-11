@@ -54,27 +54,8 @@ On the desktop, create a link to the addon loader on each drive for each account
 The addon loader can launch this way without needing Steam running. Steam won't launch both accounts at the same time, so launch at least one manually and one through Steam.
 
 ## Launch Commands
+-provider Portal 
 
-### Primary account (via Steam)
-Launch normally from the Steam library.
-
-### Second account (via protontricks)
-```bash
-export MY_PREFIX="/home/ken/.local/share/Steam/steamapps/compatdata/2716098372/pfx"
-env WINEPREFIX="$MY_PREFIX" \
-    __NV_PRIME_RENDER_OFFLOAD=1 \
-    __GLX_VENDOR_LIBRARY_NAME=nvidia \
-    LD_PRELOAD="" \
-    protontricks 2716098372 run "C:\addons\LOADER_public\Gw2-Simple-Addon-Loader.exe"
-```
-
-### Second account (direct wine)
-```bash
-env WINEPREFIX="$MY_PREFIX" \
-    __NV_PRIME_RENDER_OFFLOAD=1 \
-    __GLX_VENDOR_LIBRARY_NAME=nvidia \
-    wine "Z:/workspace/SteamLibrary/steamapps/common/Guild Wars 2/addons/LOADER_public/Gw2-Simple-Addon-Loader.exe"
-```
 
 ## Clean Rebuild
 
