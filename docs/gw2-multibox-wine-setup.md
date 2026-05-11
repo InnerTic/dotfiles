@@ -25,6 +25,10 @@
 
 > **Note:** Only `1284210` is the real Steam AppID. The other IDs are assigned dynamically by Steam when non-Steam shortcuts are added and will change if re-added.
 
+## Normal Behavior
+
+- **Steam log complains about running a non-Steam game** — this is expected when using the 3rd-party addon loader to inject BlishHUD. Ignore it.
+
 ## Known Failure Modes
 
 ### "File not found" (Os { code: 2, kind: NotFound })
