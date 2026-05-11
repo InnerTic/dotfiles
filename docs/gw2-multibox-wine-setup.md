@@ -83,4 +83,3 @@ env WINEPREFIX="$MY_PREFIX" \
 
 - GE-Proton10-32 was the working version. Wine 11.7 had regressions.
 - Steam library paths in `libraryfolders.vdf` must point to actual mount points (not auto-mount paths).
-- Use `-shareArchive` for multi-boxing to allow shared `Gw2.dat` access.
