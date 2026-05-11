@@ -53,9 +53,11 @@ On the desktop, create a link to the addon loader on each drive for each account
 
 The addon loader can launch this way without needing Steam running. Steam won't launch both accounts at the same time, so launch at least one manually and one through Steam.
 
-## Launch Command in Steam
+## Launch Option in Steam
 
 Set launch option to: `-provider Portal`
+
+This tells GW2 to use ArenaNet login instead of Steam login. Required for the second account.
 
 ## Clean Rebuild
 
