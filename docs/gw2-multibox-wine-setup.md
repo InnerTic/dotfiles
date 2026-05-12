@@ -37,6 +37,13 @@ Loader can't find `Gw2-64.exe`. Causes:
 - Case sensitivity (Linux is case-sensitive, GW2 is not)
 - Broken Z: drive path — ensure `/workspace` exists
 
+### Mono incompatible / dotnet required
+One of the initial setup steps (either adding `Gw2-64.exe` or the addon loader first) triggers a mono incompatibility error. Fix:
+```bash
+WINEPREFIX="$PREFIX" protontricks $APPID dotnet48
+```
+The exact order that avoids this still needs to be documented — see test build notes below.
+
 ### libEGL warnings (pci id 10de:2504, driver null)
 Wine can't initialize the NVIDIA 3D surface. Fix:
 ```bash
@@ -72,3 +79,7 @@ This tells GW2 to use ArenaNet login instead of Steam login. Required for all ac
 
 - GE-Proton10-32 was the working version. Wine 11.7 had regressions.
 - Steam library paths in `libraryfolders.vdf` must point to actual mount points (not auto-mount paths).
+
+## Test Build Investigation
+
+TBD — Document exact setup order on a clean test build. Run a 2B or 4B local model to monitor Steam logs + GW2 addon logs and determine the correct sequence that avoids the mono/dotnet issue.
