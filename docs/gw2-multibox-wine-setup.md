@@ -82,4 +82,6 @@ This tells GW2 to use ArenaNet login instead of Steam login. Required for all ac
 
 ## Test Build Investigation
 
-TBD — Document exact setup order on a clean test build. Run a 2B or 4B local model to monitor Steam logs + GW2 addon logs and determine the correct sequence that avoids the mono/dotnet issue.
+Document exact setup order on a clean test build. Run a 2B or 4B local model to monitor Steam logs + GW2 addon logs and determine the correct sequence that avoids the mono/dotnet issue.
+
+First fork will be on this build.
