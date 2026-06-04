@@ -1,0 +1,87 @@
+# ╔══════════════════════════════════════════════════════════════════════╗
+# ║ SUPERSEDED - This file is an older, messier version of              ║
+# ║ SSH_KEY_SETUP.txt. Kept only to preserve the embedded public key    ║
+# ║ for ken@Akuma. See SSH_KEY_SETUP.txt instead.                       ║
+# ╚══════════════════════════════════════════════════════════════════════╝
+
+Linux/macOS/WSL:
+
+    If you already have a key: cat ~/.ssh/id_rsa.pub (RSA) or cat ~/.ssh/id_ed25519.pub (Ed25519)
+    If not found: run
+        ssh-keygen -t rsa -b 4096 -C ken@Akuma
+        Then: cat ~/.ssh/id_rsa.pub
+Next, copy the public key content and paste it into ken's authorized_keys (on the OpenClaw VM) as shown:
+
+    On the VM:
+        mkdir -p /home/ken/.ssh
+        chmod 700 /home/ken/.ssh
+        echo "<your-public-key>" >> /home/ken/.ssh/authorized_keys
+        chmod 600 /home/ken/.ssh/authorized_keys
+        chown -R ken:ken /home/ken/.ssh
+
+        ssh-keygen -t rsa -b 4096 -C ken@Akuma
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/ken/.ssh/id_rsa):
+Enter passphrase for "/home/ken/.ssh/id_rsa" (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/ken/.ssh/id_rsa
+Your public key has been saved in /home/ken/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:gq5Y7b/qEuQ9dJwncx+lII/rFtO2oioNCFO5pC1Nzws ken@Akuma
+The key's randomart image is:
++---[RSA 4096]----+
+| . |
+| = . . . |
+| B + . = . o |
+|= E +.B + o |
+|o= +.o.BS. . |
+|o oo+ +.o . |
+| o..oo + . |
+|.ooo + . |
+|..o+==oo |
++----[SHA256]-----+
+❯ cat ~/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDNFnWfy+wJZ/J+wRytm6qBx5bpzWTtVkKq73a9ClaqK/UrZpME/vKFeRggxFIR34I881CH5E+7thw4cotWRLvrrGg8XVwfFLh0qZ9sfgFqvPNLBM0sOeqZJQ5hYW1pH59VBWen5+WkK/ns4TS1SNCT5VZSNQyg1HkAVWDICxxGwclHrzUEI05y6XI7IQrKfwFF7sCKF6crq689kXNR9FUqYVr5nLnfPKjSCUrkBqH/utLpw5sbIONU2Z4m8Qv//uizhXWzkYV/OwbjLNb5rpvqFoerQAuJzinWyX4S36URKsJhzxoHH4/kO9+RQTGfwvzwDMX8ELhtF/vr1HNKOLj3gTtBpd/j/7mr9fFu+Xat3rtNwG/yb9HC78I3zUyFtdCXbuAKuhKBY9ns9WMNdiy10btSpsROhZMJZ25s8m82USwYxBJk9ibAWqtoN7L48NkPf175Pc7nsP4U/Jyw+nxKseFLc3gcuL3frZP7h30E3XltcImc7uruLjpIJLKTiW0xZGBHqnz5NjDdDs3oqRChtyiHT6xbG20vkGpn1GS8vLjbr7CtrVuzBOH4IykzBTP0nEW7MnKihH1AZCHOHMKXybNhEFTuBdiAHQmhco0bKFPPkVuxN9zFiAeucLVV/xyx7BoJRXVS1EgdUX6W/ornujDZd5AcxybLIW6gZq/2ww== ken@Akuma
+
+To add that public key to ken's authorized_keys on 172.16.13.1:
+
+If you can log in as ken now:
+- mkdir -p /home/ken/.ssh
+- chmod 700 /home/ken/.ssh
+- cat >> /home/ken/.ssh/authorized_keys << 'KEY'
+<paste your full public key here>
+KEY
+- chmod 600 /home/ken/.ssh/authorized_keys
+- chown -R ken:ken /home/ken
+
+If you can't log in but have another admin path:
+- On a reachable host, run on the remote (as root or with sudo):
+  - mkdir -p /home/ken/.ssh
+  - echo '<your-public-key>' | sudo tee -a /home/ken/.ssh/authorized_keys
+  - sudo chmod 700 /home/ken/.ssh
+  - sudo chmod 600 /home/ken/.ssh/authorized_keys
+  - sudo chown -R ken:ken /home/ken
+Here's how to add the public key you provided to ken's account on the OpenClaw VM (172.16.13.1).
+
+If you can log in as an admin on the host or as ken:
+- Create the .ssh directory and add the key:
+  - mkdir -p /home/ken/.ssh
+  - chmod 700 /home/ken/.ssh
+  - cat >> /home/ken/.ssh/authorized_keys << 'SSHKEY'
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDNFnWfy+wJZ/J+wRytm6qBx5bpzWTtVkKq73a9ClaqK/UrZpME/vKFeRggxFIR34I881CH5E+7thw4cotWRLvrrGg8XVwfFLh0qZ9sfgFqvPNLBM0sOeqZJQ5hYW1pH59VBWen5+WkK/ns4TS1SNCT5VZSNQyg1HkAVWDICxxGwclHrzUEI05y6XI7IQrKfwFF7sCKF6crq689kXNR9FUqYVr5nLnfPKjSCUrkBqH/utLpw5sbIONU2Z4m8Qv//uizhXWzkYV/OwbjLNb5rpvqFoerQAuJzinWyX4S36URKsJhzxoHH4/kO9+RQTGfwvzwDMX8ELhtF/vr1HNKOLj3gTtBpd/j/7mr9fFu+Xat3rtNwG/yb9HC78I3zUyFtdCXbuAKuhKBY9ns9WMNdiy10btSpsROhZMJZ25s8m82USwYxBJk9ibAWqtoN7L48NkPf175Pc7nsP4U/Jyw+nxKseFLc3gcuL3frZP7h30E3XltcImc7uruLjpIJLKTiW0xZGBHqnz5NjDdDs3oqRChtyiHT6xbG20vkGpn1GS8vLjbr7CtrVuzBOH4IykzBTP0nEW7MnKihH1AZCHOHMKXybNhEFTuBdiAHQmhco0bKFPPkVuxN9zFiAeucLVV/xyx7BoJRXVS1EgdUX6W/ornujDZd5AcxybLIW6gZq/2ww== ken@Akuma
+  SSHKEY
+  - chmod 600 /home/ken/.ssh/authorized_keys
+  - chown -R ken:ken /home/ken/.ssh
+
+If ken doesn't exist yet (you have admin access elsewhere and need to create the user):
+- On the remote host:
+  - sudo useradd -m -d /home/ken -s /bin/bash ken
+  - sudo mkdir -p /home/ken/.ssh
+  - sudo bash -lc 'cat >> /home/ken/.ssh/authorized_keys' << 'SSHKEY'
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDNFnWfy+wJZ/J+wRytm6qBx5bpzWTtVkKq73a9ClaqK/UrZpME/vKFeRggxFIR34I881CH5E+7thw4cotWRLvrrGg8XVwfFLh0qZ9sfgFqvPNLBM0sOeqZJQ5hYW1pH59VBWen5+WkK/ns4TS1SNCT5VZSNQyg1HkAVWDICxxGwclHrzUEI05y6XI7IQrKfwFF7sCKF6crq689kXNR9FUqYVr5nLnfPKjSCUrkBqH/utLpw5sbIONU2Z4m8Qv//uizhXWzkYV/OwbjLNb5rpvqFoerQAuJzinWyX4S36URKsJhzxoHH4/kO9+RQTGfwvzwDMX8ELhtF/vr1HNKOLj3gTtBpd/j/7mr9fFu+Xat3rtNwG/yb9HC78I3zUyFtdCXbuAKuhKBY9ns9WMNdiy10btSpsROhZMJZ25s8m82USwYxBJk9ibAWqtoN7L48NkPf175Pc7nsP4U/Jyw+nxKseFLc3gcuL3frZP7h30E3XltcImc7uruLjpIJLKTiW0xZGBHqnz5NjDdDs3oqRChtyiHT6xbG20vkGpn1GS8vLjbr7CtrVuzBOH4IykzBTP0nEW7MnKihH1AZCHOHMKXybNhEFTuBdiAHQmhco0bKFPPkVuxN9zFiAeucLVV/xyx7BoJRXVS1EgdUX6W/ornujDZd5AcxybLIW6gZq/2ww== ken@Akuma
+  SSHKEY
+  - sudo chmod 700 /home/ken/.ssh
+  - sudo chmod 600 /home/ken/.ssh/authorized_keys
+  - sudo chown -R ken:ken /home/ken/.ssh
+
+If you share your public key here, I'll craft the exact commands for you. Also ensure SSHD on 172.16.13.1 allows PubkeyAuthentication (and/or PasswordAuthentication) and that ken is allowed to log in.

@@ -3,6 +3,8 @@
 *.pem
 *.key
 private/
+# API keys — sk-or-v1- prefix from OpenRouter/OpenAI-style providers
+sk-or-v1-*
 
 # Cache and temp
 *.swp

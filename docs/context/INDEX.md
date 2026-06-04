@@ -9,6 +9,8 @@ Files marked **HISTORICAL** are kept as reference but contain stale paths/layout
 |------|-------------|
 | **`system-memory.md`** | **START HERE.** Merged AI reference — actual drives, mounts, UUIDs, aliases, GW2, network, rebuild quick-ref. Updated 2026-05-10. |
 | `quick-commands.md` | Quick-start commands for all AI tools (llama, Forge, TextGen, OpenClaw, OpenCode) |
+| `free-models.md` | Free online model reference (OpenCode Zen + OpenRouter). Includes context sizes, capabilities, best-use notes. Updated 2026-05-13. |
+| `free-providers.md` | Free LLM API providers beyond OpenRouter/Zen. Registration info, limits, how to add to opencode config for redundancy. Updated 2026-05-13. |
 | `package-list.txt` | Clean package list for CachyOS reinstall |
 | `kde-settings.md` | KDE Plasma backup/restore file list |
 | `gw2-multibox-wine-setup.md` | GW2 multi-boxing setup — distilled from FixBot log |
@@ -29,6 +31,7 @@ Files marked **HISTORICAL** are kept as reference but contain stale paths/layout
 
 | Location | Content |
 |----------|---------|
-| `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |
+| `~/dotfiles/docs/system_backup/` | Full backup/restore reference directory |
 | `~/dotfiles/docs/commands.txt` | Full command reference with paths and hardware notes |
 | `~/dotfiles/docs/quick-commands.txt` | Condensed quick-reference command cheat sheet |
+| `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |

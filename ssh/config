@@ -20,3 +20,11 @@ Host prox105UbuntuLXC
 Host openclawVM
     HostName 172.16.12.12
     User ken
+
+Host pihole/clawVM
+    HostName 172.16.12.3
+    User ken
+
+Host tesrtlxc
+    HostName 172.16.12.250
+    User root

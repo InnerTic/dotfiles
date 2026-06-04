@@ -1,8 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Path to Oh My Zsh
 # History dedup
 setopt HIST_EXPIRE_DUPS_FIRST
@@ -37,6 +32,9 @@ export PATH="$HOME/.venvs/openclaw/bin:$PATH"
 # ── OpenClaw ──────────────────────────────────────────────────────────────────
 source "/home/ken/.openclaw/completions/openclaw.zsh"
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+
+# ── ONLINE MODEL SELECTOR (OpenRouter + OpenCode Zen) ───────────────────────
+alias oll='online-loader'
 
 # ── LLM MODEL LOADER (dynamic) ──────────────────────────────────────────────
 alias llm='llama-loader'
@@ -79,3 +77,6 @@ q() {
 # ── Completion ───────────────────────────────────────────────────────────────
 zstyle ':completion:*' menu select
 export QTWEBENGINE_CHROMIUM_FLAGS="--disable-gpu"
+
+# ── System info on terminal open (like fish_greeting) ─────────────────────────
+fastfetch
