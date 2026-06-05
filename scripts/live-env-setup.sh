@@ -146,19 +146,33 @@ arch-chroot "$TARGET" usermod -s /bin/zsh "$USERNAME"
 echo "  ✓ shell set to zsh"
 
 # =============================================================================
-# STEP 7: Enable services
+# STEP 7: P40 — add nvidia PCIe Gen3 fix to kernel cmdline
 # =============================================================================
 echo ""
-echo "=== STEP 7: Enabling services..."
+echo "=== STEP 7: Adding P40 PCIe Gen3 fix to kernel cmdline..."
+LIMINE_CONF="$TARGET/boot/limine.conf"
+if [[ -f "$LIMINE_CONF" ]]; then
+  grep -q "nvidia.NVreg_EnablePCIeGen3" "$LIMINE_CONF" 2>/dev/null || \
+    sed -i 's|rootflags=subvol=/@ root=|nvidia.NVreg_EnablePCIeGen3=1 &|' "$LIMINE_CONF"
+  echo "  ✓ nvidia.NVreg_EnablePCIeGen3=1 added to kernel cmdline"
+else
+  echo "  ⚠ /boot/limine.conf not found — add manually after reboot"
+fi
+
+# =============================================================================
+# STEP 8: Enable services
+# =============================================================================
+echo ""
+echo "=== STEP 8: Enabling services..."
 arch-chroot "$TARGET" systemctl enable ufw.service 2>/dev/null || true
 arch-chroot "$TARGET" systemctl enable fstrim.timer 2>/dev/null || true
 echo "  ✓ services enabled"
 
 # =============================================================================
-# STEP 8: Final sanity check
+# STEP 9: Final sanity check
 # =============================================================================
 echo ""
-echo "=== STEP 8: Verifying configuration..."
+echo "=== STEP 9: Verifying configuration..."
 FS_CHECK="PASS"
 arch-chroot "$TARGET" mount -a 2>/dev/null || FS_CHECK="FAIL"
 echo "  mount -a: $FS_CHECK"
@@ -181,6 +195,7 @@ echo "  ✓ Data drives added to fstab (nofail)"
 echo "  ✓ Symlinks created"
 echo "  ✓ Dotfiles bootstrapped (as $USERNAME)"
 echo "  ✓ Default shell set to zsh"
+echo "  ✓ P40 PCIe Gen3 kernel param added"
 echo "  ✓ Services enabled"
 echo ""
 echo "Bootstrap log: /root/bootstrap.log (in target, check after reboot)"

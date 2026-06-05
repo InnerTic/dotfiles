@@ -205,7 +205,37 @@ it on the P40 unless you're running PyTorch-based inference there. For Forge
 the 3060 handles it fine. For llama.cpp, it uses its own CUDA kernels, not
 PyTorch.
 
-## Troubleshooting
+### P40 Invisible in nvidia-smi — Power Cable
+
+If the P40 is claimed by the nvidia driver (`lspci -vs 04:00.0` shows `Kernel driver in use: nvidia`) but doesn't appear in `nvidia-smi`:
+
+```bash
+dmesg | grep -i nvidia
+# Look for: "GPU does not have the necessary power cables connected"
+```
+
+**Fix:** Both 8-pin power connectors must be plugged into the P40 from the PSU side (modular cables can get knocked loose when reattaching the side panel).
+
+### P40 Invisible — PCIe Gen3 Fix (Driver Param)
+
+On CachyOS, `modprobe.d` options may not apply (nvidia module loaded before config is read). Use kernel cmdline instead:
+
+```bash
+# Add to /boot/limine.conf cmdline:
+nvidia.NVreg_EnablePCIeGen3=1
+```
+
+Verify it took effect:
+```bash
+cat /proc/driver/nvidia/params | grep EnablePCIeGen3
+# Should show: EnablePCIeGen3: 1
+```
+
+### P40 Invisible — GPU Stuck at Gen1 After Reboot
+
+If `EnablePCIeGen3` is 1 but the card is still missing, it's almost certainly the **power cable** (above). The PCIe Gen3 param only helps cards that have proper power but fail link negotiation.
+
+## General Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
