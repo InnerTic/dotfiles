@@ -105,17 +105,34 @@ fi
 echo "  Source: source ~/.zshrc"
 
 # =============================================================================
-# STEP 5: Build llama.cpp (standalone CUDA)
+# STEP 5: Build llama.cpp (standalone CUDA, dual arch sm_61 + sm_86)
 # =============================================================================
 echo ""
-echo "=== STEP 5: Building llama.cpp with CUDA..."
+echo "=== STEP 5: Building llama.cpp with CUDA 12.4 (sm_61 + sm_86)..."
 echo "  See ~/dotfiles/docs/llama-setup.md for full steps"
 echo ""
+echo "  # Ensure GCC 9 is installed (CUDA 12.4 host compiler)"
+echo "  pkexec pacman -S --noconfirm cachyos/gcc9"
+echo ""
+echo "  # Patch math_functions.h (one-time: glibc noexcept conflict)"
+echo "  sed -i '847s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo "  sed -i '777s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo "  sed -i '5554s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo "  sed -i '5606s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo "  sed -i '5442s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo "  sed -i '5502s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+echo ""
+echo "  # Build with CUDA 12.4 nvcc"
 echo "  cd ~/workspace"
 echo "  git clone https://github.com/ggerganov/llama.cpp.git"
-echo "  cd llama.cpp && mkdir build && cd build"
-echo "  cmake .. -DLLAMA_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=\"61;86\""
-echo "  make -j\$(nproc)"
+echo "  cd llama.cpp"
+echo "  rm -rf build-cuda12"
+echo "  cmake -S . -B build-cuda12 \\"
+echo "    -DGGML_CUDA=ON \\"
+echo "    -DCMAKE_CUDA_ARCHITECTURES=\"61;86\" \\"
+echo "    -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \\"
+echo "    -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4"
+echo "  cmake --build build-cuda12 -j\$(nproc)"
 echo ""
 
 # =============================================================================

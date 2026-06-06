@@ -16,6 +16,9 @@ freedownloadmanager
 alacritty
 micro
 
+# Build tools
+cachyos/gcc9  # CUDA 12.4 host compiler (for P40 sm_61 builds)
+
 # Monitoring
 btop
 bottom

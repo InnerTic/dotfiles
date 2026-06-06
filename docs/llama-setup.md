@@ -126,6 +126,90 @@ pip install --force-reinstall torch torchvision --index-url https://download.pyt
 Check the venv's `lib/python3.x/site-packages/torch/version.py` to see what CUDA
 it was built against.
 
+## Dual-Arch Build (sm_61 + sm_86) with CUDA 12.4
+
+The system CUDA 13.3 can only target sm_75+. The P40 (sm_61) needs CUDA 12.x.
+A separate CUDA 12.4 toolkit is installed at `/home/ken/.local/cuda-12.4/` for
+this purpose.
+
+### Prerequisites
+
+```bash
+# CUDA 12.4 toolkit (one-time install)
+curl -L "https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run" \
+  -o /tmp/cuda_12.4.0_linux.run
+chmod +x /tmp/cuda_12.4.0_linux.run
+pkexec /tmp/cuda_12.4.0_linux.run \
+  --toolkit \
+  --toolkitpath=/home/ken/.local/cuda-12.4 \
+  --silent \
+  --override
+
+# GCC 9 (CUDA 12.4 host compiler)
+pkexec pacman -S --noconfirm cachyos/gcc9
+```
+
+### Patch math_functions.h (glibc ≥2.41 noexcept conflict)
+
+CUDA 12.4's `math_functions.h` declares functions like `rsqrtf`, `cospi`, `sinpi`
+without `__THROW`/`noexcept`, but modern glibc declares them with `noexcept (true)`.
+This causes a compile error. Patch the conflicting declarations:
+
+```bash
+sed -i '847s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+sed -i '777s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+sed -i '5554s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+sed -i '5606s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+sed -i '5442s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+sed -i '5502s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+```
+
+### nvcc-cmake Wrapper
+
+Create a wrapper so CMake can detect CUDA 12.4 with GCC 9 as the host compiler:
+
+```bash
+cat > /home/ken/.local/cuda-12.4/bin/nvcc-cmake << 'WRAPPER'
+#!/bin/bash
+export CUDA_PATH=/home/ken/.local/cuda-12.4
+exec /home/ken/.local/cuda-12.4/bin/nvcc \
+  -ccbin /usr/bin/gcc-9 \
+  --std=c++14 \
+  -I/home/ken/.local/cuda-12.4/include \
+  "$@"
+WRAPPER
+chmod +x /home/ken/.local/cuda-12.4/bin/nvcc-cmake
+```
+
+### Build
+
+```bash
+cd ~/workspace/llama.cpp
+rm -rf build-cuda12
+cmake -S . -B build-cuda12 \
+  -DGGML_CUDA=ON \
+  -DCMAKE_CUDA_ARCHITECTURES="61;86" \
+  -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \
+  -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4
+cmake --build build-cuda12 -j$(nproc)
+```
+
+### Run
+
+```bash
+export LD_LIBRARY_PATH=/home/ken/.local/cuda-12.4/lib64:$LD_LIBRARY_PATH
+~/workspace/llama.cpp/build-cuda12/bin/llama-server \
+  -m ~/models/<model>.gguf \
+  --main-gpu 1 \
+  -ngl 64
+```
+
+Or use the launcher script:
+
+```bash
+~/dotfiles/scripts/llama-server.sh --main-gpu 1 -ngl 64 -m ~/models/<model>.gguf
+```
+
 ## Tesla P40 Considerations
 
 The P40 (24GB, Pascal/sm_61) is good for running larger quantized LLMs via
@@ -174,17 +258,12 @@ python -c "import torch; print(torch.cuda.get_device_properties(0))"
 The 3060 (sm_86, tensor cores) keeps doing Forge/SD. The P40 (sm_61, 24GB,
 no tensor cores) handles llama.cpp inference exclusively.
 
-**Build for both architectures:**
-```bash
-cd ~/workspace/llama.cpp/build
-cmake .. -DLLAMA_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="61;86"
-make -j$(nproc)
-```
+**Build for both architectures** (see "Dual-Arch Build" section above).
 
 **Pin the P40 for llama-server:**
 ```bash
-~/workspace/llama.cpp/build/bin/llama-server \
-  -m ~/Downloads/llm_models/<model>.gguf \
+~/dotfiles/scripts/llama-server.sh \
+  -m ~/models/<model>.gguf \
   --host 0.0.0.0 --port 8080 \
   --main-gpu 1 \        # CUDA device 1 = P40 (0 = 3060, 1 = P40)
   -ngl 64 \              # P40 has 24GB, no display overhead
