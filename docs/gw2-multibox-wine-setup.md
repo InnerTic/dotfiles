@@ -31,6 +31,29 @@
 
 ## Known Failure Modes
 
+### Launcher stuck at "Initializing" (Local.dat corruption)
+GW2's launcher hangs on the splash screen with the spinning logo and never reaches login. This happens when `Local.dat` (settings file in the Wine prefix) grows to 50-80+ MB — should be a few KB. The CEF browser engine can't parse it → never finishes initialization.
+
+**Confirmed cause:** Game auto-patches (Gw2-64.exe update) can corrupt Local.dat on first post-patch launch, especially under Proton/Wine where crash recovery isn't robust.
+
+**Fix:**
+```bash
+# For primary prefix (1284210):
+cd "/mnt/workspace/SteamLibrary/steamapps/compatdata/1284210/pfx/drive_c/users/steamuser/AppData/Roaming/Guild Wars 2"
+mv Local.dat Local.dat.bak
+
+# For secondary prefix (2716098372):
+cd "/home/ken/.local/share/Steam/steamapps/compatdata/2716098372/pfx/drive_c/users/steamuser/AppData/Roaming/Guild Wars 2"
+mv Local.dat Local.dat.bak
+
+# Also clean up any leftover lock file:
+rm -f "/workspace/SteamLibrary/steamapps/common/Guild Wars 2/Gw2-64.tmp"
+```
+
+GW2 will recreate Local.dat with defaults on next launch. Graphics/sound settings will reset.
+
+**References:** This is a well-known issue on both Windows and Linux — documented on Steam forums, Reddit, and GW2 support threads since at least 2015. Fix applies identically under Proton/Wine.
+
 ### "File not found" (Os { code: 2, kind: NotFound })
 Loader can't find `Gw2-64.exe`. Causes:
 - Wrong working directory

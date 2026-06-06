@@ -72,8 +72,8 @@ SSD_STORAGE:
   Bind mounts: Documents, Downloads, Pictures, Videos, Desktop, Music, go, MEGA
 DATA_HDD:
   Mount: /mnt/data (sdc2, ntfs-3g)
-M2_STORAGE:
-  Mount: /mnt/m2_storage (sde1, btrfs) — currently unused
+VM_DISKS:
+  Mount: /var/lib/libvirt/images (sde1, xfs) — VM storage
 WORKSPACE_DRIVE:
   Mount: /mnt/workspace (nvme0n1p1, ext4)
 

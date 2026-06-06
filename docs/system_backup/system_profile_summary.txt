@@ -31,7 +31,7 @@
 - **Home Partition**: btrfs (defaults,noatime,compress=zstd)
 - **ssd_storage**: ext4 (defaults,noatime) — sdb1, bind mounts for user dirs
 - **Data-HDD**: ntfs-3g (defaults,uid=1000,gid=1000,umask=000,noatime,nofail) — sdc2
-- **m2_storage**: btrfs (defaults,noatime,compress=zstd) — sde1, currently unused
+- **VM-Disks**: xfs (defaults,noatime) — sde1, mounted at /var/lib/libvirt/images
 - **Workspace**: ext4 (defaults,noatime) — nvme0n1p1
 
 **Bind mounts** (8 total):
@@ -43,7 +43,7 @@
   /workspace → /mnt/workspace  (Steam Proton Z: drive compat)
   ~/workspace → /mnt/workspace
   ~/ssd_storage → /mnt/ssd_storage
-  ~/m2_storage → /mnt/m2_storage
+  # ~/m2_storage → /mnt/m2_storage (DEPRECATED — now /var/lib/libvirt/images)
   ~/Models → ~/Downloads/llm_models
 
 ## Installed Package Categories

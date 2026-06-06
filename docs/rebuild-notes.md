@@ -35,6 +35,13 @@
 - AnythingLLMDesktop.AppImage (3.7GB, on ssd_storage/ken/)
 - Duplicate Steam Proton prefix for GW2 (app 1284210) created May 10 on ssd_storage
 
+## System File Patches (apply after install)
+
+```bash
+# Thorium Shell — add dark mode support
+sudo sed -i 's|/opt/thorium-browser/thorium_shell |/opt/thorium-browser/thorium_shell --force-dark-mode |' /usr/bin/thorium-shell
+```
+
 ## GW2 Multi-Box
 See `docs/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requirements:
 - `/workspace` symlink must exist (Z: drive path for Proton prefixes)
@@ -47,5 +54,5 @@ See `docs/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requir
 - `sdb` — ssd_storage (465G, ext4)
 - `sdc` — Data-HDD (3.6T, NTFS)
 - `sdd` — ssd_home (112G, Btrfs) mounted at /home
-- `sde` — m2_storage (476G, Btrfs) — usage TBD
+- `sde` — VM-Disks (476G, xfs) at /var/lib/libvirt/images
 - `nvme0n1` — nvme-workspace (465G, ext4)

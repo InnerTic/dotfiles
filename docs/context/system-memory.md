@@ -12,7 +12,7 @@
 | **sdb** | 465.8G | ext4 | `/mnt/ssd_storage` | Bulk data (docs, downloads, pics, videos) |
 | **sdc** | 3.6T | ntfs | `/mnt/data` | Data-HDD (long-term backup) |
 | **sdd** | 111.8G | btrfs | `/home` | User configs, Wine prefixes, dotfiles |
-| **sde** | 476.9G | btrfs | `/mnt/m2_storage` | m2_storage (usage TBD) |
+| **sde** | 476.9G | xfs | `/var/lib/libvirt/images` | VM-Disks |
 | **nvme0n1** | 465.8G | ext4 | `/mnt/workspace` | AI tools, Steam games, llama.cpp, forge |
 
 ## OS Subvolumes (sda, Btrfs)
@@ -23,7 +23,7 @@
 
 ```
 ~/ssd_storage  -> /mnt/ssd_storage
-~/m2_storage   -> /mnt/m2_storage
+# ~/m2_storage   -> /mnt/m2_storage (DEPRECATED — now /var/lib/libvirt/images)
 ~/workspace    -> /mnt/workspace   (also /workspace -> /mnt/workspace for Z: drive compat)
 ~/Models       -> ~/Downloads/llm_models
 ~/Gw2-win      -> /mnt/ssd_storage/ken/Gw2-win
@@ -51,7 +51,7 @@
 | sdd /home | 4365b1fa-735e-455d-9645-e65be9903454 |
 | sdb /mnt/ssd_storage | 51b4243d-ea88-4a02-b02f-c286d52b6e0d |
 | sdc /mnt/data | 7E303CAF303C6FEF |
-| sde /mnt/m2_storage | 6befefdd-f232-4757-9eea-9f7051da3c0b |
+| sde /var/lib/libvirt/images | 6befefdd-f232-4757-9eea-9f7051da3c0b |
 | nvme /mnt/workspace | 9a1cdd8a-3d81-468f-be70-aa00a01d7301 |
 
 ## AI Tool Aliases (from ~/.zshrc)
@@ -168,6 +168,12 @@ Always use venv — never system Python. `pip freeze > requirements.txt`.
 - Pull: `~/.openclaw/workspace/scripts/mega-pull.sh`
 - pihole backup (cron, 3am): `/Backups/pihole-configs/` on MEGA
 
+## System File Patches (not in dotfiles)
+
+| File | Patch | Reason |
+|------|-------|--------|
+| `/usr/bin/thorium-shell` | Added `--force-dark-mode` | Dark mode not available otherwise |
+
 ## Rebuild Quick-Ref
 
 ```bash
@@ -178,4 +184,5 @@ sudo ln -sf /mnt/workspace ~/workspace
 # Reinstall packages from package-list.txt via pacman -S
 # Reinstall AUR packages via yay/paru
 # Set up bind mounts (see fstab entries above)
+# Apply system file patches (see "System File Patches" section above)
 ```
