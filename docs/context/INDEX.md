@@ -13,6 +13,8 @@ Files marked **HISTORICAL** are kept as reference but contain stale paths/layout
 | `free-providers.md` | Free LLM API providers beyond OpenRouter/Zen. Registration info, limits, how to add to opencode config for redundancy. Updated 2026-05-13. |
 | `package-list.txt` | Clean package list for CachyOS reinstall |
 | `kde-settings.md` | KDE Plasma backup/restore file list |
+| `kde-workarounds.md` | Tracked KDE bugs with workarounds & review-by dates |
+| `dolphinrc` | Reference dolphinrc config (ShowHiddenFiles, Details view) |
 | `gw2-multibox-wine-setup.md` | GW2 multi-boxing setup — distilled from FixBot log |
 | `rebuild-notes.md` | Latest rebuild notes (in parent dir) |
 
