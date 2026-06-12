@@ -112,7 +112,7 @@ make -j$(nproc)
 
 System CUDA (`/opt/cuda`) updates with `pacman -Syu`. This is fine for llama.cpp
 (built from source each time), but **PyTorch / oobabooga / text-gen venvs** are
-installed via pip wheels pinned to a specific CUDA version (e.g. `cu124`, `cu128`).
+installed via pip wheels pinned to a specific CUDA version (e.g. `cu129`, `cu128`).
 
 If system CUDA updates but the venv's torch wheel was compiled against an older
 CUDA, inference silently falls back to CPU or errors out.
@@ -126,78 +126,92 @@ pip install --force-reinstall torch torchvision --index-url https://download.pyt
 Check the venv's `lib/python3.x/site-packages/torch/version.py` to see what CUDA
 it was built against.
 
-## Dual-Arch Build (sm_61 + sm_86) with CUDA 12.4
+## Dual-Arch Build (sm_61 + sm_86) with CUDA 12.9
 
 The system CUDA 13.3 can only target sm_75+. The P40 (sm_61) needs CUDA 12.x.
-A separate CUDA 12.4 toolkit is installed at `/home/ken/.local/cuda-12.4/` for
+A separate CUDA 12.9 toolkit is installed at `/home/ken/.local/cuda-12.9/` for
 this purpose.
 
 ### Prerequisites
 
 ```bash
-# CUDA 12.4 toolkit (one-time install)
-curl -L "https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run" \
-  -o /tmp/cuda_12.4.0_linux.run
-chmod +x /tmp/cuda_12.4.0_linux.run
-pkexec /tmp/cuda_12.4.0_linux.run \
+# CUDA 12.9 toolkit (one-time install) — download separately, place at:
+# ~/Downloads/cuda_12.9.0_<driver>_linux.run
+chmod +x ~/Downloads/cuda_12.9.0_*_linux.run
+pkexec ~/Downloads/cuda_12.9.0_*_linux.run \
   --toolkit \
-  --toolkitpath=/home/ken/.local/cuda-12.4 \
+  --toolkitpath=/home/ken/.local/cuda-12.9 \
   --silent \
   --override
-
-# GCC 9 (CUDA 12.4 host compiler)
-pkexec pacman -S --noconfirm cachyos/gcc9
 ```
 
-### Patch math_functions.h (glibc ≥2.41 noexcept conflict)
+### GCC 14 Required
 
-CUDA 12.4's `math_functions.h` declares functions like `rsqrtf`, `cospi`, `sinpi`
-without `__THROW`/`noexcept`, but modern glibc declares them with `noexcept (true)`.
-This causes a compile error. Patch the conflicting declarations:
+CUDA 12.9 requires GCC ≤ 14. The system has GCC 16 as default, plus
+`g++-14` (14.3.1) and `g++-15` (15.2.1). Always pin to `g++-14` via `-ccbin`.
 
-```bash
-sed -i '847s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sed -i '777s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sed -i '5554s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sed -i '5606s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sed -i '5442s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sed -i '5502s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
+### Glibc 2026+ noexcept Incompatibility
+
+CUDA 12.9's `crt/math_functions.h` declares `cospi`, `sinpi`, `rsqrt` etc.
+without `noexcept(true)`, but glibc 2026+ headers (`bits/mathcalls.h`)
+redeclare them with `noexcept(true)`. This causes nvcc/CICC to error:
+
+```
+error: exception specification is incompatible with that of previous function "cospi"
 ```
 
-### nvcc-cmake Wrapper
+**Fix:** Add `-isystem /home/ken/.local/cuda-12.9/include` to the nvcc
+wrapper. Treating CUDA headers as system headers avoids the diagnostic.
 
-Create a wrapper so CMake can detect CUDA 12.4 with GCC 9 as the host compiler:
+### nvcc Wrapper
+
+CUDA 12.9 ships with GCC 14+ support. No `__THROW` patch needed (fixed upstream).
+Create a wrapper so CMake uses the secondary toolkit:
 
 ```bash
-cat > /home/ken/.local/cuda-12.4/bin/nvcc-cmake << 'WRAPPER'
+cat > /home/ken/.local/cuda-12.9/bin/nvcc-cmake << 'WRAPPER'
 #!/bin/bash
-export CUDA_PATH=/home/ken/.local/cuda-12.4
-exec /home/ken/.local/cuda-12.4/bin/nvcc \
-  -ccbin /usr/bin/gcc-9 \
-  --std=c++14 \
-  -I/home/ken/.local/cuda-12.4/include \
+export CUDA_PATH=/home/ken/.local/cuda-12.9
+# -isystem required for glibc 2026+ noexcept mismatch with CUDA 12.9 math_functions.h
+# -ccbin g++-14 required because CUDA 12.9 doesn't support GCC 15+
+exec /home/ken/.local/cuda-12.9/bin/nvcc \
+  --std=c++17 \
+  -ccbin g++-14 \
+  -isystem /home/ken/.local/cuda-12.9/include \
+  -I/home/ken/.local/cuda-12.9/include \
   "$@"
 WRAPPER
-chmod +x /home/ken/.local/cuda-12.4/bin/nvcc-cmake
+chmod +x /home/ken/.local/cuda-12.9/bin/nvcc-cmake
 ```
 
-### Build
+### Build in a venv
+
+Activate a venv with the desired Python, then build. The venv can store the
+build dir and be re-used after `git pull`:
 
 ```bash
 cd ~/workspace/llama.cpp
+python -m venv build-cuda12-venv
+source build-cuda12-venv/bin/activate
+pip install --upgrade pip
+
 rm -rf build-cuda12
 cmake -S . -B build-cuda12 \
   -DGGML_CUDA=ON \
   -DCMAKE_CUDA_ARCHITECTURES="61;86" \
-  -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \
-  -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4
+  -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.9/bin/nvcc-cmake \
+  -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.9 \
+  -DCMAKE_BUILD_TYPE=Release
 cmake --build build-cuda12 -j$(nproc)
 ```
 
 ### Run
 
+The built binary has embedded RUNPATH so it finds `libggml-cuda.so` in the same
+directory, and the system driver (`libcuda.so.1` from CUDA 13 driver) is
+backwards-compatible with CUDA 12.9. No `LD_LIBRARY_PATH` needed:
+
 ```bash
-export LD_LIBRARY_PATH=/home/ken/.local/cuda-12.4/lib64:$LD_LIBRARY_PATH
 ~/workspace/llama.cpp/build-cuda12/bin/llama-server \
   -m ~/models/<model>.gguf \
   --main-gpu 1 \
