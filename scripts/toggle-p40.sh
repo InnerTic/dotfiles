@@ -12,20 +12,37 @@
 
 set -euo pipefail
 
-LIMINE_CONF="/boot/limine.conf"
+LIMINE_CONF="/etc/default/limine"
 MKINITCPIO_CONF="/etc/mkinitcpio.conf"
 P40_IDS="10de:1b38"
 
-# Params added per mode
+BASE_CMDLINE='quiet nowatchdog splash rw rootflags=subvol=/@ root=UUID=396d414b-92bc-497e-ab3c-76782b2b99ff'
+
 PCIEGEN3="nvidia.NVreg_EnablePCIeGen3=1"
 DPM="nvidia.NVreg_DynamicPowerManagement=0x02"
 VFIO_IDS="vfio-pci.ids=$P40_IDS"
 VFIO_MODULES="vfio_pci vfio vfio_iommu_type1 vfio_pci_core"
 
+log()  { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
+die()  { log "ERROR: $*"; exit 1; }
+warn() { log "WARNING: $*"; }
+
+validate_configs() {
+  [ -f "$LIMINE_CONF" ]    || die "$LIMINE_CONF not found"
+  [ -f "$MKINITCPIO_CONF" ] || die "$MKINITCPIO_CONF not found"
+  [ -r "$LIMINE_CONF" ]    || die "$LIMINE_CONF not readable"
+  [ -r "$MKINITCPIO_CONF" ] || die "$MKINITCPIO_CONF not readable"
+}
+
+check_sudo() {
+  if ! sudo -n true 2>/dev/null; then
+    die "Passwordless sudo required. Configure sudoers or run: sudo $0 $*"
+  fi
+}
+
 current_mode() {
   local cmdline
   cmdline=$(cat /proc/cmdline)
-
   if echo "$cmdline" | grep -q "$VFIO_IDS"; then
     echo "vfio"
   elif echo "$cmdline" | grep -q "$DPM"; then
@@ -48,59 +65,72 @@ show_status() {
 }
 
 apply_limine() {
-  local param="$1"
-  # Remove any existing P40/NVIDIA params from cmdline
-  sudo sed -i \
-    -e 's/ vfio-pci\.ids=[^ ]*//g' \
-    -e 's/ nvidia\.NVreg_DynamicPowerManagement=[^ ]*//g' \
-    -e 's/ nvidia\.NVreg_EnablePCIeGen3=[^ ]*//g' \
-    "$LIMINE_CONF"
+  local extra_params="$1"
+  local backup="${LIMINE_CONF}.bak.$(date +%s)"
+  local cmdline="$BASE_CMDLINE"
+  [ -n "$extra_params" ] && cmdline="$BASE_CMDLINE $extra_params"
 
-  if [ -n "$param" ]; then
-    # Insert params after "root=UUID=" or before "rootflags="
-    sudo sed -i "s|\(root=UUID=[^ ]*\)|\1 $param|" "$LIMINE_CONF"
-  fi
+  log "Backing up $LIMINE_CONF to $backup"
+  sudo cp "$LIMINE_CONF" "$backup"
+
+  log "Updating kernel cmdline..."
+  sudo awk -v new="KERNEL_CMDLINE[default]+=\"$cmdline\"" \
+    '/^KERNEL_CMDLINE\[default\]/ { print new; next } 1' \
+    "$LIMINE_CONF" > "${LIMINE_CONF}.tmp"
+  sudo mv "${LIMINE_CONF}.tmp" "$LIMINE_CONF"
 }
 
 apply_mkinitcpio() {
   local modules="$1"
+  local backup="${MKINITCPIO_CONF}.bak.$(date +%s)"
+
+  log "Backing up $MKINITCPIO_CONF to $backup"
+  sudo cp "$MKINITCPIO_CONF" "$backup"
+
+  log "Updating mkinitcpio modules..."
   if [ -n "$modules" ]; then
-    sudo sed -i "s/^MODULES=([^)]*)/MODULES=($modules)/" "$MKINITCPIO_CONF"
+    sudo sed -i "s|^MODULES=([^)]*)|MODULES=($modules)|" "$MKINITCPIO_CONF"
   else
-    sudo sed -i "s/^MODULES=([^)]*)/MODULES=()/" "$MKINITCPIO_CONF"
+    sudo sed -i "s|^MODULES=([^)]*)|MODULES=()|" "$MKINITCPIO_CONF"
   fi
 }
 
+rebuild_and_reboot() {
+  log "Rebuilding initramfs..."
+  if ! sudo mkinitcpio -P; then
+    die "mkinitcpio failed. Restore from backup and retry."
+  fi
+  log "Rebooting..."
+  sudo reboot
+}
+
 set_mode_default() {
-  echo "Setting mode: default (NVIDIA manages both GPUs, PCIe Gen3 fix)"
+  log "Setting mode: default (NVIDIA manages both GPUs, PCIe Gen3 fix)"
   apply_limine "$PCIEGEN3"
   apply_mkinitcpio ""
-  sudo mkinitcpio -P
-  echo "Done. Reboot to apply."
+  rebuild_and_reboot
 }
 
 set_mode_dpm() {
-  echo "Setting mode: dpm (Dynamic Power Management)"
+  log "Setting mode: dpm (Dynamic Power Management)"
   apply_limine "$DPM $PCIEGEN3"
   apply_mkinitcpio ""
-  sudo mkinitcpio -P
-  echo "Done. Reboot to apply."
+  rebuild_and_reboot
 }
 
 set_mode_vfio() {
-  echo "Setting mode: vfio (VFIO passthrough)"
+  log "Setting mode: vfio (VFIO passthrough)"
   apply_limine "$VFIO_IDS $PCIEGEN3"
   apply_mkinitcpio "$VFIO_MODULES"
-  sudo mkinitcpio -P
-  echo "Done. Reboot to apply."
+  rebuild_and_reboot
 }
+
+validate_configs
+check_sudo
 
 case "${1:-}" in
   default)  set_mode_default ;;
   dpm)      set_mode_dpm ;;
   vfio)     set_mode_vfio ;;
-  *)        show_status
-            echo ""
-            echo "Usage: $0 {default|dpm|vfio}"
-            exit 1 ;;
+  *)        show_status ;;
 esac
