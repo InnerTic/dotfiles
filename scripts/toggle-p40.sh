@@ -130,6 +130,22 @@ apply_mkinitcpio() {
   { set +x; } 2>/dev/null
 }
 
+steam_shutdown() {
+  if pgrep -x steam >/dev/null 2>&1; then
+    log "Steam running, shutting down cleanly..."
+    set -x
+    sudo -u "$SUDO_USER" steam -shutdown 2>/dev/null || true
+    { set +x; } 2>/dev/null
+    for i in 1 2 3 4 5; do
+      pgrep -x steam >/dev/null 2>&1 || break
+      sleep 1
+    done
+    if pgrep -x steam >/dev/null 2>&1; then
+      log "Steam didn't exit gracefully, continuing anyway..."
+    fi
+  fi
+}
+
 rebuild_and_reboot() {
   log "Rebuilding initramfs..."
   set -x
@@ -145,6 +161,7 @@ rebuild_and_reboot() {
 
 set_mode_default() {
   log "Setting mode: default (NVIDIA manages both GPUs, PCIe Gen3 fix)"
+  steam_shutdown
   apply_limine "$PCIEGEN3"
   apply_mkinitcpio ""
   rebuild_and_reboot
@@ -152,6 +169,7 @@ set_mode_default() {
 
 set_mode_dpm() {
   log "Setting mode: dpm (Dynamic Power Management)"
+  steam_shutdown
   apply_limine "$DPM $PCIEGEN3"
   apply_mkinitcpio ""
   rebuild_and_reboot
@@ -159,6 +177,7 @@ set_mode_dpm() {
 
 set_mode_vfio() {
   log "Setting mode: vfio (VFIO passthrough)"
+  steam_shutdown
   apply_limine "$VFIO_IDS $PCIEGEN3"
   apply_mkinitcpio "$VFIO_MODULES"
   rebuild_and_reboot
