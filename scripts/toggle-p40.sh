@@ -31,16 +31,16 @@ cleanup_backups() {
   local dir="$1"
   local pattern="$2"
   local keep="${3:-3}"
-  local count
-  count=$(find "$dir" -maxdepth 1 -name "$pattern" | wc -l)
+  local files
+  files=("$dir"/$pattern)
+  local count="${#files[@]}"
   if [ "$count" -gt "$keep" ]; then
-    find "$dir" -maxdepth 1 -name "$pattern" -printf '%T@ %p\0' \
-      | sort -rnz \
-      | tail -z -n +$((keep + 1)) \
-      | while IFS= read -r -d '' _ old; do
-          sudo rm -f "$old"
-          log "Pruned old backup: $old"
-        done
+    while IFS= read -r -d '' old; do
+      sudo rm -f "$old"
+      log "Pruned old backup: $old"
+    done < <(find "$dir" -maxdepth 1 -name "$pattern" -printf '%T@ %p\0' \
+               | sort -rnz \
+               | tail -z -n +$((keep + 1)))
   fi
 }
 
