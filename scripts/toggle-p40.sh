@@ -31,16 +31,20 @@ cleanup_backups() {
   local dir="$1"
   local pattern="$2"
   local keep="${3:-3}"
-  local files
-  files=("$dir"/$pattern)
-  local count="${#files[@]}"
+  
+  # Count actual files matching the pattern
+  local count
+  count=$(find "$dir" -maxdepth 1 -name "$pattern" | wc -l)
+  
   if [ "$count" -gt "$keep" ]; then
-    while IFS= read -r -d '' old; do
-      sudo rm -f "$old"
-      log "Pruned old backup: $old"
-    done < <(find "$dir" -maxdepth 1 -name "$pattern" -printf '%T@ %p\0' \
-               | sort -rnz \
-               | tail -z -n +$((keep + 1)))
+    # Find files, sort by modification time (newest first), keep only oldest ones
+    find "$dir" -maxdepth 1 -name "$pattern" -type f -print0 \
+      | xargs -0 ls -t \
+      | tail -n +$((keep + 1)) \
+      | while read -r old; do
+        sudo rm -f "$old"
+        log "Pruned old backup: $old"
+      done
   fi
 }
 
