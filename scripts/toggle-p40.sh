@@ -129,7 +129,7 @@ apply_mkinitcpio() {
 rebuild_and_reboot() {
   log "Rebuilding initramfs..."
   set -x
-  if ! sudo mkinitcpio -P; then
+  if ! (set +o pipefail; yes | sudo mkinitcpio -P); then
     die "mkinitcpio failed. Restore from backup and retry."
   fi
   { set +x; } 2>/dev/null
