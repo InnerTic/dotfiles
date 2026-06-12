@@ -79,45 +79,61 @@ show_status() {
 }
 
 apply_limine() {
+  set -x
   local extra_params="$1"
   local backup="${LIMINE_CONF}.bak.$(date +%s)"
   local cmdline="$BASE_CMDLINE"
   [ -n "$extra_params" ] && cmdline="$BASE_CMDLINE $extra_params"
+  { set +x; } 2>/dev/null
 
   log "Backing up $LIMINE_CONF to $backup"
+  set -x
   sudo cp "$LIMINE_CONF" "$backup"
+  { set +x; } 2>/dev/null
   cleanup_backups "$(dirname "$LIMINE_CONF")" "limine.bak.*"
 
   log "Updating kernel cmdline..."
+  set -x
   sudo awk -v new="KERNEL_CMDLINE[default]+=\"$cmdline\"" \
     '/^KERNEL_CMDLINE\[default\]/ { print new; next } 1' \
     "$LIMINE_CONF" > "${LIMINE_CONF}.tmp"
   sudo mv "${LIMINE_CONF}.tmp" "$LIMINE_CONF"
+  { set +x; } 2>/dev/null
 }
 
 apply_mkinitcpio() {
+  set -x
   local modules="$1"
   local backup="${MKINITCPIO_CONF}.bak.$(date +%s)"
+  { set +x; } 2>/dev/null
 
   log "Backing up $MKINITCPIO_CONF to $backup"
+  set -x
   sudo cp "$MKINITCPIO_CONF" "$backup"
+  { set +x; } 2>/dev/null
   cleanup_backups "$(dirname "$MKINITCPIO_CONF")" "mkinitcpio.conf.bak.*"
 
   log "Updating mkinitcpio modules..."
+  set -x
   if [ -n "$modules" ]; then
     sudo sed -i "s|^MODULES=([^)]*)|MODULES=($modules)|" "$MKINITCPIO_CONF"
   else
     sudo sed -i "s|^MODULES=([^)]*)|MODULES=()|" "$MKINITCPIO_CONF"
   fi
+  { set +x; } 2>/dev/null
 }
 
 rebuild_and_reboot() {
   log "Rebuilding initramfs..."
+  set -x
   if ! sudo mkinitcpio -P; then
     die "mkinitcpio failed. Restore from backup and retry."
   fi
+  { set +x; } 2>/dev/null
   log "Rebooting..."
+  set -x
   sudo reboot
+  { set +x; } 2>/dev/null
 }
 
 set_mode_default() {
