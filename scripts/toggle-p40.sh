@@ -27,6 +27,20 @@ log()  { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
 die()  { log "ERROR: $*"; exit 1; }
 warn() { log "WARNING: $*"; }
 
+cleanup_backups() {
+  local dir="$1"
+  local pattern="$2"
+  local keep="${3:-3}"
+  local count
+  count=$(ls -1 "$dir"/"$pattern" 2>/dev/null | wc -l)
+  if [ "$count" -gt "$keep" ]; then
+    ls -1t "$dir"/"$pattern" | tail -n +$((keep + 1)) | while read -r old; do
+      sudo rm -f "$old"
+      log "Pruned old backup: $old"
+    done
+  fi
+}
+
 validate_configs() {
   [ -f "$LIMINE_CONF" ]    || die "$LIMINE_CONF not found"
   [ -f "$MKINITCPIO_CONF" ] || die "$MKINITCPIO_CONF not found"
@@ -72,6 +86,7 @@ apply_limine() {
 
   log "Backing up $LIMINE_CONF to $backup"
   sudo cp "$LIMINE_CONF" "$backup"
+  cleanup_backups "$(dirname "$LIMINE_CONF")" "limine.bak.*"
 
   log "Updating kernel cmdline..."
   sudo awk -v new="KERNEL_CMDLINE[default]+=\"$cmdline\"" \
@@ -86,6 +101,7 @@ apply_mkinitcpio() {
 
   log "Backing up $MKINITCPIO_CONF to $backup"
   sudo cp "$MKINITCPIO_CONF" "$backup"
+  cleanup_backups "$(dirname "$MKINITCPIO_CONF")" "mkinitcpio.conf.bak.*"
 
   log "Updating mkinitcpio modules..."
   if [ -n "$modules" ]; then
