@@ -6,6 +6,15 @@ set -e
 
 DOTFILES="$(cd "$(dirname "$0")" && pwd)"
 
+# Custom sudo lecture — one-time, harmless
+if [ -f "$DOTFILES/etc/sudo-lecture.txt" ] && [ ! -f /etc/sudo-lecture.txt ]; then
+  sudo cp "$DOTFILES/etc/sudo-lecture.txt" /etc/sudo-lecture.txt
+fi
+if [ -f "$DOTFILES/etc/custom-lecture.sudoers" ] && [ ! -f /etc/sudoers.d/custom-lecture ]; then
+  sudo cp "$DOTFILES/etc/custom-lecture.sudoers" /etc/sudoers.d/custom-lecture
+  sudo chmod 440 /etc/sudoers.d/custom-lecture
+fi
+
 echo "→ Linking configs from $DOTFILES"
 
 # Shell configs

@@ -16,7 +16,8 @@ LIMINE_CONF="/etc/default/limine"
 MKINITCPIO_CONF="/etc/mkinitcpio.conf"
 P40_IDS="10de:1b38"
 
-BASE_CMDLINE='quiet nowatchdog splash rw rootflags=subvol=/@ root=UUID=396d414b-92bc-497e-ab3c-76782b2b99ff'
+ROOT_UUID="$(findmnt -n -o UUID /)"
+BASE_CMDLINE="quiet nowatchdog splash rw rootflags=subvol=/@ root=UUID=${ROOT_UUID}"
 
 PCIEGEN3="nvidia.NVreg_EnablePCIeGen3=1"
 DPM="nvidia.NVreg_DynamicPowerManagement=0x02"

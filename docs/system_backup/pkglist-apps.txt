@@ -28,7 +28,7 @@ fastfetch
 ripgrep
 
 # Editors & Tools
-vim
+
 meld
 pavucontrol
 
@@ -72,7 +72,7 @@ swtpm
 # Printing & Scanning
 # (none currently)
 
-# NVIDIA
+# NVIDIA — 580xx series (do NOT mix with non-xx or 610xx; pacman will conflict)
 nvidia-580xx-dkms
 nvidia-580xx-utils
 nvidia-580xx-settings

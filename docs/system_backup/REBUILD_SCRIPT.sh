@@ -12,6 +12,41 @@ echo "==========================================================================
 echo ""
 echo "Prerequisites:"
 echo "  1. Boot with CachyOS ISO, install with btrfs + snapshots"
+echo ""
+echo "  !!! NVIDIA DRIVER CONFLICT WARNING !!!"
+echo "  If you have a Tesla P40 (or any non-standard NVIDIA card) installed,"
+echo "  PHYSICALLY REMOVE IT before installing the OS. The CachyOS installer"
+echo "  auto-installs the default nvidia package (610xx) which will conflict"
+echo "  with the 580xx series needed for older cards. Installing over the"
+echo "  conflict breaks the driver stack and requires a reinstall."
+echo "  Reinstall the card after the OS is booted, then run this script."
+echo ""
+echo "  === VFIO: isolate the Tesla P40 from nvidia driver ==="
+echo "  The P40 on the PCIe bus causes nvidia driver hangs when its"
+echo "  auxiliary power is disconnected (idles at ~47W vs 3060's 14W)."
+echo "  VFIO isolation fixes this and lets you bind it on demand."
+echo ""
+echo "  1. Add vfio modules to initramfs:"
+echo "    sudo sed -i 's/^MODULES=()/MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd)/' /etc/mkinitcpio.conf"
+echo ""
+echo "  2. Create /etc/modprobe.d/vfio.conf:"
+echo "    sudo tee /etc/modprobe.d/vfio.conf <<'EOF'"
+echo "    options vfio-pci ids=10de:1b38"
+echo "    softdep nvidia pre: vfio-pci"
+echo "    softdep nvidia_drm pre: vfio-pci"
+echo "    softdep nvidia_modeset pre: vfio-pci"
+echo "    EOF"
+echo ""
+echo "  3. Append to kernel cmdline (/etc/default/limine for Limine):"
+echo "    Append 'vfio-pci.ids=10de:1b38' to KERNEL_CMDLINE[default]"
+echo ""
+echo "  4. Rebuild and reboot:"
+echo "    sudo mkinitcpio -P && sudo limine-update && reboot"
+echo ""
+echo "  After reboot, verify: lspci -nnk -s 04:00.0"
+echo "  Should show 'Kernel driver in use: vfio-pci'"
+echo "  To use P40 for CUDA later, unbind vfio-pci and bind nvidia."
+echo ""
 echo "  2. Clone dotfiles & run: git clone git@github.com:InnerTic/dotfiles.git ~/dotfiles"
 echo "  3. See ~/dotfiles/docs/llama-setup.md for CUDA/cmake build steps"
 echo ""
@@ -31,14 +66,13 @@ echo "=== STEP 1: Installing system packages..."
 
 sudo pacman -S --needed \
   ntfs-3g btrfs-progs \
-  base-devel cmake cuda
+  base-devel cmake
 
-# Install app packages from list (CachyOS defaults already present)
-# File: ~/dotfiles/docs/system_backup/pkglist-apps.txt
-# Edit that file to add/remove apps, this step just reads it
+
+
 if [[ -f ~/dotfiles/docs/system_backup/pkglist-apps.txt ]]; then
   echo "  Installing app packages from pkglist-apps.txt..."
-  sudo pacman -S --needed - < ~/dotfiles/docs/system_backup/pkglist-apps.txt
+  sed '/^\s*#/d; /^\s*$/d' ~/dotfiles/docs/system_backup/pkglist-apps.txt | sudo pacman -S --needed -
 fi
 
 # =============================================================================
@@ -47,14 +81,17 @@ fi
 echo ""
 echo "=== STEP 2: Adding drives to /etc/fstab (nofail = safe to boot if missing)..."
 
-sudo tee -a /etc/fstab << 'FSTAB'
+if grep -q 'UUID=51b4243d' /etc/fstab 2>/dev/null; then
+  echo "  fstab entries already present, skipping."
+else
+  sudo tee -a /etc/fstab << 'FSTAB'
 
 # ssd_storage (sdb)
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
 # Data-HDD (sdc) — ntfs-3g must be installed first
 UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail 0 2
-# m2_storage (sde)
-UUID=6befefdd-f232-4757-9eea-9f7051da3c0b /mnt/m2_storage btrfs defaults,nofail 0 2
+# VM-Disks (sde1) — reformatted from btrfs to xfs
+UUID=446695a8-1348-4d45-ab10-5af0a5bf1ae5 /mnt/vm-disks xfs defaults,nofail 0 2
 # nvme-workspace (nvme0n1p1)
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
 
@@ -68,8 +105,9 @@ UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 
 /mnt/ssd_storage/ken/go /home/ken/go none bind,nofail 0 0
 /mnt/ssd_storage/ken/MEGA /home/ken/MEGA none bind,nofail 0 0
 FSTAB
+fi
 
-sudo mkdir -p /mnt/{ssd_storage,data,m2_storage,workspace}
+sudo mkdir -p /mnt/{ssd_storage,data,vm-disks,workspace}
 sudo mkdir -p /home/ken/{Documents,Downloads,Pictures,Videos,Desktop,Music,go,MEGA}
 sudo mount -a
 
@@ -80,8 +118,9 @@ echo "  Drives mounted. Verify: df -h | grep /mnt"
 # =============================================================================
 echo ""
 echo "=== STEP 3: Creating symlinks..."
+rm -rf ~/ssd_storage ~/m2_storage ~/vm-disks ~/workspace ~/Models
 ln -sf /mnt/ssd_storage ~/ssd_storage
-ln -sf /mnt/m2_storage ~/m2_storage
+ln -sf /mnt/vm-disks ~/vm-disks
 ln -sf /mnt/workspace ~/workspace
 ln -sf ~/Downloads/llm_models ~/Models
 echo "  Done."
@@ -102,38 +141,110 @@ if [[ -f ~/dotfiles/bootstrap.sh ]]; then
     cd ~/dotfiles && zsh bootstrap.sh
 fi
 
-echo "  Source: source ~/.zshrc"
+echo ""
+echo "=== STEP 4b: Setting up Oh My Zsh & plugins..."
+if [[ ! -d ~/.oh-my-zsh ]]; then
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+  echo "  Oh My Zsh already installed"
+fi
+
+ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+
+if [[ ! -d $ZSH_CUSTOM/themes/powerlevel10k ]]; then
+  echo "  Installing powerlevel10k theme..."
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+fi
+
+if [[ ! -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]]; then
+  echo "  Installing zsh-syntax-highlighting..."
+  git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+fi
+
+if [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]]; then
+  echo "  Installing zsh-autosuggestions..."
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+fi
+
+# OpenClaw completions
+if [[ ! -f ~/.openclaw/completions/openclaw.zsh ]]; then
+  echo "  OpenClaw completions not found — install openclaw first"
+  echo "  See: https://openclaw.ai/docs/install"
+fi
+
+echo "  Source: source ~/.zshrc (after installs complete)"
+
+echo "  Zsh setup done."
 
 # =============================================================================
-# STEP 5: Build llama.cpp (standalone CUDA, dual arch sm_61 + sm_86)
+# STEP 5: Build llama.cpp (system CUDA 12.9, dual GPU: sm_61 + sm_86)
 # =============================================================================
+
 echo ""
-echo "=== STEP 5: Building llama.cpp with CUDA 12.4 (sm_61 + sm_86)..."
-echo "  See ~/dotfiles/docs/llama-setup.md for full steps"
+echo "=== STEP 5: Building llama.cpp with CUDA 12.9 (sm_61 + sm_86)..."
+echo "  Build location: /mnt/workspace/llama.cpp"
 echo ""
-echo "  # Ensure GCC 9 is installed (CUDA 12.4 host compiler)"
-echo "  pkexec pacman -S --noconfirm cachyos/gcc9"
+
+echo "  CUDA layout:"
+echo "    - /opt/cuda (CUDA 12.9 AUR package)"
+echo "    - GPU 0: RTX 3060 (sm_86) → SDXL / diffusion"
+echo "    - GPU 1: Tesla P40 (sm_61) → llama.cpp inference"
 echo ""
-echo "  # Patch math_functions.h (one-time: glibc noexcept conflict)"
-echo "  sed -i '847s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
-echo "  sed -i '777s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
-echo "  sed -i '5554s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
-echo "  sed -i '5606s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
-echo "  sed -i '5442s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
-echo "  sed -i '5502s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h"
+
+# -----------------------------------------------------------------------------
+# Ensure CUDA exists
+# -----------------------------------------------------------------------------
+echo "  Checking CUDA..."
+if ! command -v nvcc >/dev/null 2>&1; then
+  echo "  CUDA not found. Install with:"
+  echo "    paru -S cuda-12.9"
+  exit 1
+fi
+
+nvcc --version
+
+# -----------------------------------------------------------------------------
+# Use persistent workspace
+# -----------------------------------------------------------------------------
 echo ""
-echo "  # Build with CUDA 12.4 nvcc"
-echo "  cd ~/workspace"
-echo "  git clone https://github.com/ggerganov/llama.cpp.git"
-echo "  cd llama.cpp"
-echo "  rm -rf build-cuda12"
-echo "  cmake -S . -B build-cuda12 \\"
-echo "    -DGGML_CUDA=ON \\"
-echo "    -DCMAKE_CUDA_ARCHITECTURES=\"61;86\" \\"
-echo "    -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \\"
-echo "    -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4"
-echo "  cmake --build build-cuda12 -j\$(nproc)"
+echo "  Using workspace: /mnt/workspace"
+
+cd /mnt/workspace
+
+if [[ -d llama.cpp ]]; then
+  echo "  llama.cpp exists → updating"
+  cd llama.cpp
+  git pull
+else
+  echo "  cloning llama.cpp"
+  git clone https://github.com/ggerganov/llama.cpp.git
+  cd llama.cpp
+fi
+
+# -----------------------------------------------------------------------------
+# Configure build
+# -----------------------------------------------------------------------------
 echo ""
+echo "  Configuring build..."
+echo "  Note: nvcc may warn about sm_61 deprecation (P40). This is harmless."
+
+rm -rf build-cuda12
+
+cmake -S . -B build-cuda12 \
+  -DGGML_CUDA=ON \
+  -DCMAKE_CUDA_ARCHITECTURES="61;86" \
+  -DCUDAToolkit_ROOT=/opt/cuda
+
+# -----------------------------------------------------------------------------
+# Build
+# -----------------------------------------------------------------------------
+echo ""
+echo "  Building llama.cpp..."
+cmake --build build-cuda12 -j$(nproc)
+
+echo ""
+echo "  DONE"
+echo "  Binary: /mnt/workspace/llama.cpp/build-cuda12/bin/"
 
 # =============================================================================
 # STEP 6: Restore GGUF models
