@@ -1,0 +1,21 @@
+# toggle-p40.sh configuration
+# Copy to /etc/toggle-p40.yaml for system-wide, or
+# ~/.config/toggle-p40.yaml for user-only override.
+
+# Limine bootloader config path
+limine_conf: "/etc/default/limine"
+
+# mkinitcpio config path
+mkinitcpio_conf: "/etc/mkinitcpio.conf"
+
+# PCI vendor:device ID for the Tesla P40
+p40_ids: "10de:1b38"
+
+# Kernel modules to add for VFIO mode
+vfio_modules: "vfio_pci vfio vfio_iommu_type1 vfio_pci_core"
+
+# NVIDIA PCIe Gen3 fix (needed for P40 on some boards)
+pciegen3_param: "nvidia.NVreg_EnablePCIeGen3=1"
+
+# Dynamic Power Management (prevents P40 hangs on NVIDIA driver)
+dpm_param: "nvidia.NVreg_DynamicPowerManagement=0x02"
