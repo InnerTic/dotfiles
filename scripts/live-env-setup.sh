@@ -94,7 +94,7 @@ UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 
 # Data-HDD
 UUID=7E303CAF303C6FEF /mnt/data ntfs3 defaults,nofail 0 2
 # m2_storage
-UUID=6befefdd-f232-4757-9eea-9f7051da3c0b /mnt/m2_storage btrfs defaults,nofail 0 2
+UUID=e070aea8-a128-4e6d-9e3f-da38a6604dbe /mnt/m2_storage btrfs defaults,nofail 0 2
 # nvme-workspace
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
 
