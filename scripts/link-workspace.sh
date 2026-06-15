@@ -46,6 +46,7 @@ SYMLINKS=(
   ".opencode:.opencode"
   ".ssh:.ssh"
   ".librewolf:.librewolf"
+  "dotfiles:dotfiles"
   "openclaw:openclaw"
   "scripts:scripts"
 )
