@@ -33,25 +33,21 @@ WORKSPACE="/mnt/workspace"
 DRY_RUN=true
 
 # Symlink pairs: home_name → workspace_name
-# .openclaw, .opencode: Custom development tool configs
-# .local, .ssh: User environment and key management
-# .librewolf: Browser profile (profiles.ini + session data)
-# config, openclaw, memory, state: App state & configs
-# backups, scripts, logs, openweb: User data directories
+# .openclaw, .opencode: Tool configs (custom dev tools)
+# .ssh: Keys and known_hosts (persist across reinstalls)
+# .librewolf: Browser profiles (session, bookmarks, extensions)
+# openclaw, scripts: Workspace project directories
+# NOTE: logs, memory, state, backups, openweb, .local, config
+# are intentionally NOT listed — they're nested in workspace
+# dirs, are leftovers, or accumulate junk that needs occasional
+# nuking rather than indefinite persistence.
 SYMLINKS=(
   ".openclaw:.openclaw"
   ".opencode:.opencode"
-  ".local:local"
   ".ssh:.ssh"
   ".librewolf:.librewolf"
-  "config:config"
   "openclaw:openclaw"
-  "memory:memory"
-  "state:state"
-  "backups:backups"
   "scripts:scripts"
-  "logs:logs"
-  "openweb:openweb"
 )
 
 # Directories excluded from symlinking — stay in real /home
