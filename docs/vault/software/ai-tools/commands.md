@@ -1,6 +1,10 @@
-# AI Tools — Command Reference
+---
+tags: [reference, ai-tools, commands]
+aliases: [ai-commands, ai-tools, command-reference]
+updated: 2026-06-15
+---
 
-#reference #ai-tools #commands
+# AI Tools — Command Reference
 
 Quick reference for all AI-related aliases and commands. See [[software/ai-tools/index]] for setup details.
 

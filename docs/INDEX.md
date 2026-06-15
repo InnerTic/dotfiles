@@ -55,6 +55,20 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 - **Current:** system-memory, quick-commands, free-models, free-providers, package-list, KDE settings, KDE workarounds
 - **Historical:** storage-layout-plan, implementation-workflow, system-profile, ollama-notes, opencode-plugins, serena-mcp
 
+## Vault Docs (Structured)
+
+| Page | Description |
+|------|-------------|
+| [[vault/QUICK-START]] | 🚨 Emergency recovery — 5-minute restore after reinstall |
+| [[vault/map]] | Full vault sitemap — navigation paths for every scenario |
+| [[vault/system/drives-and-mounts]] | Drive UUIDs, fstab, bind mounts, drive selection guide |
+| [[vault/software/dev-setup]] | Python venv, git config, shell aliases, bootstrap process |
+| [[vault/software/ai-tools/commands]] | AI command reference — llm, sdxl, textgen, oc |
+| [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |
+| [[vault/reference/glossary]] | Term definitions — llama.cpp, VFIO, CUDA, GGUF, etc. |
+| [[vault/reference/bugs-and-workarounds]] | Active upstream bugs and their workarounds |
+| [[vault/changelog]] | Vault structure changes |
+
 ## External References
 
 | Location | Content |

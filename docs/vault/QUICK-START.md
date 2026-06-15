@@ -1,3 +1,9 @@
+---
+tags: [emergency, recovery, quickstart]
+aliases: [emergency, quick-start, recovery, crisis]
+updated: 2026-06-15
+---
+
 # 🚨 Emergency Recovery — 5 Minute Start
 
 **Your system died. You need it working NOW.**
@@ -44,11 +50,10 @@ ls ~/.ssh               # Should be symlink to workspace
 
 | Issue | Go To |
 |-------|-------|
-| Symlinks wrong | [[getting-started/workspace-symlink]] |
-| GPU not detected | [[system/gpu-config]] |
-| SSH keys missing | [[system/storage-layout]] + verify workspace mounted |
-| llama.cpp won't run | [[software/ai-tools/llama-setup]] |
-| Wine/Proton issues | [[software/gaming/gw2-wine]] |
-| Unknown error | [[reference/troubleshooting]] |
+| Symlinks wrong | [[workspace-symlink-strategy]] |
+| GPU not detected | [[gpu-config-notes]] |
+| SSH keys missing | [[system/drives-and-mounts]] + verify workspace mounted |
+| llama.cpp won't run | [[llama-setup]] |
+| Wine/Proton issues | [[gw2-multibox-wine-setup]] |
 
-Full docs at [[index]].
+Full docs at [[INDEX]].

@@ -1,6 +1,10 @@
-# Glossary & Abbreviations
+---
+tags: [reference, glossary, definitions]
+aliases: [glossary, definitions, terms, abbreviations]
+updated: 2026-06-15
+---
 
-#reference #definitions
+# Glossary & Abbreviations
 
 ## System & Infrastructure
 
