@@ -1,0 +1,44 @@
+#!/bin/bash
+# llama-loader — Interactive GGUF model selector
+# Lists models in ~/Downloads/llm_models/, lets you pick one,
+# then starts llama-server with CUDA GPU offload
+
+MODELS_DIR="$HOME/Downloads/llm_models"
+MODEL_STORAGE="$MODELS_DIR/model_storage"
+LLAMA_SERVER="$HOME/dotfiles/scripts/llama-server.sh"
+
+shopt -s nullglob
+MODELS=( "$MODELS_DIR"/*.gguf "$MODEL_STORAGE"/*.gguf )
+
+if [ ${#MODELS[@]} -eq 0 ]; then
+  echo "No .gguf models found in $MODELS_DIR or $MODEL_STORAGE"
+  exit 1
+fi
+
+echo "Available models:"
+for i in "${!MODELS[@]}"; do
+  NAME=$(basename "${MODELS[$i]}")
+  SIZE=$(du -h "${MODELS[$i]}" | cut -f1)
+  echo "  $((i+1))) $NAME  ($SIZE)"
+done
+
+echo
+read -p "Select model [1-${#MODELS[@]}]: " CHOICE
+
+if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || [ "$CHOICE" -lt 1 ] || [ "$CHOICE" -gt "${#MODELS[@]}" ]; then
+  echo "Invalid selection"
+  exit 1
+fi
+
+SELECTED="${MODELS[$((CHOICE-1))]}"
+echo "Starting: $(basename "$SELECTED")"
+
+export CUDA_PATH=/opt/cuda
+export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+
+exec "$LLAMA_SERVER" \
+  -m "$SELECTED" \
+  --host 0.0.0.0 \
+  --port "${1:-8080}" \
+  -ngl 99 \
+  --main-gpu 0

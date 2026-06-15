@@ -14,7 +14,11 @@ alias llmk='pkill -f llama-server'
 alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'
 alias textgen='~/.openclaw/workspace/scripts/textgen-start.sh'
 alias textkill='pkill -f "server.py"'
+alias sdxl='/mnt/workspace/scripts/sdxl-tmux.sh'
 alias quickhelp='cat ~/dotfiles/docs/quick-commands.txt'
+alias oc='opencode'
+alias ocl='opencode --provider llama.cpp'
+alias oclw='opencode web --provider llama.cpp'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
