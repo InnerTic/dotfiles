@@ -9,20 +9,9 @@
 #   ./link-workspace.sh --status     # show current state
 #
 # Philosophy:
-#   Existing home dir contents get merged (rsync) into the workspace,
-#   NOT backed up to a separate archive. The workspace is the canonical
-#   location. After reinstall, run --apply and your tools/configs are
-#   back where they belong — no data left behind in /home.
-#
-# Fstab Integration:
-#   Media dirs (Documents, Downloads, Pictures, Music, Videos, Desktop, go, MEGA)
-#   are bind-mounted to /mnt/ssd_storage via fstab.
-#
-# What stays in real /home (NOT symlinked):
-#   - Ephemeral/session-specific: .cache, .dbus, .fontconfig, .thumbnails
-#   - Runtime app state: .steam, .wine, .local/share/Steam, .config/discord, etc.
-#   - These are auto-generated/managed by applications and should not persist
-#     or be shared across reinstalls.
+#   Total OS refresh: wipe /, /home completely, then restore working state
+#   from /mnt/workspace. Only essentials are symlinked — everything else
+#   regenerates fresh.
 #
 # Idempotent — safe to run multiple times.
 # =============================================================================
@@ -32,38 +21,15 @@ set -euo pipefail
 WORKSPACE="/mnt/workspace"
 DRY_RUN=true
 
-# Symlink pairs: home_name → workspace_name
-# .openclaw, .opencode: Tool configs (custom dev tools)
-# .ssh: Keys and known_hosts (persist across reinstalls)
-# .librewolf: Browser profiles (session, bookmarks, extensions)
-# openclaw, scripts: Workspace project directories
-# NOTE: logs, memory, state, backups, openweb, .local, config
-# are intentionally NOT listed — they're nested in workspace
-# dirs, are leftovers, or accumulate junk that needs occasional
-# nuking rather than indefinite persistence.
+# ONLY these directories are persisted across OS refreshes
+# Everything else in /home is excluded and regenerates
 SYMLINKS=(
-  ".openclaw:.openclaw"
-  ".opencode:.opencode"
-  ".ssh:.ssh"
-  ".librewolf:.librewolf"
-  "dotfiles:dotfiles"
-  "openclaw:openclaw"
-  "scripts:scripts"
-)
-
-# Directories excluded from symlinking — stay in real /home
-# Ephemeral/session-specific: auto-generated at runtime, should not persist
-# Application runtimes: Steam, Wine, Discord, etc. — manage their own state
-EXCLUDED=(
-  ".cache"
-  ".dbus"
-  ".fontconfig"
-  ".thumbnails"
-  ".steam"
-  ".wine"
-  ".local/share/Steam"
-  ".local/share/Discord"
-  ".config/discord"
+  ".ssh:.ssh"                # SSH keys
+  ".librewolf:.librewolf"    # Browser profiles/bookmarks
+  ".openclaw:.openclaw"      # Custom dev tool config
+  ".opencode:.opencode"      # Custom dev tool config
+  "dotfiles:dotfiles"        # Dotfiles repo
+  "openclaw:openclaw"        # Project directory
 )
 
 # --- helpers ---
@@ -75,14 +41,6 @@ info()  { echo -e "$(color 2)[*]$(reset) $*"; }
 warn()  { echo -e "$(color 3)[!]$(reset) $*"; }
 error() { echo -e "$(color 1)[!!]$(reset) $*" >&2; }
 dry()   { echo -e "$(color 6)[DRY]$(reset) $*"; }
-
-is_excluded() {
-  local name="$1"
-  for x in "${EXCLUDED[@]}"; do
-    [[ "$name" == "$x" ]] && return 0
-  done
-  return 1
-}
 
 # Validate that workspace is on a different filesystem than home
 validate_workspace() {
@@ -187,17 +145,13 @@ remove_symlink() {
 do_status() {
   echo "Symlink status for workspace targets:"
   echo "  Workspace: $WORKSPACE"
+  echo "  (Only these essentials are persisted; everything else regenerates)"
   echo
   for entry in "${SYMLINKS[@]}"; do
     name="${entry%%:*}"
     ws_part="${entry##*:}"
     home_path="$HOME/$name"
     ws_path="$WORKSPACE/$ws_part"
-
-    if is_excluded "$name"; then
-      echo "  ⏭️  $name  (excluded — ephemeral/runtime)"
-      continue
-    fi
 
     if [ -L "$home_path" ]; then
       local target
@@ -222,7 +176,7 @@ do_status() {
 }
 
 do_apply() {
-  info "Merging home dirs → $WORKSPACE and creating symlinks..."
+  info "Merging persisted directories → $WORKSPACE and creating symlinks..."
   echo
 
   validate_workspace || return 1
@@ -233,8 +187,6 @@ do_apply() {
     ws_part="${entry##*:}"
     home_path="$HOME/$name"
     ws_path="$WORKSPACE/$ws_part"
-
-    is_excluded "$name" && continue
 
     merge_and_link "$home_path" "$ws_path" "$name" || had_error=1
   done
@@ -254,7 +206,6 @@ do_revert() {
   for entry in "${SYMLINKS[@]}"; do
     name="${entry%%:*}"
     home_path="$HOME/$name"
-    is_excluded "$name" && continue
     remove_symlink "$home_path" "$name"
   done
 }
@@ -283,7 +234,7 @@ case "${1:-}" in
     echo "Usage: $(basename "$0") [--apply | --revert | --status | --dry-run]"
     echo
     echo "  No args    Show status + dry-run preview"
-    echo "  --apply    Merge home → workspace, create symlinks"
+    echo "  --apply    Merge persisted dirs → workspace, create symlinks"
     echo "  --revert   Remove symlinks (workspace data preserved)"
     echo "  --status   Show current state"
     echo "  --dry-run  Preview without making changes"
