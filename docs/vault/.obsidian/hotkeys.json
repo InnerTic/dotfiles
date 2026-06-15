@@ -1,0 +1,62 @@
+{
+  "editor:toggle-bold": [
+    {
+      "modifiers": ["Mod"],
+      "key": "b"
+    }
+  ],
+  "editor:toggle-italics": [
+    {
+      "modifiers": ["Mod"],
+      "key": "i"
+    }
+  ],
+  "editor:toggle-code": [
+    {
+      "modifiers": ["Mod"],
+      "key": "`"
+    }
+  ],
+  "editor:toggle-blockquote": [
+    {
+      "modifiers": ["Mod"],
+      "key": ">"
+    }
+  ],
+  "editor:toggle-bullet-list": [
+    {
+      "modifiers": ["Mod", "Shift"],
+      "key": "u"
+    }
+  ],
+  "editor:toggle-numbered-list": [
+    {
+      "modifiers": ["Mod", "Shift"],
+      "key": "o"
+    }
+  ],
+  "editor:delete-paragraph": [
+    {
+      "modifiers": ["Ctrl", "Shift"],
+      "key": "k"
+    }
+  ],
+  "switcher:open": [
+    {
+      "modifiers": ["Mod"],
+      "key": "k"
+    }
+  ],
+  "global-search:open": [
+    {
+      "modifiers": ["Mod"],
+      "key": "f"
+    }
+  ],
+  "graph:open": [
+    {
+      "modifiers": ["Ctrl"],
+      "key": "g"
+    }
+  ]
+}
