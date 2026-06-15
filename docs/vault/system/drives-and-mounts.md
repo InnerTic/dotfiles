@@ -16,7 +16,8 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | **sdb** | 465G | ext4 | `/mnt/ssd_storage` | Bulk data — documents, downloads, media |
 | **sdc** | 3.6T | ntfs | `/mnt/data` | Long-term backup, large files |
 | **sdd** | 112G | btrfs | `/home` | User home dir (ephemeral — wiped on reinstall) |
-| **sde** | 476G | xfs | `/var/lib/libvirt/images` | VM disk storage |
+| **sde1** | 238G | ext4 | — | Future OS (Limine bootloader) |
+| **sde2** | 238G | xfs | `/mnt/vm-disks` | VM disk storage |
 | **nvme0n1** | 465G | ext4 | `/mnt/workspace` | AI tools, models, projects, dotfiles (persistent) |
 
 ## UUIDs (for /etc/fstab)
@@ -28,7 +29,8 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | sdd /home | `4365b1fa-735e-455d-9645-e65be9903454` |
 | sdb /mnt/ssd_storage | `51b4243d-ea88-4a02-b02f-c286d52b6e0d` |
 | sdc /mnt/data | `7E303CAF303C6FEF` |
-| sde /var/lib/libvirt/images | `6befefdd-f232-4757-9eea-9f7051da3c0b` |
+| sde1 /mnt/new-os | `9e04d3b5-745c-49b9-bdec-e865672eb2a0` (ext4, noauto) |
+| sde2 /mnt/vm-disks | `9e63ef79-7b4a-4511-a4d5-d411a59af195` (xfs) |
 | nvme /mnt/workspace | `9a1cdd8a-3d81-468f-be70-aa00a01d7301` |
 
 ## Drive Selection Guide
@@ -38,7 +40,8 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | OS, packages, temp | sda (/) | Btrfs snapshots for rollback |
 | AI models, projects | nvme (workspace) | Fast NVMe, persists reinstalls |
 | Documents, media | sdb (ssd_storage) | Large SSD, bind-mounted to ~/ |
-| VMs, disk images | sde (VM-Disks) | Dedicated xfs for libvirt |
+| VMs, disk images | sde2 (VM-Disks) | Dedicated xfs partition |
+| Future OS install | sde1 (new-os) | ext4, noauto in fstab — mount when needed |
 | Backups, archives | sdc (Data-HDD) | 3.6T NTFS, slow but huge |
 | User configs | sdd (/home) | Small btrfs, gets wiped |
 
@@ -78,7 +81,7 @@ It holds:
 - `textgen/` — TextGen WebUI
 - `searxng/` — search engine
 - Model files
-- VM disk images (on sde)
+- VM disk images (on sde2)
 
 ## Related
 

@@ -12,7 +12,8 @@
 | **sdb** | 465.8G | ext4 | `/mnt/ssd_storage` | Bulk data (docs, downloads, pics, videos) |
 | **sdc** | 3.6T | ntfs | `/mnt/data` | Data-HDD (long-term backup) |
 | **sdd** | 111.8G | btrfs | `/home` | User configs, Wine prefixes, dotfiles |
-| **sde** | 476.9G | xfs | `/var/lib/libvirt/images` | VM-Disks |
+| **sde1** | 238.4G | ext4 | — | Future OS (Limine bootloader) |
+| **sde2** | 238.5G | xfs | `/mnt/vm-disks` | VM-Disks |
 | **nvme0n1** | 465.8G | ext4 | `/mnt/workspace` | AI tools, Steam games, llama.cpp, forge |
 
 ## OS Subvolumes (sda, Btrfs)
@@ -23,7 +24,7 @@
 
 ```
 ~/ssd_storage  -> /mnt/ssd_storage
-# ~/m2_storage   -> /mnt/m2_storage (DEPRECATED — now /var/lib/libvirt/images)
+# ~/m2_storage   -> /mnt/m2_storage (DEPRECATED — now /mnt/vm-disks on sde2)
 ~/workspace    -> /mnt/workspace   (also /workspace -> /mnt/workspace for Z: drive compat)
 ~/Models       -> ~/Downloads/llm_models
 ~/Gw2-win      -> /mnt/ssd_storage/ken/Gw2-win
@@ -51,7 +52,8 @@
 | sdd /home | 4365b1fa-735e-455d-9645-e65be9903454 |
 | sdb /mnt/ssd_storage | 51b4243d-ea88-4a02-b02f-c286d52b6e0d |
 | sdc /mnt/data | 7E303CAF303C6FEF |
-| sde /var/lib/libvirt/images | 6befefdd-f232-4757-9eea-9f7051da3c0b |
+| sde1 /mnt/new-os | 9e04d3b5-745c-49b9-bdec-e865672eb2a0 (ext4, noauto) |
+| sde2 /mnt/vm-disks | 9e63ef79-7b4a-4511-a4d5-d411a59af195 (xfs) |
 | nvme /mnt/workspace | 9a1cdd8a-3d81-468f-be70-aa00a01d7301 |
 
 ## AI Tool Aliases (from ~/.zshrc)

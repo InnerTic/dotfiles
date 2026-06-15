@@ -90,8 +90,10 @@ else
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
 # Data-HDD (sdc) — ntfs-3g must be installed first
 UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail 0 2
-# VM-Disks (sde1) — reformatted from btrfs to xfs
-UUID=446695a8-1348-4d45-ab10-5af0a5bf1ae5 /mnt/vm-disks xfs defaults,nofail 0 2
+# VM-Disks (sde2) — reformatted from btrfs → xfs → now sde2 (split 50/50)
+UUID=9e63ef79-7b4a-4511-a4d5-d411a59af195 /mnt/vm-disks xfs defaults,nofail 0 2
+# Future-OS (sde1) — ext4, for another OS install with Limine. noauto until needed.
+UUID=9e04d3b5-745c-49b9-bdec-e865672eb2a0 /mnt/new-os ext4 noauto,nofail 0 0
 # nvme-workspace (nvme0n1p1)
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
 

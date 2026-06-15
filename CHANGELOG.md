@@ -19,6 +19,11 @@ All notable changes to this dotfiles repo.
 - docs: update P40 fix — kernel cmdline (not modprobe.d), power cable troubleshooting
 - add: docs + rebuild script + live-env-setup + pkglist-apps.txt
 
+## 2026-06-15
+
+- disk: split sde 50/50 — sde1 ext4 (future OS, Limine), sde2 xfs (VMs at /mnt/vm-disks)
+- docs: update UUIDs and drive layout across all docs for new sde partitioning
+
 ## Earlier
 
 - GW2 multi-box Wine setup docs, cleanups, and formatting fixes

@@ -54,5 +54,6 @@ See `docs/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requir
 - `sdb` — ssd_storage (465G, ext4)
 - `sdc` — Data-HDD (3.6T, NTFS)
 - `sdd` — ssd_home (112G, Btrfs) mounted at /home
-- `sde` — VM-Disks (476G, xfs) at /var/lib/libvirt/images
+- `sde1` — Future-OS (238G, ext4, Limine) noauto
+- `sde2` — VM-Disks (238G, xfs) at /mnt/vm-disks
 - `nvme0n1` — nvme-workspace (465G, ext4)
