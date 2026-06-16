@@ -1,4 +1,5 @@
 #!/bin/bash
-export CUDA_PATH=/opt/cuda
-export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
-exec /mnt/workspace/llama.cpp/build/bin/llama-server "$@"
+# Debian — uses textgen-bundled llama-server (Arch build-cuda12 needs glibc 2.43)
+LLAMA_BIN="/mnt/workspace/textgen/venv/lib/python3.13/site-packages/llama_cpp_binaries/bin"
+export LD_LIBRARY_PATH="$LLAMA_BIN:$LD_LIBRARY_PATH"
+exec "$LLAMA_BIN/llama-server" "$@"

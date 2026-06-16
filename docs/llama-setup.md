@@ -1,6 +1,11 @@
 # llama.cpp — Fresh Install to Running Server
 
-CUDA 12.4 · sm_61 + sm_86 (RTX 3060 + Tesla P40) · CachyOS/Arch
+CUDA 12.4 · sm_61 + sm_86 (RTX 3060 + Tesla P40) · CachyOS/Arch / Debian
+
+> **Debian:** On Debian, skip the `pacman` steps and use `apt` equivalents.
+> The `llama-server.sh` script already points to the textgen-bundled binary
+> which works with glibc 2.41. The standalone build-cuda12 was built on Arch
+> (glibc 2.43) and won't run here — rebuild from source if you want it.
 
 ## 1. System Dependencies
 

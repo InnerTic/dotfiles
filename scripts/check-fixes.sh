@@ -1,4 +1,5 @@
 #!/bin/bash
+# Debian — pacman -Q replaced with dpkg -l
 # Quality gate for rolling updates — blocks update when tracked bugs are pending.
 # New bugs get a 21-day cooldown after their upstream fix lands before passing.
 #
@@ -50,7 +51,7 @@ mark_fixed () {
 }
 
 # --- KDE#519773 — kio ≥ 6.26.1 ---
-kio_ver=$(pacman -Q kio | cut -d' ' -f2)
+kio_ver=$(dpkg -l kio 2>/dev/null | awk '/^ii/ {print $3}')
 if [ "$(vercmp "$kio_ver" "6.26.1")" -ge 0 ]; then
     mark_fixed "KDE#519773"
     if cooldown_active "KDE#519773"; then

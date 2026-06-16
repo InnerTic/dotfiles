@@ -1,4 +1,5 @@
 #!/bin/bash
+# Debian — replaced pacman -Q with dpkg -l
 set -euo pipefail
 
 echo "=== Shell ==="
@@ -15,11 +16,11 @@ echo "$XDG_SESSION_TYPE"
 
 echo
 echo "=== NVIDIA packages ==="
-pacman -Q | grep nvidia
+dpkg -l | grep nvidia || echo "(none)"
 
 echo
 echo "=== libinput ==="
-pacman -Q libinput
+dpkg -l libinput 2>/dev/null | awk '/^ii/ {print "libinput " $3}' || echo "libinput not installed"
 
 echo
 echo "=== CUDA ==="

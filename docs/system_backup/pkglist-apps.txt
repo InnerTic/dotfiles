@@ -1,94 +1,96 @@
-# Applications for reinstall
-# CachyOS defaults (zsh, git, curl, python, node, plasma, etc.) are already present
-# This list is only for additional apps not in the CachyOS ISO
+# Applications for reinstall — Debian
+# Base system packages (zsh, git, curl, python3, etc.) are already present
+# This list is only for additional apps not in the Debian base install
 
-# AUR helpers
-paru
-yay
+# AUR helpers — not applicable on Debian
+# paru
+# yay
 
 # Browsers & Internet
-librewolf-bin
+# librewolf-bin — use firefox-esr or download from librewolf.net
 qbittorrent
-freetube
-freedownloadmanager
+# freetube
+# freedownloadmanager
 
 # Terminals
 alacritty
 micro
 
 # Build tools
-cachyos/gcc9  # CUDA 12.4 host compiler (for P40 sm_61 builds)
+build-essential
+cmake
+# cachyos/gcc9 — not applicable
 
 # Monitoring
 btop
-bottom
+# bottom
 nvtop
 glances
 fastfetch
 ripgrep
 
 # Editors & Tools
-
 meld
 pavucontrol
 
 # System
-opencode
-openrgb
-protonup-qt
+# opencode — install from opencode.ai
+# openrgb
+# protonup-qt
 pv
 duf
 plocate
 ufw
-ufw-extras
-rebuild-detector
-pkgfile
+# ufw-extras
+# rebuild-detector
+# pkgfile
 
 # Fonts
-noto-fonts
-noto-fonts-cjk
-noto-fonts-emoji
-cantarell-fonts
-ttf-bitstream-vera
-ttf-dejavu
-ttf-liberation
-ttf-meslo-nerd
-ttf-opensans
-awesome-terminal-fonts
+fonts-noto
+fonts-noto-cjk
+fonts-noto-color-emoji
+fonts-cantarell
+fonts-bitstream-vera
+fonts-dejavu-core
+fonts-liberation2
+fonts-firacode
+fonts-powerline
 
 # Codec & Media
-vlc-plugins-all
-libdvdcss
+vlc
 ffmpegthumbnailer
+# libdvdcss — in contrib, may need manual install
 
 # Virtualization
 virt-manager
 virt-viewer
-qemu-full
-libvirt
-edk2-ovmf
+qemu-system-x86
+qemu-utils
+libvirt-daemon-system
+# edk2-ovmf
 swtpm
 
 # Printing & Scanning
 # (none currently)
 
-# NVIDIA — 580xx series (do NOT mix with non-xx or 610xx; pacman will conflict)
-nvidia-580xx-dkms
-nvidia-580xx-utils
-nvidia-580xx-settings
-lib32-nvidia-580xx-utils
-opencl-nvidia-580xx
-lib32-opencl-nvidia-580xx
-libva-nvidia-driver
+# NVIDIA — standard Debian driver metapackage
+# nvidia-580xx-dkms — use nvidia-driver from non-free
+# nvidia-580xx-utils
+# nvidia-580xx-settings
+# lib32-nvidia-580xx-utils
+# opencl-nvidia-580xx
+# lib32-opencl-nvidia-580xx
+# libva-nvidia-driver — install nvidia-vaapi-driver if needed
 
 # AMD
-xf86-video-amdgpu
-vulkan-radeon
-lib32-vulkan-radeon
+# xf86-video-amdgpu — included in xserver-xorg-core
+# vulkan-radeon
+# lib32-vulkan-radeon
 
 # Gaming
-cachyos-gaming-applications
-cachyos-gaming-meta
+# cachyos-gaming-applications
+# cachyos-gaming-meta
+steam-installer
 
 # Compression
 unzip

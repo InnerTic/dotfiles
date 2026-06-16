@@ -1,4 +1,5 @@
-source /usr/share/cachyos-fish-config/cachyos-config.fish
+# # Debian — CachyOS config not available
+# source /usr/share/cachyos-fish-config/cachyos-config.fish
 
 # overwrite greeting
 # potentially disabling fastfetch

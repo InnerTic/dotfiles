@@ -1,5 +1,5 @@
 #!/bin/bash
-# llama-loader — Interactive GGUF model selector
+# Debian — Interactive GGUF model selector
 # Lists models in ~/Downloads/llm_models/, lets you pick one,
 # then starts llama-server with CUDA GPU offload
 
@@ -32,9 +32,6 @@ fi
 
 SELECTED="${MODELS[$((CHOICE-1))]}"
 echo "Starting: $(basename "$SELECTED")"
-
-export CUDA_PATH=/opt/cuda
-export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
 
 exec "$LLAMA_SERVER" \
   -m "$SELECTED" \

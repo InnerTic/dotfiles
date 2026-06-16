@@ -1,55 +1,22 @@
-#!/bin/zsh
+#!/bin/bash
+# Debian
 # =============================================================================
-# SYSTEM REBUILD SCRIPT
+# SYSTEM REBUILD SCRIPT (Debian)
 # Run this after OS reinstall/storage change to restore your AI setup
-# CURRENT as of 2026-06-04 — standalone llama.cpp + P40 ready
+# CURRENT as of 2026-06-15 — textgen bundled llama-server + P40 ready
 # Usage: source REBUILD_SCRIPT.sh
 # =============================================================================
 
 echo "============================================================================"
-echo "  SYSTEM REBUILD SCRIPT"
+echo "  SYSTEM REBUILD SCRIPT (Debian)"
 echo "============================================================================"
 echo ""
 echo "Prerequisites:"
-echo "  1. Boot with CachyOS ISO, install with btrfs + snapshots"
+echo "  1. Install Debian 13 (Trixie) with standard partitioning"
+echo "  2. Clone dotfiles (deb branch):"
+echo "     git clone -b deb git@github.com:InnerTic/dotfiles.git ~/dotfiles"
 echo ""
-echo "  !!! NVIDIA DRIVER CONFLICT WARNING !!!"
-echo "  If you have a Tesla P40 (or any non-standard NVIDIA card) installed,"
-echo "  PHYSICALLY REMOVE IT before installing the OS. The CachyOS installer"
-echo "  auto-installs the default nvidia package (610xx) which will conflict"
-echo "  with the 580xx series needed for older cards. Installing over the"
-echo "  conflict breaks the driver stack and requires a reinstall."
-echo "  Reinstall the card after the OS is booted, then run this script."
-echo ""
-echo "  === VFIO: isolate the Tesla P40 from nvidia driver ==="
-echo "  The P40 on the PCIe bus causes nvidia driver hangs when its"
-echo "  auxiliary power is disconnected (idles at ~47W vs 3060's 14W)."
-echo "  VFIO isolation fixes this and lets you bind it on demand."
-echo ""
-echo "  1. Add vfio modules to initramfs:"
-echo "    sudo sed -i 's/^MODULES=()/MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd)/' /etc/mkinitcpio.conf"
-echo ""
-echo "  2. Create /etc/modprobe.d/vfio.conf:"
-echo "    sudo tee /etc/modprobe.d/vfio.conf <<'EOF'"
-echo "    options vfio-pci ids=10de:1b38"
-echo "    softdep nvidia pre: vfio-pci"
-echo "    softdep nvidia_drm pre: vfio-pci"
-echo "    softdep nvidia_modeset pre: vfio-pci"
-echo "    EOF"
-echo ""
-echo "  3. Append to kernel cmdline (/etc/default/limine for Limine):"
-echo "    Append 'vfio-pci.ids=10de:1b38' to KERNEL_CMDLINE[default]"
-echo ""
-echo "  4. Rebuild and reboot:"
-echo "    sudo mkinitcpio -P && sudo limine-update && reboot"
-echo ""
-echo "  After reboot, verify: lspci -nnk -s 04:00.0"
-echo "  Should show 'Kernel driver in use: vfio-pci'"
-echo "  To use P40 for CUDA later, unbind vfio-pci and bind nvidia."
-echo ""
-echo "  2. Clone dotfiles & run: git clone git@github.com:InnerTic/dotfiles.git ~/dotfiles"
-echo "  3. See ~/dotfiles/docs/llama-setup.md for CUDA/cmake build steps"
-echo ""
+
 echo -n "Continue? (y/n): "
 read confirm
 
@@ -64,15 +31,14 @@ fi
 echo ""
 echo "=== STEP 1: Installing system packages..."
 
-sudo pacman -S --needed \
-  ntfs-3g btrfs-progs \
-  base-devel cmake
-
-
+sudo apt update
+sudo apt install -y \
+  ntfs-3g btrfs-progs xfsprogs \
+  build-essential cmake git
 
 if [[ -f ~/dotfiles/docs/system_backup/pkglist-apps.txt ]]; then
   echo "  Installing app packages from pkglist-apps.txt..."
-  sed '/^\s*#/d; /^\s*$/d' ~/dotfiles/docs/system_backup/pkglist-apps.txt | sudo pacman -S --needed -
+  grep -v '^\s*#' ~/dotfiles/docs/system_backup/pkglist-apps.txt | grep -v '^\s*$' | sudo xargs apt install -y 2>/dev/null || true
 fi
 
 # =============================================================================
@@ -88,14 +54,12 @@ else
 
 # ssd_storage (sdb)
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
-# Data-HDD (sdc) — ntfs-3g must be installed first
-UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail 0 2
-# VM-Disks (sde2) — reformatted from btrfs → xfs → now sde2 (split 50/50)
-UUID=9e63ef79-7b4a-4511-a4d5-d411a59af195 /mnt/vm-disks xfs defaults,nofail 0 2
-# Future-OS (sde1) — ext4, for another OS install with Limine. noauto until needed.
-UUID=9e04d3b5-745c-49b9-bdec-e865672eb2a0 /mnt/new-os ext4 noauto,nofail 0 0
+# Data-HDD (sdc)
+UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail,uid=1000,gid=1000,umask=000 0 2
 # nvme-workspace (nvme0n1p1)
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
+# m2_storage (sdd)
+UUID=e070aea8-a128-4e6d-9e3f-da38a6604dbe /mnt/m2_storage btrfs defaults,nofail 0 2
 
 # Bind mounts (silently skip if source drive not mounted)
 /mnt/ssd_storage/ken/Documents /home/ken/Documents none bind,nofail 0 0
@@ -109,7 +73,7 @@ UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 
 FSTAB
 fi
 
-sudo mkdir -p /mnt/{ssd_storage,data,vm-disks,workspace}
+sudo mkdir -p /mnt/{ssd_storage,data,m2_storage,workspace}
 sudo mkdir -p /home/ken/{Documents,Downloads,Pictures,Videos,Desktop,Music,go,MEGA}
 sudo mount -a
 
@@ -120,10 +84,11 @@ echo "  Drives mounted. Verify: df -h | grep /mnt"
 # =============================================================================
 echo ""
 echo "=== STEP 3: Creating symlinks..."
-rm -rf ~/ssd_storage ~/m2_storage ~/vm-disks ~/workspace ~/Models
+rm -rf ~/ssd_storage ~/m2_storage ~/workspace ~/Models
 ln -sf /mnt/ssd_storage ~/ssd_storage
-ln -sf /mnt/vm-disks ~/vm-disks
+ln -sf /mnt/m2_storage ~/m2_storage
 ln -sf /mnt/workspace ~/workspace
+sudo ln -sf /mnt/workspace /workspace
 ln -sf ~/Downloads/llm_models ~/Models
 echo "  Done."
 
@@ -135,12 +100,12 @@ echo "=== STEP 4: Restore dotfiles..."
 if [[ -d ~/dotfiles ]]; then
     echo "  dotfiles already cloned"
 else
-    echo "  Clone: git clone git@github.com:InnerTic/dotfiles.git ~/dotfiles"
+    echo "  Clone: git clone -b deb git@github.com:InnerTic/dotfiles.git ~/dotfiles"
 fi
 
 if [[ -f ~/dotfiles/bootstrap.sh ]]; then
     echo "  Running dotfiles bootstrap..."
-    cd ~/dotfiles && zsh bootstrap.sh
+    cd ~/dotfiles && bash bootstrap.sh
 fi
 
 echo ""
@@ -168,91 +133,67 @@ if [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]]; then
   git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 fi
 
-# OpenClaw completions
-if [[ ! -f ~/.openclaw/completions/openclaw.zsh ]]; then
-  echo "  OpenClaw completions not found — install openclaw first"
-  echo "  See: https://openclaw.ai/docs/install"
-fi
-
 echo "  Source: source ~/.zshrc (after installs complete)"
-
 echo "  Zsh setup done."
 
 # =============================================================================
-# STEP 5: Build llama.cpp (system CUDA 12.9, dual GPU: sm_61 + sm_86)
+# STEP 5: Check CUDA and llama.cpp
 # =============================================================================
 
 echo ""
-echo "=== STEP 5: Building llama.cpp with CUDA 12.9 (sm_61 + sm_86)..."
-echo "  Build location: /mnt/workspace/llama.cpp"
-echo ""
-
+echo "=== STEP 5: CUDA setup..."
 echo "  CUDA layout:"
-echo "    - /opt/cuda (CUDA 12.9 AUR package)"
+echo "    - NVIDIA driver from debian non-free (nvidia-driver metapackage)"
 echo "    - GPU 0: RTX 3060 (sm_86) → SDXL / diffusion"
 echo "    - GPU 1: Tesla P40 (sm_61) → llama.cpp inference"
 echo ""
 
-# -----------------------------------------------------------------------------
-# Ensure CUDA exists
-# -----------------------------------------------------------------------------
-echo "  Checking CUDA..."
-if ! command -v nvcc >/dev/null 2>&1; then
-  echo "  CUDA not found. Install with:"
-  echo "    paru -S cuda-12.9"
-  exit 1
-fi
-
-nvcc --version
-
-# -----------------------------------------------------------------------------
-# Use persistent workspace
-# -----------------------------------------------------------------------------
-echo ""
-echo "  Using workspace: /mnt/workspace"
-
-cd /mnt/workspace
-
-if [[ -d llama.cpp ]]; then
-  echo "  llama.cpp exists → updating"
-  cd llama.cpp
-  git pull
+echo "  Checking NVIDIA driver..."
+if command -v nvidia-smi >/dev/null 2>&1; then
+  nvidia-smi --query-gpu=name,driver_version --format=csv,noheader 2>/dev/null
+  echo "  ✓ NVIDIA driver installed"
 else
-  echo "  cloning llama.cpp"
-  git clone https://github.com/ggerganov/llama.cpp.git
-  cd llama.cpp
+  echo "  ✗ NVIDIA driver not found. Install with:"
+  echo "    sudo apt install nvidia-driver firmware-misc-nonfree"
+  echo "    Then reboot"
 fi
 
-# -----------------------------------------------------------------------------
-# Configure build
-# -----------------------------------------------------------------------------
 echo ""
-echo "  Configuring build..."
-echo "  Note: nvcc may warn about sm_61 deprecation (P40). This is harmless."
-
-rm -rf build-cuda12
-
-cmake -S . -B build-cuda12 \
-  -DGGML_CUDA=ON \
-  -DCMAKE_CUDA_ARCHITECTURES="61;86" \
-  -DCUDAToolkit_ROOT=/opt/cuda
-
-# -----------------------------------------------------------------------------
-# Build
-# -----------------------------------------------------------------------------
-echo ""
-echo "  Building llama.cpp..."
-cmake --build build-cuda12 -j$(nproc)
+echo "  Checking llama.cpp build..."
+if [[ -f /mnt/workspace/llama.cpp/build-cuda12/bin/llama-server ]]; then
+  echo "  ✓ llama.cpp build-cuda12 exists"
+  echo "  Note: This was built on Arch (glibc 2.43) and may not run on Debian (glibc 2.41)."
+  echo "  Using textgen bundled llama-server instead."
+fi
 
 echo ""
-echo "  DONE"
-echo "  Binary: /mnt/workspace/llama.cpp/build-cuda12/bin/"
+echo "  Checking textgen bundled llama-server..."
+TEXTGEN_BIN="/mnt/workspace/textgen/venv/lib/python3.13/site-packages/llama_cpp_binaries/bin"
+if [[ -f "$TEXTGEN_BIN/llama-server" ]]; then
+  echo "  ✓ textgen bundled llama-server found"
+else
+  echo "  ✗ Not found — install textgen-webui first (see step 8)"
+fi
 
 # =============================================================================
-# STEP 6: Restore GGUF models
+# STEP 6: Install Forge WebUI
 # =============================================================================
 echo ""
-echo "=== STEP 6: Restore GGUF models..."
+echo "=== STEP 6: Installing SD WebUI Forge Neo..."
+if [[ -d /mnt/workspace/sd-webui-forge-neo/.git ]]; then
+  echo "  Forge already cloned, updating..."
+  cd /mnt/workspace/sd-webui-forge-neo && git pull
+else
+  git clone https://github.com/lllyasviel/stable-diffusion-webui-forge.git /mnt/workspace/sd-webui-forge-neo
+fi
+echo "  ✓ Forge ready. First launch will install dependencies automatically."
+echo "  Run: cd /mnt/workspace/sd-webui-forge-neo && python3 launch.py --listen"
+
+# =============================================================================
+# STEP 7: Restore GGUF models
+# =============================================================================
+echo ""
+echo "=== STEP 7: Restore GGUF models..."
 if ls ~/Downloads/llm_models/*.gguf >/dev/null 2>&1; then
     echo "  ✓ $(ls ~/Downloads/llm_models/*.gguf 2>/dev/null | wc -l) models present"
 else
@@ -260,21 +201,29 @@ else
 fi
 
 # =============================================================================
-# STEP 7: Verify Scripts
+# STEP 8: Install textgen-webui
 # =============================================================================
 echo ""
-echo "=== STEP 7: Verify Scripts..."
-for script in ~/.local/bin/llama-loader; do
-    if [[ -f $script ]]; then
-        echo "  ✓ $(basename $script)"
-    else
-        echo "  ✗ $script MISSING (should be in dotfiles)"
-    fi
-done
+echo "=== STEP 8: Install TextGen WebUI (if not present)..."
+if [[ -d /mnt/workspace/textgen/.git ]]; then
+  echo "  ✓ textgen already cloned"
+else
+  echo "  Clone and install textgen-webui:"
+  echo "    cd /mnt/workspace"
+  echo "    git clone https://github.com/oobabooga/text-generation-webui.git textgen"
+  echo "    cd textgen"
+  echo "    ./start_linux.sh --listen"
+  echo "  (First run installs CUDA-enabled llama-cpp-python)"
+fi
 
-for script in ~/.openclaw/workspace/scripts/llama-start.sh \
-              ~/.openclaw/workspace/scripts/forge-start.sh \
-              ~/.openclaw/workspace/scripts/textgen-start.sh; do
+# =============================================================================
+# STEP 9: Verify Scripts
+# =============================================================================
+echo ""
+echo "=== STEP 9: Verify Scripts..."
+for script in ~/.local/bin/llama-loader \
+              ~/dotfiles/scripts/llama-server.sh \
+              ~/dotfiles/scripts/forge-start.sh; do
     if [[ -f $script ]]; then
         echo "  ✓ $(basename $script)"
     else
@@ -282,22 +231,14 @@ for script in ~/.openclaw/workspace/scripts/llama-start.sh \
     fi
 done
 
-# =============================================================================
-# STEP 8: Start Services
-# =============================================================================
-echo ""
-echo "=== STEP 8: Starting Services..."
-echo ""
-echo "  # Start local AI model (interactive selector)"
-echo "  llm"
-echo ""
-echo "  # Start web UIs"
-echo "  forge-start.sh      # SDXL Forge (port 7860)"
-echo "  textgen-start.sh    # TextGen (port 7861)"
-echo ""
-echo "  # Verify"
-echo "  llmcheck            # curl localhost:8080/v1/models | jq"
-echo "  curl localhost:7860 # Forge"
+for script in ~/.openclaw/workspace/scripts/llama-start.sh \
+              ~/.openclaw/workspace/scripts/textgen-start.sh; do
+    if [[ -f $script ]]; then
+        echo "  ✓ $(basename $script)"
+    else
+        echo "  ✗ $script MISSING"
+    fi
+done
 
 # =============================================================================
 # DONE
@@ -311,7 +252,9 @@ echo "Quick commands:"
 echo "  llm              - Interactive model selector (llama-loader)"
 echo "  llmcheck         - Verify what's running"
 echo "  oc               - opencode CLI"
-echo "  ocl / oclw       - opencode-local.sh (tui/web)"
+echo "  ocl / oclw       - opencode TUI/Web with local models"
+echo "  textgen          - Start TextGen WebUI (port 7861)"
+echo "  forge            - Start SD Forge (port 7860)"
 echo ""
 echo "Full ref:     ~/dotfiles/docs/commands.txt"
 echo "LLaMA setup:  ~/dotfiles/docs/llama-setup.md"
