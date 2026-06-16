@@ -10,7 +10,19 @@ Python environment management, Git configuration, shell setup, and bootstrap pro
 
 ## Bootstrap Process
 
-The [[dotfiles]] repo provides a distro-agnostic `bootstrap.sh` that symlinks configs into place:
+The [[dotfiles]] repo has two branches:
+- **`main`** — Arch/CachyOS configs (pacman, paru, CUDA paths, CachyOS shell configs)
+- **`deb`** — Debian 13 (Trixie) configs (apt, dpkg, textgen-bundled llama-server)
+
+```bash
+# Clone a specific branch
+git clone -b deb git@github.com:InnerTic/dotfiles.git ~/dotfiles
+# Or switch branches later
+cd ~/dotfiles && git checkout deb    # Debian
+cd ~/dotfiles && git checkout main   # Arch
+```
+
+Then run `bootstrap.sh` to symlink configs into place:
 
 ```bash
 cd ~/dotfiles && ./bootstrap.sh
