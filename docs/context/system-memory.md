@@ -1,6 +1,8 @@
 # System Memory — Akuma
 
-**Host:** Akuma (CachyOS Linux, KDE Plasma 6.6.3)
+**Host:** Akuma (Debian 13 Trixie — `deb` branch of dotfiles)
+**CPU:** AMD Ryzen 7 5700G (16 cores) | **RAM:** 48 GiB (46.3 GiB usable)
+**GPU:** NVIDIA GeForce RTX 3060 12GB VRAM (driver 580.142) + AMD Radeon integrated
 **CPU:** AMD Ryzen 7 5700G (16 cores) | **RAM:** 48 GiB (46.3 GiB usable)
 **GPU:** NVIDIA GeForce RTX 3060 12GB VRAM (driver 580.142) + AMD Radeon integrated
 

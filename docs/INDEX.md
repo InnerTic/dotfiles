@@ -1,7 +1,10 @@
-# Docs Vault
+# Docs Vault — Debian
 
 System documentation, rebuild references, GPU config, cheat sheets, and AI context.
 Start here to navigate the vault.
+
+> **On the `deb` branch.** Switch to `main` for Arch/CachyOS docs.
+> `cd ~/dotfiles && git checkout main`
 
 ## Quick Navigation
 
