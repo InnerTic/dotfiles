@@ -133,7 +133,7 @@ Install remaining deps:
 Forge pins every dependency to an exact version (e.g. `Pillow==9.5.0`, `numpy==1.26.2`).
 These are too old for Python 3.13 and fail to compile.
 
-**Fix**: Change all `==` to `>=` so pip doesn't try to downgrade:
+**Fix**: Change all `==` to `>=` so pip doesn't try to downgrade, then selectively re-pin the packages that need fixed versions for compatibility:
 
 ```bash
 cd /mnt/workspace/sd-webui-forge-neo
@@ -151,6 +151,31 @@ sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 ```bash
 # pre-install what forge's installer will fail on
 ./venv/bin/pip install sentencepiece joblib
+
+# pin gradio to 4.x (5.x breaks slider validation, incompatible with forge UI)
+# but 4.40.0 exact works on Python 3.13
+./venv/bin/pip install "gradio==4.40.0"
+
+# pin huggingface-hub <0.25 (gradio 4.x imports HfFolder, removed in 0.25+)
+./venv/bin/pip install "huggingface-hub<0.25"
+
+# re-pin specific versions that conflict with older huggingface-hub
+./venv/bin/pip install \
+  "diffusers==0.31.0" \
+  "transformers==4.46.1" \
+  "peft==0.13.2" \
+  "fastapi==0.104.1" \
+  "kornia==0.6.7" \
+  "accelerate==0.31.0" \
+  "pydantic==2.8.2" \
+  "protobuf==3.20.0"
+```
+
+Update `requirements_versions.txt` to reflect the gradio pin:
+
+```bash
+sed -i 's/gradio>=4.40.0/gradio==4.40.0/' requirements_versions.txt
+sed -i 's/huggingface-hub/huggingface-hub<0.25/' requirements_versions.txt
 ```
 
 ### Launch
@@ -163,9 +188,13 @@ sudo apt-get install -y libcairo2-dev pkg-config python3-dev
 - `setuptools==69.5.1` → un-pin, installed version 74+ works fine.
 - `Pillow==9.5.0` → can't build on 3.13 (`KeyError: '__version__'`). Pillow 11+ works.
 - `numpy==1.26.2` → can't build on 3.13 without `python3-dev`. The >= pin uses prebuilt wheel.
+- `scikit-image==0.21.0` → can't build on 3.13 either. Leave unpinned.
 - `svglib`/`pycairo` → needs `libcairo2-dev`, `pkg-config`, **and** `python3-dev` for `Python.h`. Even then, pycairo 1.29 meson build may fail to find Python in the venv. **Non-critical** — only needed for SVG preprocessors.
 - `bitsandbytes` → needs `python3-dev` for `Python.h`. **Optional** — only for 4-bit quantization.
-- `xformers` → wrong version from index (0.0.35 targets torch 2.10). Must pin `xformers==0.0.29` and build from source with `--no-build-isolation`. Needs torch installed first.
+- `xformers` → wrong version from default index (0.0.35 targets torch 2.10+cu128). Must pin `xformers==0.0.29` and build from source with `--no-build-isolation`. Needs torch installed first.
+- `gradio` → 5.x breaks forge slider validation. Pin to `==4.40.0`.
+- `huggingface-hub` → 0.25+ removes `HfFolder` which gradio 4.x imports. Pin `<0.25`.
+- `diffusers`, `transformers`, `peft`, etc. → new versions require huggingface-hub >=0.25. Re-pin to forge's original versions (`0.31.0`, `4.46.1`, `0.13.2`).
 - `insightface` → optional preprocessor, install manually if needed: `pip install insightface`
 - `joblib` → needed by `soft_inpainting.py` script
 
