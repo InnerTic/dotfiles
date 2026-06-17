@@ -24,109 +24,133 @@
             "format": "{#90}──────────────────────────────────────────"
         },
         {
-            "type": "os",
-            "key": "{#cyan}  OS"
+            "type": "custom",
+            "format": "{#bold}{#cyan}┌─ System ───────────────────────────────┐"
         },
         {
-            "type": "host",
-            "key": "{#cyan}  Host"
+            "type": "os",
+            "key": "│   OS"
         },
         {
             "type": "kernel",
-            "key": "{#cyan}├   Kernel",
+            "key": "│ ├   Kernel",
             "format": "{release}"
         },
         {
             "type": "packages",
-            "key": "{#cyan}├   Packages",
+            "key": "│ ├   Packages",
             "combined": true
         },
         {
             "type": "shell",
-            "key": "{#cyan}├   Shell"
+            "key": "│ ├   Shell"
         },
         {
             "type": "command",
-            "key": "{#cyan}│    Tide",
+            "key": "│ │   Tide",
             "text": "fish -c 'tide --version' 2>/dev/null | grep -oP 'version \\K[0-9.]+' || true"
         },
         {
             "type": "uptime",
-            "key": "{#cyan}└   Uptime"
+            "key": "│ └   Uptime"
+        },
+        {
+            "type": "custom",
+            "format": "{#bold}{#green}├─ Hardware ─────────────────────────────┤"
         },
         {
             "type": "cpu",
-            "key": "{#green}  CPU",
+            "key": "│   CPU",
             "showPeCoreCount": true,
             "temp": true
         },
         {
             "type": "gpu",
-            "key": "{#green}├ 󰍛  GPU"
+            "key": "│ ├ 󰍛  GPU"
         },
         {
             "type": "command",
-            "key": "{#green}│   VRAM",
+            "key": "│ │   VRAM",
             "text": "nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader 2>/dev/null | awk -F', ' '{u=$1; gsub(/ MiB/,\"\",u); t=$2; gsub(/ MiB/,\"\",t); printf \"%s/%s MiB\\n\", u, t}' | paste -sd ' | ' || echo 'N/A'"
         },
         {
             "type": "memory",
-            "key": "{#green}├   Memory"
+            "key": "│ ├   Memory"
         },
         {
             "type": "swap",
-            "key": "{#green}├   Swap"
+            "key": "│ ├   Swap"
         },
         {
             "type": "disk",
-            "key": "{#green}└   Disk",
+            "key": "│ ├   Root",
             "folders": "/"
         },
         {
+            "type": "disk",
+            "key": "│ │   Work",
+            "folders": "/mnt/workspace"
+        },
+        {
+            "type": "disk",
+            "key": "│ └   Store",
+            "folders": "/mnt/ssd_storage"
+        },
+        {
+            "type": "custom",
+            "format": "{#bold}{#yellow}├─ Display ─────────────────────────────┤"
+        },
+        {
             "type": "de",
-            "key": "{#yellow}  DE/WM"
+            "key": "│   DE/WM"
         },
         {
             "type": "wm",
-            "key": "{#yellow}├   WM"
+            "key": "│ ├   WM"
         },
         {
             "type": "terminal",
-            "key": "{#yellow}├   Terminal"
-        },
-        {
-            "type": "terminalfont",
-            "key": "{#yellow}├   Font",
-            "format": "{/name}{-}{/}{name}"
+            "key": "│ ├   Terminal"
         },
         {
             "type": "display",
-            "key": "{#yellow}└ 󰍹  Display",
+            "key": "│ └ 󰍹  Display",
             "compactType": "original-with-refresh-rate"
         },
         {
+            "type": "custom",
+            "format": "{#bold}{#magenta}├─ Network ─────────────────────────────┤"
+        },
+        {
             "type": "localip",
-            "key": "{#magenta}󰩟  IP"
+            "key": "│ 󰩟  IP"
         },
         {
             "type": "sound",
-            "key": "{#magenta}└   Audio"
+            "key": "│ └   Audio"
         },
-        "break",
+        {
+            "type": "custom",
+            "format": "{#bold}{#red}├─ Dev ─────────────────────────────────┤"
+        },
         {
             "type": "command",
-            "key": "{#red}  Python",
+            "key": "│   Python",
             "text": "python3 --version 2>/dev/null || python --version 2>/dev/null"
         },
         {
             "type": "command",
-            "key": "{#red}  Node",
+            "key": "│   Node",
             "text": "node --version 2>/dev/null"
         },
         {
             "type": "command",
-            "key": "{#red}  CUDA",
+            "key": "│   CUDA",
             "text": "nvidia-smi 2>/dev/null | grep 'CUDA Version' | grep -oP 'CUDA Version: \\K[0-9.]+' || nvcc --version 2>/dev/null | tail -1 | grep -oP 'release \\K[^,]+' || echo 'not installed'"
+        },
+        {
+            "type": "custom",
+            "format": "{#90}└─────────────────────────────────────────┘"
         },
         "break",
         {
