@@ -15,6 +15,9 @@
         "separator": "  ",
         "color": {
             "separator": "bright_black"
+        },
+        "key": {
+            "width": 14
         }
     },
     "modules": [
