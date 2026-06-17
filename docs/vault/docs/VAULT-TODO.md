@@ -108,6 +108,12 @@
 ✅ `docs/vault/software/ai-tools/commands.md` — AI command reference  
 ✅ `docs/vault/docs/VAULT-TODO.md` — This file
 
+## Completed (Previous Sessions)
+
+✅ **`docs/vault/scripts/`** — All scripts migrated from `~/subjects/` and `dotfiles/scripts/` into vault with per-file `.md` views for Obsidian  
+✅ **`docs/vault/scripts/fastfetch.md`** — Fastfetch config in vault  
+✅ **`docs/vault/scripts/README.md`** — Script index with categorized tables and wikilink entries
+
 ---
 
 ## Notes for Next Session
