@@ -4,18 +4,22 @@
 **GPU 0:** RTX 3060 12GB (Forge/SDXL + small models)  
 **GPU 1:** Tesla P40 24GB (32B models via llama-server)
 
-## Model Assignments
+## Roles
 
-| Role | Goal | Model | Size | GPU | Port | Script |
-|------|------|-------|------|-----|------|--------|
-| **Glossary Updater** | Extract new terms, titles, locations, orgs, relationships. Output markdown to candidate glossary only. | `gemma-4-26B-A4B-APEX-Compact.gguf` | ~7GB eff. | 3060 | 8082 | `glossary-update.sh` |
-| **Briefer** | Extract characters, locations, relationships, prior events, and Ambiguity Anchors. Structured context for Verifier only. | `PromptEnhancer-32B.i1-Q4_K_M.gguf` | ~20GB | P40 | 8081 | `briefer.sh` |
-| **Translator** | Literal translation using approved glossary + candidates. Preserve honorifics, names, terms. Output + difficulty. | `Qwen3.6-27B-Q4_K_M.gguf` | ~16GB | P40 | 8083 | `translate.sh` |
-| **Editor** | Improve readability, natural English. Keep all meaning, names, terms, honorifics. Include Edit Log. | `Floppa-12B-Gemma3-Uncensored.i1-Q4_K_M.gguf` | ~7GB | 3060 | 8084 | `editor.sh` |
-| **Verifier** | Sentence-by-sentence comparison. Report omissions, additions, name errors, honorific drift, tense, glossary, continuity. Do NOT rewrite. | `DS4X8R1L3.1-Dp-Thnkr-UnC-24B-D_AU-q5_k_m.gguf` | ~15GB | P40 | 8085 | `verify.sh` |
-| **Consistency Checker** | Compare current vs prior chunks. Terminology drift, speaker attribution, dialogue flow, duplicated meaning, paragraph order. | `Qwen2.5-Coder-32B-Rombo-TIES.i1-Q4_K_M.gguf` | ~20GB | P40 | 8086 | `consistency-check.sh` |
-| **Continuity Updater** | After human approval, update character state: items, injuries, location, relationships, deaths. Also update scene index. | `gemma-4-26B-A4B-APEX-Compact.gguf` | ~7GB eff. | 3060 | 8088 | `continuity-update.sh` |
-| **Script Checks** | Deterministic only — no LLM. Unicode normalization, quote/bracket balance, Japanese chars, repeated paragraphs, name counts, markdown. | grep/awk/jq | — | — | — | `script-checks.sh` |
+Each stage is documented in detail with model rationale and alternatives in [[translation-pipeline/roles/README\|roles/]].
+
+| # | Role | Model (Current) | GPU | Port | Details |
+|---|------|-----------------|-----|------|---------|
+| 1 | [[translation-pipeline/roles/01-glossary-updater\|Glossary Updater]] | `gemma-4-26B-A4B-APEX-Compact.gguf` | 3060 | 8082 | [[translation-pipeline/roles/01-glossary-updater\|role →]] |
+| 2 | [[translation-pipeline/roles/02-briefer\|Briefer (PromptEnhancer)]] | `PromptEnhancer-32B.i1-Q4_K_M.gguf` | P40 | 8081 | [[translation-pipeline/roles/02-briefer\|role →]] |
+| 3 | [[translation-pipeline/roles/03-translator\|Translator]] | `Qwen3.6-27B-Q4_K_M.gguf` | P40 | 8083 | [[translation-pipeline/roles/03-translator\|role →]] |
+| 4 | [[translation-pipeline/roles/04-editor\|Editor]] | `Floppa-12B-Gemma3-Uncensored.i1-Q4_K_M.gguf` | 3060 | 8084 | [[translation-pipeline/roles/04-editor\|role →]] |
+| 5 | [[translation-pipeline/roles/05-script-checks\|Script Checks]] | grep/awk/jq | — | — | [[translation-pipeline/roles/05-script-checks\|role →]] |
+| 6 | [[translation-pipeline/roles/06-consistency-checker\|Consistency Checker]] | `Qwen2.5-Coder-32B-Rombo-TIES.i1-Q4_K_M.gguf` | P40 | 8086 | [[translation-pipeline/roles/06-consistency-checker\|role →]] |
+| 7 | [[translation-pipeline/roles/07-verifier\|Verifier]] | `DS4X8R1L3.1-Dp-Thnkr-UnC-24B-D_AU-q5_k_m.gguf` | P40 | 8085 | [[translation-pipeline/roles/07-verifier\|role →]] |
+| 8 | [[translation-pipeline/roles/08-continuity-updater\|Continuity Updater]] | `gemma-4-26B-A4B-APEX-Compact.gguf` | 3060 | 8088 | [[translation-pipeline/roles/08-continuity-updater\|role →]] |
+
+For comprehensive model evaluation, alternatives, and tradeoffs, see [[translation-pipeline/model-index\|Model Index]].
 
 ## Pipeline
 
