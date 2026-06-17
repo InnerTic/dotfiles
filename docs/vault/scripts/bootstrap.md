@@ -1,3 +1,6 @@
+# bootstrap.sh
+
+```bash
 #!/usr/bin/env sh
 # bootstrap.sh — symlink configs into place
 # Distro-agnostic. Works on anything with a POSIX shell.
@@ -34,3 +37,4 @@ echo "→ Linking configs from $DOTFILES"
 [ -f "$DOTFILES/ssh/config" ] && mkdir -p "$HOME/.ssh" && ln -sf "$DOTFILES/ssh/config" "$HOME/.ssh/config"
 
 echo "✓ Done. Restart your shell or source the config."
+```

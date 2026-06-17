@@ -22,6 +22,8 @@ Start here to navigate the vault.
 
 | Page | Description |
 |------|-------------|
+| `reinstall-guides/` | **Step-by-step install guides** for llama.cpp, forge-neo, textgen — separated by distro (cachyos/ debian) with CUDA version, python version, and gotcha notes |
+| [[vault/scripts/README\|vault/scripts/]] | **All scripts in one place** — reinstall sequence, GPU/AI tools, system helpers |
 | [[rebuild-notes]] | Latest rebuild notes — step-by-step OS reinstall |
 | [[context/implementation-workflow]] | Original migration workflow (historical, some paths stale) |
 | `system_backup/` | Full backup/restore reference — REBUILD_SCRIPT.sh, KEY_LOCATIONS.txt |
@@ -65,7 +67,7 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/QUICK-START]] | 🚨 Emergency recovery — 5-minute restore after reinstall |
 | [[vault/map]] | Full vault sitemap — navigation paths for every scenario |
 | [[vault/system/drives-and-mounts]] | Drive UUIDs, fstab, bind mounts, drive selection guide |
-| [[vault/software/dev-setup]] | Python venv, git config, shell aliases, bootstrap process |
+| [[vault/software/dev-setup]] | Python venv, git config, shell aliases, bootstrap process, fastfetch greeting |
 | [[vault/software/ai-tools/commands]] | AI command reference — llm, sdxl, textgen, oc |
 | [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |
 | [[vault/reference/glossary]] | Term definitions — llama.cpp, VFIO, CUDA, GGUF, etc. |

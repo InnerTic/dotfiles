@@ -33,7 +33,8 @@ What it creates:
 | Source (in dotfiles repo) | Target | Purpose |
 |---------------------------|--------|---------|
 | `shell/.zshrc` | `~/.zshrc` | Zsh config with AI aliases |
-| `shell/config.fish` | `~/.config/fish/config.fish` | Fish config (if used) |
+| `shell/config.fish` | `~/.config/fish/config.fish` | Fish config with AI aliases + fastfetch greeting |
+| `shell/fastfetch.jsonc` | `~/.config/fastfetch/config.jsonc` | Fastfetch system info display (runs on terminal open) |
 | `git/.gitconfig` | `~/.gitconfig` | Git user, aliases, diff settings |
 | `tmux/.tmux.conf` | `~/.tmux.conf` | Tmux config |
 | `ssh/config` | `~/.ssh/config` | Host shortcuts (zima, pihole, etc.) |
@@ -41,6 +42,9 @@ What it creates:
 Bootstrap only creates symlinks — it does not install packages or modify system files.
 Run it after [[workspace-symlink-strategy|link-workspace.sh --apply]] so that workspace
 symlinks are in place before config files land.
+
+For a full reinstall, follow the numbered scripts in `vault/scripts/README.md` in order,
+then run `bootstrap.sh` at step 5.
 
 ## Git Configuration
 
