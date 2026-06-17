@@ -59,7 +59,7 @@
         },
         {
             "type": "custom",
-            "format": "{#bold}{#green}├─ Hardware ─────────────────────────────┤"
+            "format": "{#green}├─ Hardware ─────────────────────────────┤"
         },
         {
             "type": "cpu",
@@ -101,7 +101,7 @@
         },
         {
             "type": "custom",
-            "format": "{#bold}{#yellow}├─ Display ─────────────────────────────┤"
+            "format": "{#yellow}├─ Display ─────────────────────────────┤"
         },
         {
             "type": "de",
@@ -122,7 +122,7 @@
         },
         {
             "type": "custom",
-            "format": "{#bold}{#magenta}├─ Network ─────────────────────────────┤"
+            "format": "{#magenta}├─ Network ─────────────────────────────┤"
         },
         {
             "type": "localip",
@@ -134,7 +134,7 @@
         },
         {
             "type": "custom",
-            "format": "{#bold}{#red}├─ Dev ─────────────────────────────────┤"
+            "format": "{#red}├─ Dev ─────────────────────────────────┤"
         },
         {
             "type": "command",
