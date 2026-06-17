@@ -46,6 +46,11 @@
             "key": "{#cyan}├   Shell"
         },
         {
+            "type": "command",
+            "key": "{#cyan}│   Tide",
+            "text": "fish -c 'tide --version' 2>/dev/null | grep -oP 'version \\K[0-9.]+' || true"
+        },
+        {
             "type": "uptime",
             "key": "{#cyan}└   Uptime"
         },
