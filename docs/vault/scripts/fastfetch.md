@@ -47,7 +47,7 @@
         },
         {
             "type": "command",
-            "key": "{#cyan}│   Tide",
+            "key": "{#cyan}│    Tide",
             "text": "fish -c 'tide --version' 2>/dev/null | grep -oP 'version \\K[0-9.]+' || true"
         },
         {
