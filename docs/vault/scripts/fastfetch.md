@@ -60,6 +60,11 @@
             "key": "{#green}├ 󰍛  GPU"
         },
         {
+            "type": "command",
+            "key": "{#green}│   VRAM",
+            "text": "nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader 2>/dev/null | awk -F', ' '{u=$1; gsub(/ MiB/,\"\",u); t=$2; gsub(/ MiB/,\"\",t); printf \"%s/%s MiB\\n\", u, t}' | paste -sd ' | ' || echo 'N/A'"
+        },
+        {
             "type": "memory",
             "key": "{#green}├   Memory"
         },
