@@ -116,7 +116,7 @@
         {
             "type": "command",
             "key": "{#red}  CUDA",
-            "text": "nvcc --version 2>/dev/null | tail -1 | grep -oP 'release \\K[^,]+' || echo 'not installed'"
+            "text": "nvidia-smi 2>/dev/null | grep 'CUDA Version' | grep -oP 'CUDA Version: \\K[0-9.]+' || nvcc --version 2>/dev/null | tail -1 | grep -oP 'release \\K[^,]+' || echo 'not installed'"
         },
         "break",
         {
