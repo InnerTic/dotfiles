@@ -1,5 +1,6 @@
-# Model Index & Evaluation
-
+ 
+**Model** Index & Evaluation
+``note to ai clean this section up make formatting mnatch the rest write for fact accuracy.  had to clean refences to 12gb models fitting on the 3060 when `"you have ≤~9GB to leave room for KV cache and CUDA "" 12b does not equal 12gb, a 12b can fit, 12gb cannot`
 Complete inventory of all available LLMs with architecture notes, role suitability, and tradeoffs.
 
 ## Quick Picks by Role
@@ -93,23 +94,25 @@ Models that fit the 3060 — file size must be ≤~9GB to leave room for KV cach
 
 ### gemma-3-it-12B-Q8_0.gguf (borderline)
 
-| Attribute | Value |
-|-----------|-------|
-| **Path** | `~/Downloads/llm_models/` (ssd) |
-| **Size** | 12G |
-| **Arch** | 12B dense, Q8_0 |
-| **VRAM** | ~12GB (borderline — may need partial offload `-ngl`) |
+| Attribute | Value                           |
+| --------- | ------------------------------- |
+| **Path**  | `~/Downloads/llm_models/` (ssd) |
+| **Size**  | 12G                             |
+| **Arch**  | 12B dense, Q8_0                 |
+| **VRAM**  | ~12GB                           |
+|           | P40 only                        |
 
 **Evaluation: ★★★★☆** — Near-lossless quantization of Gemma-3 12B. Q8 preserves full quality. 12GB file pushes 3060 limit — may need `-ngl` to keep some layers on CPU. **Best for:** editor (primary).
 
 ### gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf (borderline)
 
-| Attribute | Value |
-|-----------|-------|
-| **Path** | `/mnt/data/model_storage/` |
-| **Size** | 12G |
-| **Arch** | 12B dense, Q8_0, polaris/heretic fine-tune |
-| **VRAM** | ~12GB (borderline, same as primary editor) |
+| Attribute | Value                                      |
+| --------- | ------------------------------------------ |
+| **Path**  | `/mnt/data/model_storage/`                 |
+| **Size**  | 12G                                        |
+| **Arch**  | 12B dense, Q8_0, polaris/heretic fine-tune |
+| **VRAM**  | ~12GB                                      |
+|           | p40 only                                   |
 
 **Evaluation: ★★★☆☆** — Experimental fine-tune of Gemma-3 12B at Q8. Same VRAM footprint but different training mix. Needs A/B testing vs primary editor. **Use for:** experimental editor A/B test.
 

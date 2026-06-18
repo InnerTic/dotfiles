@@ -31,7 +31,7 @@ No model should perform work outside its specialty.
 | 2 | [[translation-pipeline/roles/02-briefer\|Narrative Briefer]] | `DS4X8R1L3.1-Dp-Thnkr-UnC-24B-D_AU-q5_k_m.gguf` | 17G | P40 | 8081 | [[translation-pipeline/roles/02-briefer\|role →]] |
 | 3 | [[translation-pipeline/roles/03-translator\|Literal Translator]] | `Qwen3.6-27B-Q4_K_M.gguf` | 16G | P40 | 8083 | [[translation-pipeline/roles/03-translator\|role →]] |
 | 4 | [[translation-pipeline/roles/04-editor\|Editor]] | `gemma-3-it-12B-Q8_0.gguf` | 12G | 3060 | 8084 | [[translation-pipeline/roles/04-editor\|role →]] |
-| 5 | [[translation-pipeline/roles/05-script-checks\|Script Checks]] | grep/awk/jq | — | — | — | [[translation-pipeline/roles/05-script-checks\|role →]] |
+| 5 | [[translation-pipeline/roles/05-script-checks\|Script Checks]] | Deterministic validation gate | — | — | — | [[translation-pipeline/roles/05-script-checks\|role →]] |
 | 6 | [[translation-pipeline/roles/06-style-auditor\|Style Auditor]] | `QiMing-Gemma-3-4b.f16.gguf` | 7.3G | 3060 | 8086 | [[translation-pipeline/roles/06-style-auditor\|role →]] |
 | 7 | [[translation-pipeline/roles/07-consistency-checker\|Consistency Checker]] | `Qwen2.5-Coder-32B-Rombo-TIES.i1-Q4_K_M.gguf` | 19G | P40 | 8087 | [[translation-pipeline/roles/07-consistency-checker\|role →]] |
 | 8 | [[translation-pipeline/roles/08-verifier\|Verifier]] | `PromptEnhancer-32B.i1-Q4_K_M.gguf` | 19G | P40 | 8085 | [[translation-pipeline/roles/08-verifier\|role →]] |
@@ -71,10 +71,11 @@ Raw Text
     Output: edited text + edit log
     |
     V
-[5] Script Checks — Deterministic only
-    grep/awk/jq
+[5] Script Checks — Deterministic Validation Gate
+    grep/awk/jq — no GPU, no model inference, no heuristics
     Unicode normalization pass before all checks
-    Output: issue list
+    Failures are binary (pass/fail) — blocks pipeline if FAIL
+    Output: structured JSON issue report
     |
     V
 [6] Style Auditor — QiMing-Gemma-3-4b (port 8086)

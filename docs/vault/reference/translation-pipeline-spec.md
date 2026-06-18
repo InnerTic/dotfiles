@@ -21,7 +21,7 @@ Semantic Lock Check (drift detection gate)
   ↓
 Editor (surface grammar only)
   ↓
-Deterministic Script Checks
+Deterministic Script Checks (Validation Gate)
   ↓
 Consistency Checker (cross-chunk drift)
   ↓

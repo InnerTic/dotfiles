@@ -163,7 +163,7 @@ This layer is intentionally constrained to prevent semantic drift.
 
 ---
 
-### 4.5 Deterministic Script Checks
+### 4.5 Deterministic Script Checks (Validation Gate)
 
 Non-AI validation stage:
 
