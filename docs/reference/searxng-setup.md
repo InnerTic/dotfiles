@@ -58,6 +58,32 @@ RestartSec=10
 WantedBy=default.target
 ```
 
+## MCP Integration
+
+MCP server bridges SearXNG to AI assistants (OpenCode, Claude, Cursor):
+
+```bash
+npm install --prefix /mnt/workspace/searxng/mcp mcp-searxng
+```
+
+Add to `~/.config/opencode/opencode.jsonc` (or `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "mcp-searxng"],
+      "env": {
+        "SEARXNG_URL": "http://127.0.0.1:8888"
+      }
+    }
+  }
+}
+```
+
+Provides tools: `searxng_web_search`, `searxng_search_suggestions`, `searxng_instance_info`, `web_url_read`.
+
 ## Commands
 
 ```bash
