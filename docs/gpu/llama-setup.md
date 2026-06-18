@@ -22,6 +22,8 @@ GCC 9 is required as the CUDA 12.4 host compiler:
 pkexec pacman -S --noconfirm cachyos/gcc9
 ```
 
+
+`cuda 12.4 is wrong on cachos and needs to be changed to 12.9. 12,4 is the only thing that depends older gcc9 and craps out on 15/16. 12.4 is for debain its in the repo, 12.9 for deb is not in repo`
 ## 2. Install CUDA 12.4 Toolkit
 
 ```bash

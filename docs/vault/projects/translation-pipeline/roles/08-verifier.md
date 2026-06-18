@@ -24,6 +24,8 @@ Reports with severity (HIGH/MEDIUM/LOW):
 
 **Path:** `/home/ken/Downloads/llm_models/DS4X8R1L3.1-Dp-Thnkr-UnC-24B-D_AU-q5_k_m.gguf`
 
+**Research wiki:** [`DS4X8R1L3.1-Dp-Thnkr-24B` →](../../../../../../ai-model-research/individual-models/ds4x8r1l3-dp-thnkr-24b.md)
+
 **Why this model:**
 - **"Deep Thinker"** — the verifier role requires careful reasoning, which benefits from thinking-style models
 - **D_AU fine-tune** — "Detailed, Accurate, Useful" training aligns perfectly with the verifier's requirements
@@ -35,8 +37,7 @@ Reports with severity (HIGH/MEDIUM/LOW):
 
 | Model | Size | Tradeoff |
 |-------|------|----------|
-| `Qwen3.5-21B-Claude-4.6-Opus-Deckard-Heretic-Uncensored-Thinking.i1-Q5_K_M.gguf` | 14G | 21B. Also a thinking model, smaller, Q5. Less param capacity but frees VRAM. |
-| `LLMBG-ToolUse-27B-v1.0.i1-Q4_K_M.gguf` | 16G | 27B tool fine-tune. Might format reports too rigidly. |
-| `L3-4X8B-MOE-Dark-Planet-Infinite-25B-D_AU-q5_k_m.gguf` | 17G | MoE 25B. Dark-themed fine-tune — may inject negativity into issue reports. |
+| `L3-4X8B-MOE-Dark-Planet-Infinite-25B-D_AU-q5_k_m.gguf` | 17G | MoE 25B. Dark-themed fine-tune — test for bias. |
+| `gpt-oss-20b-hermes.Q5_K_M.gguf` | 16G | 20B dense. General-purpose fallback. |
 
 **Verifier is the most critical quality gate.** Don't swap to a weaker model unless the current one is unavailable. The "Deep Thinker" training is specifically suited for this.

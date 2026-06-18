@@ -7,6 +7,8 @@ fi
 
 # source /usr/share/cachyos-zsh-config/cachyos-config.zsh
 
+export OPENCODE_ZEN_API_KEY="sk-n3bmHkk1I235qfPj2XVnT03i59KAycRUqL9VVFZMV8HYVKMIJd2gSMkOrc6X2IG3"
+
 # ── AI Aliases ──────────────────────────────────────────────
 alias llm='~/.local/bin/llama-loader'
 alias llmcheck='curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id'

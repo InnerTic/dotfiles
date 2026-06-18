@@ -24,13 +24,13 @@ llama-server. In OpenCode TUI, use `/model llama.cpp/<filename>`.
 
 RTX 3060 (12GB) for small models and SD image gen. Tesla P40 (24GB) for large
 quantized LLMs. Set `CUDA_VISIBLE_DEVICES=0` for the 3060, `=1` for the P40.
-See [[gpu-config-notes]] for the full setup.
+See [[gpu/gpu-config-notes]] for the full setup.
 
 **Q: llama.cpp won't run / falls back to CPU?**
 
 Usually a stale CUDA library path. Run `sudo ldconfig` to rebuild the linker
 cache, or check that `LD_LIBRARY_PATH` includes `/opt/cuda/lib64`.
-See [[gpu-config-notes]] for the full fix walkthrough.
+See [[gpu/gpu-config-notes]] for the full fix walkthrough.
 
 ## System & Storage
 
@@ -49,7 +49,7 @@ See [[QUICK-START]] for the 5-minute recovery.
 Only 6 things are symlinked from `/home` to `/mnt/workspace`:
 `.ssh`, `.librewolf`, `.openclaw`, `.opencode`, `dotfiles`, `openclaw`.
 Everything else (`.cache`, `.config/*`, `.steam`, etc.) regenerates on first use.
-See [[workspace-symlink-strategy]] for the full rationale.
+See [[reference/workspace-symlink-strategy]] for the full rationale.
 
 **Q: Which drive should I use for what?**
 
@@ -74,7 +74,7 @@ if the bind mount hasn't been set up yet.
 **Q: Guild Wars 2 multi-box setup?**
 
 Two physical installs on separate drives, two Steam AppIDs (1284210 and
-2716098372), separate Proton prefixes. See [[gw2-multibox-wine-setup]].
+2716098372), separate Proton prefixes. See [[gaming/gw2-multibox-wine-setup]].
 
 **Q: Game won't start / Proton issue?**
 
@@ -88,13 +88,13 @@ settings.
 
 Check the kernel cmdline includes `nvidia.NVreg_EnablePCIeGen3=1`. The P40
 needs PCIe Gen3 forced on some boards. Also verify Above 4G Decoding is
-enabled in BIOS. See [[tesla-p40-vfio-passthrough]].
+enabled in BIOS. See [[gpu/tesla-p40-vfio-passthrough]].
 
 **Q: Why is the P40 bound to vfio-pci instead of nvidia?**
 
 The P40 is passed through to a VM for AI workloads. The `nvidia` driver
 is used by the RTX 3060 for the host. They can't both use the same driver
-when one is passed through. See [[gpu-config-notes]].
+when one is passed through. See [[gpu/gpu-config-notes]].
 
 ## Network
 
@@ -119,6 +119,6 @@ Keys are persisted via workspace symlink.
 ## Related
 
 - [[system/drives-and-mounts]] — Drive UUIDs, fstab, bind mounts
-- [[gpu-config-notes]] — Dual-GPU setup and troubleshooting
-- [[workspace-symlink-strategy]] — Persistence strategy
+- [[gpu/gpu-config-notes]] — Dual-GPU setup and troubleshooting
+- [[reference/workspace-symlink-strategy]] — Persistence strategy
 - [[QUICK-START]] — Emergency recovery guide

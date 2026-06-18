@@ -105,6 +105,6 @@ if $GATE; then
 fi
 
 # Interactive mode: show revert hints
-$FIXED && echo "" && echo "See docs/temporary-hacks.md for revert instructions."
+$FIXED && echo "" && echo "See docs/known-issues/temporary-hacks.md for revert instructions."
 $BLOCK && echo "" && echo "Cooldown: fix landed but ${COOLDOWN_DAYS}d settling period not yet met."
 ```

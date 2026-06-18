@@ -94,7 +94,7 @@ alias llmk='pkill -f llama-server'
 alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'
 alias textgen='~/.openclaw/workspace/scripts/textgen-start.sh'
 alias textkill='pkill -f "server.py"'
-alias quickhelp='cat ~/dotfiles/docs/quick-commands.txt'
+alias quickhelp='cat ~/dotfiles/docs/reference/quick-commands.txt'
 
 # OpenCode
 alias oc='opencode'
@@ -107,7 +107,7 @@ See [[software/ai-tools/commands]] for the full AI command reference.
 ## OpenCode Setup
 
 OpenCode config lives in `~/.config/opencode/opencode.json` (symlinked to workspace
-via [[workspace-symlink-strategy]]). Key providers configured:
+via [[reference/workspace-symlink-strategy]]). Key providers configured:
 
 - **llama.cpp** — local models on port 8080 (GPU 0) or 8081 (GPU 1)
 - **OpenRouter** — cloud models via API key
@@ -116,5 +116,5 @@ via [[workspace-symlink-strategy]]). Key providers configured:
 ## Related
 
 - [[software/ai-tools/commands]] — Full AI command reference
-- [[workspace-symlink-strategy]] — What persists across reinstalls
+- [[reference/workspace-symlink-strategy]] — What persists across reinstalls
 - [[reference/glossary]] — Term definitions

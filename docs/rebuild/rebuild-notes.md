@@ -43,7 +43,7 @@ sudo sed -i 's|/opt/thorium-browser/thorium_shell |/opt/thorium-browser/thorium_
 ```
 
 ## GW2 Multi-Box
-See `docs/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requirements:
+See `docs/gaming/gw2-multibox-wine-setup.md` for the full Wine/Proton setup. Key requirements:
 - `/workspace` symlink must exist (Z: drive path for Proton prefixes)
 - Two physical GW2 installs on separate drives
 - NVIDIA GPU must be forced, AMD iGPU crashes

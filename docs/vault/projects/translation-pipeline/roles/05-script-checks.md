@@ -1,21 +1,27 @@
 # Script Checks
 
-**No GPU required** | **Deterministic only** (grep/awk/jq)
+**No GPU required** | **Deterministic only** (grep/awk/jq/sed/sort/uniq)
 
 ## Role
 
-Runs against edited output before human review. Catches mechanical issues that LLMs consistently miss. 100% deterministic — no model, no false positives from hallucination.
+Runs against edited output before style audit. Catches mechanical issues that LLMs consistently miss. 100% deterministic — no model, no false positives from hallucination.
 
 Checks against Unicode-normalized text (smart quotes → ASCII, em-dashes → hyphens, etc.):
 
 - **Quote balance** — odd count = unclosed quote
 - **Bracket balance** — `「` vs `」` mismatch
 - **Japanese characters remaining** — CJK chars that weren't translated
+- **Chinese characters remaining** — for JP projects, remaining CN chars
 - **Repeated paragraphs** — exact duplicates
 - **Name counts** — multiple variants of the same name (Alice vs Alicia)
 - **Markdown code fences** — unclosed ``` blocks
-
-**Early exit:** If no HIGH-severity issues, skip Consistency Checker (fast path).
+- **Whitespace consistency** — mixed tabs/spaces, trailing whitespace
+- **Honorific counts** — per honorific variant per character
+- **Glossary term counts** — expected vs actual frequency
+- **Dialogue count checks** — ratio of dialogue vs narration
+- **Capitalization checks** — proper noun consistency
+- **Duplicate sentence detection** — repeated sentences
+- **Paragraph count** — expected vs actual
 
 ## Current Implementation
 
@@ -29,6 +35,9 @@ grep -o "'" | wc -l            # expect even
 
 # Japanese chars
 grep -oP '[一-龯ぁ-んァ-ン]'     # expect empty
+
+# Chinese chars (for JP projects)
+grep -oP '[\u4e00-\u9fff]'    # expect empty
 
 # Bracket balance
 grep -o '「' | wc -l
@@ -46,4 +55,4 @@ grep -c '```'                  # expect even
 
 ## Alternatives
 
-N/A — deterministic. Could be extended with additional checks (ellipsis count, whitespace normalization) but there's no model competition for this role.
+N/A — deterministic. Could be extended with additional checks but there's no model competition for this role.

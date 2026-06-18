@@ -69,7 +69,7 @@ Edit `/etc/default/limine` to remove the added parameter, and for VFIO also rese
 
 - The live-env-setup.sh already adds `nvidia.NVreg_EnablePCIeGen3=1` for P40 PCIe compatibility. This should remain regardless of which option you choose.
 - For VFIO mode, the P40 will not appear in `nvidia-smi` and cannot be used by CUDA on the host — only inside a VM with VFIO passthrough.
-- See `docs/llama-setup.md` for BIOS requirements (Above 4G Decoding, CSM disabled) and the dual-GPU dual-arch CUDA build procedure.
+- See `docs/gpu/llama-setup.md` for BIOS requirements (Above 4G Decoding, CSM disabled) and the dual-GPU dual-arch CUDA build procedure.
 - CachyOS uses Limine with snapshot-based boot entries. The template at `/etc/default/limine` feeds `limine-entry-tool`, which generates `/boot/limine.conf`. Always edit the template, not the generated file.
 
 ---

@@ -109,4 +109,4 @@ setup if workspace isn't mounted or is on the same filesystem as `/home`.
 | File | Purpose |
 |------|---------|
 | `scripts/link-workspace.sh` | The script — `--apply`, `--status`, `--revert`, `--dry-run` |
-| `docs/workspace-symlink-strategy.md` | This file — documentation of the approach |
+| `docs/reference/workspace-symlink-strategy.md` | This file — documentation of the approach |

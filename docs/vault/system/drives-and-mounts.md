@@ -85,5 +85,5 @@ It holds:
 
 ## Related
 
-- [[lspci-akuma-output]] — PCI topology showing which drives are on which bus
-- [[workspace-symlink-strategy]] — What lives on workspace and how it's linked into /home
+- [[reference/lspci-akuma-output]] — PCI topology showing which drives are on which bus
+- [[reference/workspace-symlink-strategy]] — What lives on workspace and how it's linked into /home

@@ -3,6 +3,7 @@
 Host: **Akuma** (CachyOS/Arch, AMD Ryzen Cezanne, dual GPU)
 Generated: 2026-06-14
 
+`pull the relevent info out for obsidian://open?vault=docs&file=context%2Fsystem-profile and update that file using this as well as updating seytem-profile doc`
 ---
 
 ## Full Inventory — `lspci`

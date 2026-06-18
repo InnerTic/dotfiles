@@ -1,3 +1,7 @@
+
+
+this file needs to be current if possible using a combination of tools to gather data
+
 # System Profile Summary - Akuma
 # Extracted from akuma_recovery.log for portable configuration reference
 # Focus: Hardware specs, desktop environment, and general setup (not hardware-specific UUIDs)

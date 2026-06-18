@@ -15,8 +15,8 @@ Files marked **HISTORICAL** are kept as reference but contain stale paths/layout
 | [[kde-settings]] | KDE Plasma backup/restore file list |
 | [[kde-workarounds]] | Tracked KDE bugs with workarounds & review-by dates |
 | `dolphinrc` | Reference dolphinrc config (ShowHiddenFiles, Details view) |
-| [[gw2-multibox-wine-setup]] | GW2 multi-boxing setup — distilled from FixBot log |
-| [[rebuild-notes]] | Latest rebuild notes (in parent dir) |
+| [[gaming/gw2-multibox-wine-setup]] | GW2 multi-boxing setup — distilled from FixBot log |
+| [[rebuild/rebuild-notes]] | Latest rebuild notes (in parent dir) |
 
 ## Historical (Stale — Reference Only)
 
@@ -34,6 +34,6 @@ Files marked **HISTORICAL** are kept as reference but contain stale paths/layout
 | Location | Content |
 |----------|---------|
 | `system_backup/` | Full backup/restore reference directory |
-| `commands.txt` | Full command reference with paths and hardware notes |
-| `quick-commands.txt` | Condensed quick-reference command cheat sheet |
+| `reference/commands.txt` | Full command reference with paths and hardware notes |
+| `reference/quick-commands.txt` | Condensed quick-reference command cheat sheet |
 | `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |
