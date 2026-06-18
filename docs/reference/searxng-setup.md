@@ -113,3 +113,9 @@ journalctl --user -u searxng.service -n 50 --no-pager
 - Installed via pip (not AUR) to avoid sudo dependency and keep it as a user service
 - Uses `--no-build-isolation` because setup.py imports `searx` (which requires `msgspec`) at import time during build
 - No nginx reverse proxy needed for local-only usage — SearXNG's built-in server handles direct access on port 8888
+
+## References
+
+- SearXNG: <https://github.com/searxng/searxng>
+- mcp-searxng (MCP bridge): <https://github.com/ihor-sokoliuk/mcp-searxng>
+- SearXNG docs: <https://docs.searxng.org/>
