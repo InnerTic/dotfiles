@@ -1,146 +1,84 @@
-# llama.cpp — Fresh Install to Running Server
+# llama.cpp — Fresh Install to Running Server (CachyOS)
 
-CUDA 12.4 · sm_61 + sm_86 (RTX 3060 + Tesla P40) · CachyOS/Arch
+CUDA 12.9 · sm_61 + sm_86 (RTX 3060 + Tesla P40)
 
-## 1. System Dependencies
+## Prerequisites
 
 ```bash
-sudo pacman -S --needed base-devel cmake git
+sudo pacman -S --needed base-devel cmake git cuda-12.9
 ```
 
-CUDA 12.4 is not installed from pacman (system CUDA 13+ drops sm_61/Pascal support).
-Install it locally — see step 2.
+CUDA 12.9 lands at `/opt/cuda/`. System GCC works fine as host compiler.
 
-GCC 9 is required as the CUDA 12.4 host compiler:
+> Build artifacts link against glibc 2.43 (CachyOS). They will NOT run on Debian (glibc 2.41). Always rebuild per-distro.
 
-```bash
-pkexec pacman -S --noconfirm cachyos/gcc9
-```
-
-## 2. Install CUDA 12.4 Toolkit
+## Clone & Build
 
 ```bash
-curl -L "https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda_12.4.0_550.54.14_linux.run" \
-  -o /tmp/cuda_12.4.0_linux.run
-chmod +x /tmp/cuda_12.4.0_linux.run
-pkexec /tmp/cuda_12.4.0_linux.run \
-  --toolkit \
-  --toolkitpath=/home/ken/.local/cuda-12.4 \
-  --silent \
-  --override
-```
-
-## 3. Patch math_functions.h (glibc ≥2.41 noexcept conflict)
-
-CUDA 12.4's `math_functions.h` declares functions without `__THROW`/`noexcept`,
-but modern glibc declares them with `noexcept (true)`. Patch the conflicts:
-
-Note: the CUDA toolkit is root-owned, so patches need `sudo`.
-
-```bash
-sudo sed -i '847s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rsqrtf(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sudo sed -i '777s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rsqrt(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sudo sed -i '5554s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double cospi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sudo sed -i '5606s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float cospif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sudo sed -i '5442s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double sinpi(double x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-sudo sed -i '5502s/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float sinpif(float x) __THROW;/' /home/ken/.local/cuda-12.4/include/crt/math_functions.h
-```
-
-## 4. nvcc-cmake Wrapper
-
-Create a wrapper so CMake can detect CUDA 12.4 with GCC 9 as the host compiler:
-
-```bash
-sudo tee /home/ken/.local/cuda-12.4/bin/nvcc-cmake > /dev/null << 'WRAPPER'
-#!/bin/bash
-export CUDA_PATH=/home/ken/.local/cuda-12.4
-exec /home/ken/.local/cuda-12.4/bin/nvcc \
-  -ccbin /usr/bin/gcc-9 \
-  --std=c++14 \
-  -I/home/ken/.local/cuda-12.4/include \
-  "$@"
-WRAPPER
-sudo chmod +x /home/ken/.local/cuda-12.4/bin/nvcc-cmake
-```
-
-## 5. Clone & Build
-
-The dual-arch flags (`sm_61 + sm_86`) compile CUDA kernels for **both** Pascal
-and Ampere in one binary. You do **not** need both GPUs present to run — the
-binary works fine with either card alone.
-
-```bash
-cd ~/workspace
+cd /mnt/workspace
 git clone https://github.com/ggerganov/llama.cpp.git
 cd llama.cpp
-rm -rf build-cuda12
-cmake -S . -B build-cuda12 \
+rm -rf build
+cmake -S . -B build \
   -DGGML_CUDA=ON \
   -DCMAKE_CUDA_ARCHITECTURES="61;86" \
-  -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \
-  -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4
-cmake --build build-cuda12 -j$(nproc)
+  -DCUDAToolkit_ROOT=/opt/cuda
+cmake --build build -j$(nproc)
 ```
 
-This produces binaries in `build-cuda12/bin/`:
+Build outputs in `build/bin/`:
 - `llama-server` — main server (OpenAI-compatible API on :8080)
 - `llama-cli` — CLI inference
-- `llama-bench` — benchmarking
-- `llama-quantize` — quantize models
+- `llama-bench` — benchmarks
 
-## 6. Verify CUDA Offload
+> GPU device order (0 vs 1) depends on PCIe slot, not GPU model. Check with `nvidia-smi` before using `--main-gpu`.
+
+## Verify CUDA Offload
 
 ```bash
-./build-cuda12/bin/llama-server --help 2>&1 | grep -i cuda
+./build/bin/llama-server --help 2>&1 | grep -i cuda
+nvidia-smi  # confirm both GPUs visible
 ```
 
-## 7. Get GGUF Models
-
-Place `.gguf` files in `~/Downloads/llm_models/`.
-
-Common sources:
-- HuggingFace: `huggingface.co/<user>/<repo>`
-- unsloth, bartowski, mradermacher repos
-
-## 8. Start Server
+## Quick Test
 
 ```bash
-export LD_LIBRARY_PATH=/home/ken/.local/cuda-12.4/lib64:$LD_LIBRARY_PATH
-~/workspace/llama.cpp/build-cuda12/bin/llama-server \
+./build/bin/llama-server \
   -m ~/Downloads/llm_models/<model>.gguf \
-  --host 0.0.0.0 \
-  --port 8080 \
-  -ngl 35 \
-  --ctx-size 131072 \
-  --no-kv-offload \
-  -np 8 \
-  --jinja
+  --host 0.0.0.0 --port 8080 \
+  -ngl 35 --ctx-size 131072 --no-kv-offload
 ```
 
-Or use the launcher script:
+## Upgrade
 
 ```bash
-~/dotfiles/scripts/llama-server.sh -m ~/models/<model>.gguf --main-gpu 1 -ngl 64
+cd /mnt/workspace/llama.cpp
+git pull
+rm -rf build
+cmake -S . -B build \
+  -DGGML_CUDA=ON \
+  -DCMAKE_CUDA_ARCHITECTURES="61;86" \
+  -DCUDAToolkit_ROOT=/opt/cuda
+cmake --build build -j$(nproc)
 ```
 
-| Flag | Meaning |
-|------|---------|
-| `-ngl 35` | Offload 35 layers to GPU (fits 7B-8B on 12GB VRAM) |
-| `--no-kv-offload` | KV cache on system RAM, saves VRAM |
-| `--ctx-size 131072` | 128K context window |
-| `-np 8` | 8 parallel processing slots |
-| `--jinja` | Jinja2 chat template support |
+## GPU Layout
 
-## 9. Verify Running
+| GPU | Device | Port | Job |
+|-----|--------|------|-----|
+| RTX 3060 (sm_86) | 0 | :8080 | Default, small LLMs |
+| Tesla P40 (sm_61) | 1 | :8081 | Big models, `--main-gpu 1` |
 
-```bash
-curl http://127.0.0.1:8080/v1/models
-curl http://127.0.0.1:8080/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model":"<model-filename>","messages":[{"role":"user","content":"hello"}]}'
+## Aliases
+
+```zsh
+alias llm='llama-loader'
+alias llmcheck='curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id'
+alias llmk='pkill -f llama-server'
+alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'
 ```
 
-## 10. Configure in OpenCode
+## OpenCode Config
 
 `~/.config/opencode/opencode.json`:
 
@@ -156,30 +94,7 @@ curl http://127.0.0.1:8080/v1/chat/completions \
 }
 ```
 
-Then in TUI: `/model llama.cpp/<model-filename>`
-
-## 11. Quick Aliases
-
-```zsh
-alias llm='llama-loader'
-alias llmcheck='curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id'
-alias llmk='pkill -f llama-server'
-alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'
-```
-
-## 12. Upgrade
-
-```bash
-cd ~/workspace/llama.cpp
-git pull
-rm -rf build-cuda12
-cmake -S . -B build-cuda12 \
-  -DGGML_CUDA=ON \
-  -DCMAKE_CUDA_ARCHITECTURES="61;86" \
-  -DCMAKE_CUDA_COMPILER=/home/ken/.local/cuda-12.4/bin/nvcc-cmake \
-  -DCUDAToolkit_ROOT=/home/ken/.local/cuda-12.4
-cmake --build build-cuda12 -j$(nproc)
-```
+---
 
 ## Tesla P40 Considerations
 
@@ -285,12 +200,12 @@ If `EnablePCIeGen3` is 1 but the card is still missing, it's almost certainly th
 **power cable** (above). The PCIe Gen3 param only helps cards that have proper
 power but fail link negotiation.
 
-## General Troubleshooting
+## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
 | `CUDA error: out of memory` | Lower `-ngl` or add `--no-kv-offload` |
-| `llama-server: command not found` | Build first (step 5) or check path |
+| `llama-server: command not found` | Build first or check path |
 | Model not appearing in OpenCode | Check model ID matches filename in config |
 | Slow token generation | Verify CUDA offload is working (`nvidia-smi` shows GPU usage) |
-| `cmake: not found` | `sudo pacman -S cmake` |
+| CPU fallback (no GPU offload) | Check `sudo ldconfig -p | grep cuda` for stale library paths |
