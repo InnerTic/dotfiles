@@ -1,6 +1,5 @@
- 
-**Model** Index & Evaluation
-``note to ai clean this section up make formatting mnatch the rest write for fact accuracy.  had to clean refences to 12gb models fitting on the 3060 when `"you have ≤~9GB to leave room for KV cache and CUDA "" 12b does not equal 12gb, a 12b can fit, 12gb cannot`
+# Model Index & Evaluation
+
 Complete inventory of all available LLMs with architecture notes, role suitability, and tradeoffs.
 
 ## Quick Picks by Role
@@ -92,31 +91,29 @@ Models that fit the 3060 — file size must be ≤~9GB to leave room for KV cach
 
 **Evaluation: ★★★☆☆** — Vision + thinking MoE. VL capability for future manga OCR pipeline.
 
-### gemma-3-it-12B-Q8_0.gguf (borderline)
+### gemma-3-it-12B-Q8_0.gguf
 
 | Attribute | Value                           |
 | --------- | ------------------------------- |
 | **Path**  | `~/Downloads/llm_models/` (ssd) |
 | **Size**  | 12G                             |
 | **Arch**  | 12B dense, Q8_0                 |
-| **VRAM**  | ~12GB                           |
-|           | P40 only                        |
+| **VRAM**  | ~12GB — P40 only for full offload; 3060 with `-ngl` partial offload |
 
 **Evaluation: ★★★★☆** — Near-lossless quantization of Gemma-3 12B. Q8 preserves full quality. 12GB file pushes 3060 limit — may need `-ngl` to keep some layers on CPU. **Best for:** editor (primary).
 
-### gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf (borderline)
+### gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf
 
 | Attribute | Value                                      |
 | --------- | ------------------------------------------ |
 | **Path**  | `/mnt/data/model_storage/`                 |
 | **Size**  | 12G                                        |
 | **Arch**  | 12B dense, Q8_0, polaris/heretic fine-tune |
-| **VRAM**  | ~12GB                                      |
-|           | p40 only                                   |
+| **VRAM**  | ~12GB — P40 only for full offload; 3060 with `-ngl` partial offload |
 
 **Evaluation: ★★★☆☆** — Experimental fine-tune of Gemma-3 12B at Q8. Same VRAM footprint but different training mix. Needs A/B testing vs primary editor. **Use for:** experimental editor A/B test.
 
-### gemma-4-26B-A4B-APEX-Compact.gguf (does not fit 3060)
+### gemma-4-26B-A4B-APEX-Compact.gguf
 
 See P40 section. 14G file needs ~14GB VRAM — exceeds 3060 for full offload. Move to P40 or use partial offloading. Currently assigned to glossary/continuity on P40.
 
