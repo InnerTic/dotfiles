@@ -1,4 +1,4 @@
-# Docs Vault — Debian
+n# Docs Vault — Debian
 
 System documentation, rebuild references, GPU config, cheat sheets, and AI context.
 Start here to navigate the vault.
