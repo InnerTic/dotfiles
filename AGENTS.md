@@ -83,3 +83,32 @@ When installing software, document every step in `docs/reference/` for reproduci
 - Verification commands to confirm it works
 
 The goal: a clean OS reinstall should be fully recoverable from these docs + the dotfiles repo — no tribal knowledge required.
+
+## Model Inventory Rule
+
+Before editing pipeline docs or assigning models to roles, always scan actual GGUF files on disk:
+
+```bash
+find /mnt/data/model_storage/ ~/Downloads/llm_models/ -name '*.gguf' -printf '%f\t%s\n'
+```
+
+Documented filenames, sizes, and quant levels regularly drift from reality. Verify before writing.
+
+## Vault Location Conventions
+
+| Content | Location |
+|---|---|
+| Pipeline role files, project-specific docs | `docs/vault/projects/` |
+| Standalone reference (keyd, pipeline proposal, SearXNG setup) | `docs/vault/reference/` |
+| Model spec pages (non-public) | `/mnt/workspace/ai-model-research/individual-models/` |
+
+The model research wiki lives outside the dotfiles repo so it stays non-public.
+
+## GPU Constraint Formula
+
+| GPU | Max file size | Notes |
+|-----|--------------|-------|
+| RTX 3060 (12GB) | ~9GB | After KV cache + CUDA overhead |
+| Tesla P40 (24GB) | ~20GB | PCIe Gen3, needs kernel cmdline fix |
+
+MoE models do NOT save VRAM in llama.cpp — all expert weights are loaded per offloaded layer. File size ≈ VRAM usage for full offload. MoE only saves compute (FLOPs), not memory.
