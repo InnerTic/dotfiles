@@ -33,9 +33,18 @@ fi
 SELECTED="${MODELS[$((CHOICE-1))]}"
 echo "Starting: $(basename "$SELECTED")"
 
+echo
+read -p "Parallel sequences [1-8] (default 1, 'a' for auto): " NP
+case "$NP" in
+  a|A|auto) NP_ARG="-np auto" ;;
+  [2-8])   NP_ARG="-np $NP" ;;
+  *)       NP_ARG="-np 1" ;;
+esac
+
 exec "$LLAMA_SERVER" \
   -m "$SELECTED" \
   --host 0.0.0.0 \
   --port "${1:-8080}" \
   -ngl 99 \
-  --main-gpu 0
+  --main-gpu 0 \
+  $NP_ARG

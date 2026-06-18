@@ -1,4 +1,4 @@
-# CachyOS Steam / NVIDIA / Input Issue Log (June 2026)
+n# CachyOS Steam / NVIDIA / Input Issue Log (June 2026)
 
 ## Symptoms
 

@@ -61,7 +61,6 @@ GPU 1 — Tesla P40   :8081  CUDA_VISIBLE_DEVICES=1  ngl 99
 - **llama.cpp build**: `/mnt/workspace/llama.cpp/build/bin/`
 - **Models**: `/home/ken/Downloads/llm_models/`
 - **CUDA 12.9**: `/opt/cuda/`
-- **Old CUDA 12.4** (disabled but kept for reference): `~/.local/cuda-12.4/`
 
 ## If You Rebuild llama.cpp
 
