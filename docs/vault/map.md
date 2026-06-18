@@ -12,7 +12,8 @@ docs/                          ← Vault root (.obsidian/ lives here)
 ├── vault/
 │   ├── QUICK-START.md         ← 🚨 Emergency recovery (system died, 5-min restore)
 │   ├── system/
-│   │   └── drives-and-mounts.md ← Storage layout, UUIDs, fstab, bind mounts
+│   │   ├── drives-and-mounts.md ← Storage layout, UUIDs, fstab, bind mounts
+│   │   └── dual-boot-recovery.md ← Limine/MX Linux recovery, boot entry repair
 │   ├── software/
 │   │   ├── ai-tools/
 │   │   │   └── commands.md    ← AI command reference (llm, sdxl, textgen, oc)

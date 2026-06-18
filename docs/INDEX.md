@@ -67,6 +67,7 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/QUICK-START]] | 🚨 Emergency recovery — 5-minute restore after reinstall |
 | [[vault/map]] | Full vault sitemap — navigation paths for every scenario |
 | [[vault/system/drives-and-mounts]] | Drive UUIDs, fstab, bind mounts, drive selection guide |
+| [[vault/system/dual-boot-recovery]] | Limine/MX Linux recovery — boot entry repair, UEFI fallbacks |
 | [[vault/software/dev-setup]] | Python venv, git config, shell aliases, bootstrap process, fastfetch greeting |
 | [[vault/software/ai-tools/commands]] | AI command reference — llm, sdxl, textgen, oc |
 | [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |

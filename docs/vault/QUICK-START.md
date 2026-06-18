@@ -55,5 +55,7 @@ ls ~/.ssh               # Should be symlink to workspace
 | SSH keys missing    | [[system/drives-and-mounts]] + verify workspace mounted |
 | llama.cpp won't run | [[gpu/llama-setup]]                                         |
 | Wine/Proton issues  | [[gaming/gw2-multibox-wine-setup]]                             |
+| Boot entry broken   | [[system/dual-boot-recovery]]                                 |
+| Keyboard not reaching game | [[system_backup/cachyos-steam-nvidia-input-log]] (check libinput) |
 
 Full docs at [[INDEX]].
