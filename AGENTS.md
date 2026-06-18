@@ -44,7 +44,7 @@ Key paths (not in repo, but on the system):
 
 - **RTX 3060** (sm_86, 12GB) — GPU 0, port 8080 for llama.cpp
 - **Tesla P40** (sm_61, 24GB) — GPU 1, port 8081, needs PCIe Gen3 kernel cmdline fix
-- CUDA 12.9 at `/opt/cuda/` (system package), old CUDA 12.4 at `~/.local/cuda-12.4/` (disabled)
+- CUDA 12.9 at `/opt/cuda/` (system package), old CUDA 12.4 at `~/.local/cuda-12.4/` (disabled) only used by debian install
 - llama.cpp built with `CMAKE_CUDA_ARCHITECTURES="61;86"` for dual-GPU support
 
 ## Documentation (in `docs/`)
