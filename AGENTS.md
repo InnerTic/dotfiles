@@ -43,6 +43,18 @@ Symlinks: `shell/.zshrc` → `~/.zshrc`, `shell/config.fish` → `~/.config/fish
 
 ## Rules
 
-- **Install docs**: save every command + flag + why in docs. Goal: full recovery from dotfiles + docs, no tribal knowledge.
 - **Model inventory**: scan disk before assigning models — filenames drift. `find ~/Downloads/llm_models/ -name '*.gguf' -printf '%f\t%s\n'`
 - **GPU cap**: RTX 3060 ≈9GB, P40 ≈20GB after overhead. MoE does NOT save VRAM in llama.cpp.
+
+## Appendix: Installation Protocol
+
+When installing software, document every step in `docs/reference/` for reproducibility:
+
+- Full commands with all flags (copy/paste ready)
+- Annotations explaining why each step exists (gotchas, edge cases, why not the obvious approach)
+- Source URLs / references for anything fetched
+- Config files in full (not diffs — complete blocks)
+- Service files, env vars, directory layout
+- Verification commands to confirm it works
+
+The goal: a clean OS reinstall should be fully recoverable from these docs + the dotfiles repo — no tribal knowledge required.
