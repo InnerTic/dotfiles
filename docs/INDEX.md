@@ -86,3 +86,4 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/reference/chat-ingestion-architecture]] | Vault memory architecture — episodes, knowledge, decisions, artifacts, indexes, retrieval model |
 | [[vault/reference/index-retrieval-system]] | Index format + retrieval pipeline — scoring, tiers, agent prompt, full memory loop |
 | [[vault/reference/vault-query-scripts]] | Vault query scripts — fish frontend, bash backend, ranking, upgrade path |
+| [[vault/reference/memory-reasoning-execution-pipeline]] | Memory → reasoning → execution — how vault-query pipes into llama-loader as context injection |
