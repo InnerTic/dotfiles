@@ -17,6 +17,9 @@ session-*
 Documents/chatlogs/
 chatlogs/
 
+# Stale duplicated docs (copy artifact)
+docs/docs/
+
 # OS junk
 .DS_Store
 Thumbs.db
