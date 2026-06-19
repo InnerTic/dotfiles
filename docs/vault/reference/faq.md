@@ -58,8 +58,8 @@ See [[workspace-symlink-strategy]] for the full rationale.
 | AI models, projects | nvme (fastest) | `/mnt/workspace` |
 | Documents, media | SSD | `/mnt/ssd_storage` |
 | Long-term backup | HDD (largest) | `/mnt/data` |
-| VMs | sde2 | `/mnt/vm-disks` |
-| Future OS install | sde1 | `/mnt/new-os` (noauto until needed) |
+| VMs | sde3 | `/mnt/vm-disks` |
+| MX Linux (secondary OS) | sde2 | rootMX25 (ext4) |
 | Configs, caches | sdd | `/home` (ephemeral) |
 
 **Q: My /home is on a small drive and fills up. What do?**

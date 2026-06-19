@@ -25,6 +25,8 @@ milestone:
 
 - docs(vault): dual-boot recovery, keyboard input reference
 - docs(agents): trim Arch-specific refs, flatten docs table
+- fix(docs): correct sde partition layout across all docs — sde1=EFI, sde2=MX root, sde3=VM-Disks
+- fix(fstab): update REBUILD_SCRIPT.sh fstab block for sde3 xfs UUID
 
 ## 2026-06-17
 
