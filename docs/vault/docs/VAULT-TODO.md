@@ -30,6 +30,24 @@
 
 ---
 
+## High Priority — Vault Query System (Next Session)
+
+- [ ] **Create `vault-query.fish`** — front CLI  
+  `~/.local/bin/vault-query.fish`  
+  Fish wrapper that passes query to backend. Takes search text, calls `vault-query.sh`.
+
+- [ ] **Create `vault-query.sh`** — backend engine  
+  `~/.local/bin/vault-query.sh`  
+  Searches `conversations/`, `knowledge/`, `decisions/` directories. Scores by match count, returns ranked results with context snippets.
+
+- [ ] **Add `--decision-only`, `--knowledge-only`, `--conversation-only` flags**  
+  Filter by layer for targeted retrieval.
+
+- [ ] **Upgrade scoring to index JSON lookup**  
+  Replace raw grep with structured index metadata. Reserve for after index format is populated.
+
+---
+
 ## Medium Priority (Next Week)
 
 - [ ] **Split `known-issues.md` → two files:**
