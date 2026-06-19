@@ -27,7 +27,9 @@ if [ "$NGL" -ge 80 ]; then
 fi
 
 # NP heuristic
-if echo "$NP_ARG" | grep -q "[4-8]"; then
+if [[ "${NP_VAL:-0}" == "auto" ]]; then
+  notes+="  - Auto concurrency — dynamic VRAM allocation"
+elif [ "${NP_VAL:-0}" -ge 4 ] 2>/dev/null; then
   notes+="  - NP >= 4 increases parallel VRAM pressure"
 fi
 

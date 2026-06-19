@@ -2,6 +2,16 @@
 # llama-loader — shared library
 # Sourced by all scripts in the pipeline.
 # ============================================================
+#
+# SYSTEM INTEGRITY CONTRACT
+# RULES:
+# 1. State = raw values only (no CLI syntax ever stored)
+# 2. CLI flags are derived at runtime only
+# 3. NP is integer OR "auto" at runtime only
+# 4. All state writes must pass validation functions
+# 5. Any CLI syntax in state = hard failure
+# 6. No silent normalization allowed
+# ============================================================
 
 shopt -s nullglob
 
@@ -29,18 +39,141 @@ get_json_value() {
 }
 
 get_state_value() {
-  get_json_value "$STATE_FILE" "$1"
+  local val
+  val=$(get_json_value "$STATE_FILE" "$1")
+  reject_cli_syntax "$val" || { echo ""; return 1; }
+  echo "$val"
 }
 
 get_profile_value() {
   if [ -z "$PROFILE_FILE" ]; then
     return 0
   fi
-  get_json_value "$PROFILE_FILE" "$1"
+  local val
+  val=$(get_json_value "$PROFILE_FILE" "$1")
+  reject_cli_syntax "$val" || { echo ""; return 1; }
+  echo "$val"
+}
+
+# ------------------------------------------------------------
+# STRICT TYPE CONTRACT HELPERS
+# ------------------------------------------------------------
+reject_cli_syntax() {
+  if echo "$1" | grep -qE "^-np|--| "; then
+    echo "STATE ERROR: CLI syntax detected: '$1'" >&2
+    return 1
+  fi
   return 0
 }
 
-# --- Memory hierarchy ---
+validate_int() {
+  [[ "$1" =~ ^[0-9]+$ ]] || {
+    echo "STATE ERROR: expected integer, got '$1'" >&2
+    exit 1
+  }
+  echo "$1"
+}
+
+sanitize_split() {
+  local v="$1"
+  v="${v// /}"
+  if [[ "$v" =~ ^[0-9]+,[0-9]+$ ]]; then
+    echo "$v"
+  else
+    echo "ERROR: invalid GPU split format: $1" >&2
+    return 1
+  fi
+}
+
+sanitize_np() {
+  local v="$1"
+  if [[ "$v" =~ ^[0-9]+$ ]]; then
+    echo "$v"
+  else
+    echo "ERROR: invalid NP value: $v" >&2
+    return 1
+  fi
+}
+
+validate_split() {
+  local cleaned="${1// /}"
+  [[ "$cleaned" =~ ^[0-9]+,[0-9]+$ ]] || {
+    echo "STATE ERROR: invalid GPU split format '$1' (expected X,Y)" >&2
+    exit 1
+  }
+  echo "$cleaned"
+}
+
+# ------------------------------------------------------------
+# NP contract: state = integer ONLY, runtime = flexible
+# ------------------------------------------------------------
+resolve_np() {
+  local raw
+  raw=$(resolve_default "np" "1")
+  reject_cli_syntax "$raw" || raw="1"
+
+  if [[ "$raw" == "auto" ]]; then
+    echo "auto"
+    return
+  fi
+
+  validate_int "$raw"
+}
+
+# ------------------------------------------------------------
+# State migration: convert legacy CLI syntax to raw values
+# ------------------------------------------------------------
+migrate_legacy_state() {
+  for f in "$STATE_FILE" "$MODEL_STATE_DIR"/*.json; do
+    [ -f "$f" ] || continue
+
+    if grep -qE '"-np|--ngl|--port' "$f" 2>/dev/null; then
+      echo "MIGRATING LEGACY STATE: $f" >&2
+
+      python3 - <<EOF
+import json, re
+
+path = "$f"
+data = json.load(open(path))
+
+def clean(v):
+    if isinstance(v, str) and v.startswith("-"):
+        return "1"
+    return v
+
+for k in list(data.keys()):
+    data[k] = clean(data[k])
+
+json.dump(data, open(path, "w"), indent=2)
+EOF
+    fi
+  done
+}
+
+# ------------------------------------------------------------
+# Soft guard: recover from legacy state, then enforce
+# ------------------------------------------------------------
+assert_clean_state() {
+  local dirty=0
+
+  if grep -qE "(-np|-ngl|--port)" "$STATE_FILE" 2>/dev/null; then
+    echo "WARNING: legacy CLI syntax detected in STATE_FILE — migrating" >&2
+    dirty=1
+  fi
+
+  if [ -n "$PROFILE_FILE" ] && grep -qE "(-np|-ngl|--port)" "$PROFILE_FILE" 2>/dev/null; then
+    echo "WARNING: legacy CLI syntax detected in PROFILE_FILE — migrating" >&2
+    dirty=1
+  fi
+
+  if [ "$dirty" -eq 1 ]; then
+    migrate_legacy_state
+  fi
+}
+
+# ------------------------------------------------------------
+# Memory hierarchy (sanitized pipeline, RULE 3+4)
+# ------------------------------------------------------------
 resolve_default() {
   local key="$1" fallback="$2"
   local model_val global_val
@@ -127,18 +260,27 @@ show_snapshot() {
   echo
   echo "GPU:"
   if [ -n "$TENSOR_SPLIT" ]; then
-    echo "  Dual GPU  |  SPLIT: $TENSOR_SPLIT"
+    local display_split="${TENSOR_SPLIT//,/\/}"
+    echo "  Dual GPU  |  SPLIT: $display_split"
   else
     echo "  Single GPU"
   fi
   echo
-  echo "CONTEXT: $CTX_SIZE  |  NP: $NP_ARG  |  NGL: $NGL  |  PORT: $PORT"
+  echo "CONTEXT: $CTX_SIZE  |  NP: $NP_VAL  |  NGL: $NGL  |  PORT: $PORT"
+  local cli_line="CLI:  --np $NP_VAL  |  --ngl $NGL  |  --port $PORT"
+  [ -n "$TENSOR_SPLIT" ] && cli_line+="  |  --split $TENSOR_SPLIT"
+  echo "$cli_line"
   echo
   echo "INTERPRETATION:"
   if [ "$CTX_SIZE" -ge 131072 ]; then
     echo "  -> Long-context / high VRAM mode"
   else
     echo "  -> Standard inference mode"
+  fi
+  if [[ "$NP_VAL" == "auto" ]]; then
+    echo "  -> Auto concurrency scheduling enabled"
+  elif [ "$NP_VAL" -ge 4 ] 2>/dev/null; then
+    echo "  -> High parallel load (VRAM pressure expected)"
   fi
   if [ "$TENSOR_SPLIT" = "20,80" ]; then
     echo "  -> P40-heavy GPU distribution"
@@ -176,25 +318,46 @@ decision_gate() {
 
 # --- State persistence ---
 save_state() {
+  assert_clean_state
+
+  # HARD SANITIZATION: refuse to write CLI syntax to state
+  if echo "$NP_VAL" | grep -qE "^-np|--"; then
+    echo "STATE ERROR: refusing to write CLI syntax to state: '$NP_VAL'" >&2
+    exit 1
+  fi
+
+  # "auto" is runtime-only — store fallback integer
+  local np_store
+  if [[ "$NP_VAL" == "auto" ]]; then
+    np_store="1"
+  else
+    np_store="$NP_VAL"
+  fi
+
   cat > "$PROFILE_FILE" <<EOF
 {
-  "ctx": "$CTX_SIZE",
-  "split": "$TENSOR_SPLIT",
-  "ngl": "$NGL",
-  "np": "$(echo "$NP_ARG" | sed 's/^-np //')",
-  "port": "$PORT",
-  "gpu_mode": "${GPU_MODE:-3}"
+  "schema_version": 2,
+  "ctx": "$(validate_int "$CTX_SIZE")",
+  "split": "$(validate_split "$TENSOR_SPLIT")",
+  "ngl": "$(validate_int "$NGL")",
+  "np": "$(validate_int "$np_store")",
+  "port": "$(validate_int "$PORT")",
+  "gpu_mode": "${GPU_MODE:-3}",
+  "np_mode": "${NP_MODE:-manual}"
 }
 EOF
   cat > "$STATE_FILE" <<EOF
 {
+  "schema_version": 2,
   "last_model": "$MODEL_NAME",
-  "last_ctx": "$CTX_SIZE",
-  "last_split": "$TENSOR_SPLIT",
-  "last_ngl": "$NGL",
-  "last_port": "$PORT",
+  "last_ctx": "$(validate_int "$CTX_SIZE")",
+  "last_split": "$(validate_split "$TENSOR_SPLIT")",
+  "last_ngl": "$(validate_int "$NGL")",
+  "last_np": "$(validate_int "$np_store")",
+  "last_port": "$(validate_int "$PORT")",
   "last_location": "$MODEL_LOCATION",
-  "last_gpu_mode": "${GPU_MODE:-3}"
+  "last_gpu_mode": "${GPU_MODE:-3}",
+  "last_np_mode": "${NP_MODE:-manual}"
 }
 EOF
 }

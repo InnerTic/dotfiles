@@ -10,6 +10,12 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 ensure_state_dirs
 
+migrate_legacy_state
+assert_clean_state
+
+SPLIT_ARG=""
+[ -n "$TENSOR_SPLIT" ] && SPLIT_ARG="--split $TENSOR_SPLIT"
+
 CMD=(
   "$LLAMA_SERVER"
   -m "$SELECTED"
@@ -19,9 +25,8 @@ CMD=(
   --ctx-size "$CTX_SIZE"
   $GPU_ARG
   $NP_ARG
+  $SPLIT_ARG
 )
-
-[ -n "$TENSOR_SPLIT" ] && CMD+=( --tensor-split "$TENSOR_SPLIT" )
 
 save_state
 exec "${CMD[@]}"

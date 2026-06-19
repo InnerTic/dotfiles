@@ -10,6 +10,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 ensure_state_dirs
 
+migrate_legacy_state
+
 MODEL_NAME=$(get_state_value "last_model")
 if [ -z "$MODEL_NAME" ]; then
   echo "No prior run found — use factory or custom mode first."
@@ -47,12 +49,30 @@ fi
 PROFILE_FILE="$MODEL_STATE_DIR/${MODEL_NAME}.json"
 [ ! -f "$PROFILE_FILE" ] && echo "{}" > "$PROFILE_FILE"
 
+assert_clean_state
+
 CTX_SIZE=$(resolve_default "ctx" "8192")
 TENSOR_SPLIT=$(resolve_default "split" "")
 NGL=$(resolve_default "ngl" "60")
-NP_ARG="-np $(resolve_default "np" "1")"
+
 PORT=$(resolve_default "port" "8080")
 GPU_MODE=$(resolve_default "gpu_mode" "3")
+
+# --- NP SAFE LOAD (STATE → SANITIZE → CLI) ---
+
+NP_RAW=$(resolve_default "np" "1")
+
+# Detect legacy CLI contamination (-np, --np, etc.)
+if echo "$NP_RAW" | grep -q -- "-np"; then
+  echo "STATE CORRUPTION DETECTED: CLI syntax in NP value: $NP_RAW" >&2
+  NP_RAW="1"
+fi
+
+# Strict integer validation (hard gate)
+NP_VAL="$(sanitize_np "$NP_RAW" 2>/dev/null || echo "1")"
+
+# CLI derivation (runtime only)
+NP_ARG="--np $NP_VAL"
 GPU_ARG="--main-gpu 0"
 
 show_snapshot "LAST USED"

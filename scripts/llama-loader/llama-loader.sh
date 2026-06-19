@@ -10,6 +10,9 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 ensure_state_dirs
 
+migrate_legacy_state
+assert_clean_state
+
 clear
 echo "===================================================="
 echo "  llama-loader — GPU Inference Launcher"
@@ -21,12 +24,22 @@ echo
 LAST_MODEL=$(get_state_value "last_model")
 if [ -n "$LAST_MODEL" ]; then
   LAST_CTX=$(get_state_value "last_ctx")
-  echo "  Last used: $LAST_MODEL  (ctx: ${LAST_CTX:-unknown})"
+  echo "  Last used:"
+  echo "    $LAST_MODEL"
+  echo "    ctx: ${LAST_CTX:-unknown}"
 else
   echo "  Last used: (none)"
 fi
 
-echo "  Factory:   ctx=8192  split=30/70  np=1  ngl=60"
+echo
+echo "  Default profile (factory baseline):"
+echo "    context:        8192  (safe fallback, not model-aware)"
+echo "    gpu split:      30/70"
+echo "    np:             1"
+echo "    ngl:            60"
+echo
+echo "  Model awareness:"
+echo "    ctx limit:      unknown until load-time (some models exceed 64k)"
 echo
 echo "  [1] Last used"
 echo "  [2] Factory default"

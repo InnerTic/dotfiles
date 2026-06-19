@@ -36,12 +36,15 @@ if ! [[ "$pchoice" =~ ^[0-9]+$ ]] || [ "$pchoice" -lt 1 ] || [ "$pchoice" -gt "$
   exit 1
 fi
 
+assert_clean_state
 source "${PRESETS[$((pchoice-1))]}"
 
 [ -z "$CTX_SIZE" ] && CTX_SIZE=16384
 [ -z "$TENSOR_SPLIT" ] && TENSOR_SPLIT="20,80"
 [ -z "$NGL" ] && NGL=60
-[ -z "$NP_ARG" ] && NP_ARG="-np 2"
+[ -z "${NP_VAL:-}" ] && NP_VAL=2
+NP_ARG="--np $NP_VAL"
+NP_MODE=manual
 [ -z "$PORT" ] && PORT=8080
 GPU_ARG="--main-gpu 0"
 

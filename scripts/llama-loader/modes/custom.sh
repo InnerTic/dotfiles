@@ -10,6 +10,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 ensure_state_dirs
 
+assert_clean_state
+
 list_models
 select_model
 
