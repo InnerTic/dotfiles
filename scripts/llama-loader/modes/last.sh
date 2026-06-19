@@ -50,11 +50,10 @@ PROFILE_FILE="$MODEL_STATE_DIR/${MODEL_NAME}.json"
 CTX_SIZE=$(resolve_default "ctx" "8192")
 TENSOR_SPLIT=$(resolve_default "split" "")
 NGL=$(resolve_default "ngl" "60")
-NP_ARG=$(resolve_default "np" "-np 1")
+NP_ARG="-np $(resolve_default "np" "1")"
 PORT=$(resolve_default "port" "8080")
+GPU_MODE=$(resolve_default "gpu_mode" "3")
 GPU_ARG="--main-gpu 0"
-
-[ -n "$TENSOR_SPLIT" ] && GPU_ARG="--main-gpu 0"
 
 show_snapshot "LAST USED"
 decision_gate

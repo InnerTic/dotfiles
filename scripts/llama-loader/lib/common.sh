@@ -68,19 +68,21 @@ list_models() {
   echo
   echo "================ MODEL INDEX ================"
   echo
+  INDEX=1
   for i in "${!MODELS[@]}"; do
-    local tag path name size loc
+    local tag path name size label
     tag="${MODELS[$i]%%:*}"
     path="${MODELS[$i]#*:}"
     name=$(basename "$path")
     size=$(du -h "$path" | cut -f1)
     if [ "$tag" = "SSD" ]; then
-      loc="SSD fast"
+      label="\e[32mSSD FAST\e[0m"
     else
-      loc="HDD slow"
+      label="\e[31mHDD SLOW\e[0m"
     fi
-    printf "%-3s  \e[1m%-70s\e[0m  \e[36m(%-4s)\e[0m  \e[33m[%s]\e[0m\n" \
-      "$((i+1)))" "$name" "$size" "$loc"
+    printf "\e[90m%2s)\e[0m  \e[1m%-65s\e[0m  \e[36m(%-4s)\e[0m  %s\n" \
+      "$INDEX" "$name" "$size" "$label"
+    INDEX=$((INDEX+1))
   done
   echo
   echo "============================================"
@@ -179,8 +181,9 @@ save_state() {
   "ctx": "$CTX_SIZE",
   "split": "$TENSOR_SPLIT",
   "ngl": "$NGL",
-  "np": "$NP_ARG",
-  "port": "$PORT"
+  "np": "$(echo "$NP_ARG" | sed 's/^-np //')",
+  "port": "$PORT",
+  "gpu_mode": "${GPU_MODE:-3}"
 }
 EOF
   cat > "$STATE_FILE" <<EOF
@@ -190,7 +193,8 @@ EOF
   "last_split": "$TENSOR_SPLIT",
   "last_ngl": "$NGL",
   "last_port": "$PORT",
-  "last_location": "$MODEL_LOCATION"
+  "last_location": "$MODEL_LOCATION",
+  "last_gpu_mode": "${GPU_MODE:-3}"
 }
 EOF
 }

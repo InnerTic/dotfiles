@@ -4,7 +4,9 @@ Newest changes at top, condensed as they age.
 
 ## 2026-06-19
 
-- fix: `llama-loader.sh` SCRIPT_DIR resolution via symlink (`readlink -f`)
+- fix: `NP_ARG` double-prefix (`-np -np 1`) — strip flag before save, prepend on load
+- fix: `gpu_mode` never persisted to state — added to profile + global state
+- fix: `last.sh` redundant `GPU_ARG` line removed, GPU_MODE now loaded from state
 - refactor: symlink reorg — `llm` → `llama-loader.old`, `test-llm` → modular entry
 - feat: fish completions for `llm` and `test-llm` (port suggestions)
 - docs: purge CUDA 12.4/gcc9 from Arch context, split llama-setup per-distro

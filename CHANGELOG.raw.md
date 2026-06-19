@@ -4,6 +4,15 @@ Detailed record of every change. Newest first. Older entries condensed.
 
 ## 2026-06-19
 
+- **fix: `NP_ARG` double-prefix bug (`-np -np 1`)**
+  - Root cause: `save_state()` stored `-np 1` (with flag), `concurrency.sh` expected bare `1`
+  - Fix: strip `-np` prefix before saving, prepend on load
+  - Fixed in `common.sh:184`, `last.sh:53`, `concurrency.sh:5`
+- **fix: `gpu_mode` never persisted to state**
+  - `resolve_default("gpu_mode", "3")` always fell back to `3` because state never saved it
+  - Fix: added `gpu_mode` to profile state and `last_gpu_mode` to global state (`common.sh:188,199`)
+  - Added `GPU_MODE` load to `last.sh:54` so last-mode preserves GPU mode
+- **fix: `last.sh:57` redundant `GPU_ARG="--main-gpu 0"` removed**
 - **fix: `llama-loader.sh` SCRIPT_DIR resolution broken via symlink**
   - `test-llm` alias → `~/.local/bin/test-llma-loader` → symlink to `llama-loader/llama-loader.sh`
   - `dirname "$0"` resolved to `~/.local/bin/` instead of the real script directory
