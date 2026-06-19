@@ -67,6 +67,8 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |
 | [[vault/reference/glossary]] | Term definitions — llama.cpp, VFIO, CUDA, GGUF, etc. |
 | [[vault/reference/bugs-and-workarounds]] | Active upstream bugs and their workarounds |
+| [[vault/reference/boot-diagnostics]] | Boot timing debug — systemd-analyze, dmesg, journalctl, mental model |
+| [[vault/reference/keyd-stack]] | keyd upstream install, input group fix, Caps→Hyper→F24 remapping, KDE intercept debug |
 | [[vault/changelog]] | Vault structure changes |
 
 ## External References
@@ -75,4 +77,6 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 |----------|---------|
 | `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |
 | `/mnt/workspace/memory/` | OpenCode memory wiki — session state, learned patterns |
-| [[gw2-multibox-wine-setup]] | GW2 multi-boxing setup on Wine |
+| [[gaming/gw2-multibox-wine-setup]] | GW2 multi-boxing setup on Wine |
+| [[reference/agent-hallucination-techniques]] | Stop AI Agent Hallucinations — 4 techniques (Graph-RAG, semantic tool selection, neurosymbolic guardrails, multi-agent validation) |
+| [[reference/llama-loader-architecture]] | llama-loader modular architecture — layered pipeline, modes, state system, GPU config |

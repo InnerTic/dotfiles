@@ -9,6 +9,7 @@ source /usr/share/cachyos-zsh-config/cachyos-config.zsh
 
 # ── AI Aliases ──────────────────────────────────────────────
 alias llm='~/.local/bin/llama-loader'
+alias test-llm='~/.local/bin/test-llma-loader'
 alias llmcheck='curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id'
 alias llmk='pkill -f llama-server'
 alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'

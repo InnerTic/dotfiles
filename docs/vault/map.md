@@ -20,7 +20,9 @@ docs/                          ← Vault root (.obsidian/ lives here)
 │   ├── reference/
 │   │   ├── glossary.md         ← Term definitions (llama.cpp, VFIO, CUDA, etc.)
 │   │   ├── faq.md              ← Common questions
-│   │   └── bugs-and-workarounds.md ← Active workarounds for upstream bugs
+│   │   ├── bugs-and-workarounds.md ← Active workarounds for upstream bugs
+│   │   └── boot-diagnostics.md ← Boot timing debug — systemd-analyze, dmesg, journalctl
+│   │   └── keyd-stack.md      ← keyd upstream install, permissions, remap debug
 │   └── changelog.md            ← Vault structure changes
 │
 ├── context/                    ← Detailed AI reference docs
