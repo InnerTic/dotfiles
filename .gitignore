@@ -13,6 +13,13 @@ sk-or-v1-*
 .cache/
 session-*
 
+# Personal chat logs / vault
+Documents/chatlogs/
+chatlogs/
+
+# Stale duplicated docs (copy artifact)
+docs/docs/
+
 # OS junk
 .DS_Store
 Thumbs.db
