@@ -1,7 +1,7 @@
 ---
 tags: [virtualization, kvm, networking]
 aliases: [kvm-bridge, bridge-networking, libvirt-setup]
-updated: 2026-06-18
+updated: 2026-06-19
 ---
 
 # Debian KVM + Bridge Networking (libvirt + virt-manager)
@@ -217,3 +217,127 @@ This configuration turns a Debian desktop into a lightweight hypervisor where:
 - No NAT or port forwarding is required
 - DHCP is handled entirely by the existing router
 - libvirt only manages lifecycle, not networking topology
+
+---
+
+# CachyOS / Arch — Clean Bridge Setup
+
+Reboot-safe, zero-touch libvirt VM host profile for Arch-based systems.
+Same end state (bridged `br0`, LAN DHCP), but with corrected package and nmcli setup.
+
+## What's different from Debian
+
+- `bridge-utils` **does not exist** in Arch repos — bridge tooling is in `iproute2` + kernel module + NetworkManager
+- `nmcli` requires `type bridge-slave`, not `type ethernet master br0`
+- MAC binding can go stale — force DHCP renewal when switching to bridge
+
+## 1. Install correct packages
+
+```bash
+sudo pacman -S --needed \
+    qemu-full \
+    libvirt \
+    virt-manager \
+    dnsmasq \
+    edk2-ovmf \
+    iptables-nft \
+    iproute2
+```
+
+If `bridge-utils` errors from a prior install, remove:
+```bash
+sudo pacman -R bridge-utils 2>/dev/null
+```
+
+## 2. Enable services
+
+```bash
+sudo systemctl enable --now libvirtd
+sudo systemctl enable --now NetworkManager
+```
+
+## 3. Create clean bridge (delete broken profiles first)
+
+```bash
+sudo nmcli connection delete br0 2>/dev/null
+sudo nmcli connection delete br0-port 2>/dev/null
+
+sudo nmcli connection add \
+    type bridge \
+    ifname br0 \
+    con-name br0
+
+sudo nmcli connection modify br0 \
+    ipv4.method auto \
+    ipv6.method auto
+```
+
+## 4. Attach NIC as bridge-slave (not master)
+
+```bash
+sudo nmcli connection add \
+    type bridge-slave \
+    ifname enp6s0 \
+    master br0 \
+    con-name br0-enp6s0
+```
+
+## 5. Bring up
+
+```bash
+sudo nmcli connection up br0
+sudo nmcli connection up br0-enp6s0
+```
+
+## 6. Verify
+
+```bash
+ip a show br0
+```
+
+Expected: `inet 172.16.x.x/16 dynamic`, `state UP`, NIC shows `master br0`.
+
+## 7. Force DHCP refresh if MAC binding is stale
+
+```bash
+sudo nmcli connection down br0
+sudo nmcli connection up br0
+```
+
+Hard reset:
+```bash
+sudo dhclient -r br0
+sudo dhclient br0
+```
+
+## 8. Disable libvirt NAT (optional)
+
+If you want pure bridge, no `virbr0`:
+```bash
+sudo virsh net-destroy default
+sudo virsh net-autostart default --disable
+```
+
+## 9. VM NIC config (virt-manager)
+
+- NIC source: **Bridge device**
+- Device name: `br0`
+- Model: `virtio`
+
+## 10. Reboot-safe persistence
+
+```bash
+sudo systemctl enable NetworkManager
+sudo systemctl enable libvirtd
+```
+
+## Key corrections (vs failed attempts)
+
+| Issue | Fix |
+|-------|-----|
+| `bridge-utils` missing | removed dependency assumption |
+| nmcli controller error | replaced with proper bridge-slave |
+| enp6s0 modify failure | corrected connection vs device confusion |
+| MAC binding stale | forced DHCP renewal strategy |
+| bridge DOWN state | clarified normal behavior |
+| mixed connection types | normalized NetworkManager model |
