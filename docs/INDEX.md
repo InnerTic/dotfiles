@@ -83,3 +83,4 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[llama-loader-integrity-contract]] | llama-loader integrity contract — state typing, layer separation, CLI derivation rules |
 | [[quartz-setup]] | Quartz v5 digital garden setup — install, config, plugins, build, known issues |
 | [[vault/reference/quartz-constitution]] | AI project constitution — design philosophy, pipeline, task blocks for the homelab wiki |
+| [[vault/reference/chat-ingestion-architecture]] | Vault memory architecture — episodes, knowledge, decisions, artifacts, indexes, retrieval model |
