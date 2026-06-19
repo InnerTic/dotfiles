@@ -22,6 +22,7 @@ All notable changes to this dotfiles repo.
 ## 2026-06-19
 
 - docs: add CachyOS/Arch libvirt bridge setup (nmcli, bridge-slave, DHCP fixes) to kvm-bridge-networking
+- scripts: add vm-bridge-setup.sh + vm-bridge-setup.fish (zero-touch br0 bootstrap)
 
 ## 2026-06-15
 
