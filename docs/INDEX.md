@@ -81,3 +81,4 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[reference/agent-hallucination-techniques]] | Stop AI Agent Hallucinations — 4 techniques (Graph-RAG, semantic tool selection, neurosymbolic guardrails, multi-agent validation) |
 | [[reference/llama-loader-architecture]] | llama-loader modular architecture — layered pipeline, modes, state system, GPU config |
 | [[llama-loader-integrity-contract]] | llama-loader integrity contract — state typing, layer separation, CLI derivation rules |
+| [[quartz-setup]] | Quartz v5 digital garden setup — install, config, plugins, build, known issues |
