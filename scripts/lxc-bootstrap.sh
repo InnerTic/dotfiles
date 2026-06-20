@@ -28,8 +28,16 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
-LXC_DIR="$SCRIPT_DIR/lxc"
+# Detect script directory — handles both direct execution and pipe (curl | bash)
+BASE_URL="https://raw.githubusercontent.com/InnerTic/dotfiles/deb/scripts/lxc"
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+    LXC_DIR="$SCRIPT_DIR/lxc"
+else
+    # Piped from stdin — fetch components from GitHub raw
+    echo ">>> (pipe mode: fetching components from GitHub raw)"
+    LXC_DIR="$BASE_URL"
+fi
 
 # ── Defaults ──────────────────────────────────────────────────────
 
@@ -59,26 +67,36 @@ echo "  Shell:  $DEFAULT_SHELL"
 echo "  User:   $TARGET_USER"
 echo ""
 
+run_component() {
+    local name="$1"
+    shift
+    if [[ "$LXC_DIR" == http* ]]; then
+        bash <(curl -fsSL "$LXC_DIR/$name.sh") "$@"
+    else
+        bash "$LXC_DIR/$name.sh" "$@"
+    fi
+}
+
 # core.sh is always needed
-bash "$LXC_DIR/core.sh"
+run_component core
 
 # fonts.sh — always for full, only for fish/zsh otherwise (Tide/P10K need Meslo)
 if [ "$MODE" = "full" ] || [ "$MODE" = "fish" ] || [ "$MODE" = "zsh" ]; then
-    bash "$LXC_DIR/fonts.sh"
+    run_component fonts
 fi
 
 # fish.sh — fish mode and full mode
 if [ "$MODE" = "full" ] || [ "$MODE" = "fish" ]; then
-    bash "$LXC_DIR/fish.sh"
+    run_component fish
 fi
 
 # zsh.sh — zsh mode and full mode
 if [ "$MODE" = "full" ] || [ "$MODE" = "zsh" ]; then
-    bash "$LXC_DIR/zsh.sh" "$TARGET_USER"
+    run_component zsh "$TARGET_USER"
 fi
 
 # aliases.sh — always (even minimal gets bat/fd aliases)
-bash "$LXC_DIR/aliases.sh" "$TARGET_USER"
+run_component aliases "$TARGET_USER"
 
 # ── Set default shell ─────────────────────────────────────────────
 
