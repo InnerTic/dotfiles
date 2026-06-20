@@ -30,6 +30,15 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# ── Resolve target user paths ─────────────────────────────────────
+
+# Don't assume $HOME — always resolve from passdb
+TARGET_USER="root"
+TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
+TARGET_SHELL_CURRENT=$(getent passwd "$TARGET_USER" | cut -d: -f7)
+
+echo ">>> Target: $TARGET_USER @ $TARGET_HOME (current shell: $TARGET_SHELL_CURRENT)"
+
 # ── 1. System packages ──────────────────────────────────────────
 
 echo ">>> Updating package list..."
@@ -51,33 +60,39 @@ apt install -y -qq \
     wget \
     zsh
 
-# lsd is not in Debian repos by default — grab the .deb directly
+# lsd — try repo first, fall back to GitHub .deb
 if ! command -v lsd &>/dev/null; then
-    echo ">>> Installing lsd (latest release)..."
-    LSD_DEB=$(curl -s https://api.github.com/repos/lsd-rs/lsd/releases/latest \
-        | grep "browser_download_url.*amd64.deb" \
-        | cut -d: -f2- | tr -d '" ')
-    curl -fsSL "$LSD_DEB" -o /tmp/lsd.deb
-    dpkg -i /tmp/lsd.deb 2>/dev/null || apt install -f -y -qq
-    rm -f /tmp/lsd.deb
+    echo ">>> Installing lsd..."
+    if apt install -y -qq lsd 2>/dev/null; then
+        echo "    from apt"
+    else
+        echo "    fetching latest GitHub release..."
+        LSD_DEB=$(curl -s https://api.github.com/repos/lsd-rs/lsd/releases/latest \
+            | grep "browser_download_url.*amd64.deb" \
+            | cut -d: -f2- | tr -d '" ')
+        if [ -n "$LSD_DEB" ]; then
+            curl -fsSL "$LSD_DEB" -o /tmp/lsd.deb
+            dpkg -i /tmp/lsd.deb 2>/dev/null || apt install -f -y -qq
+            rm -f /tmp/lsd.deb
+        else
+            echo "    WARNING: could not fetch lsd .deb from GitHub"
+        fi
+    fi
 fi
 
-# ── 2. Meslo Nerd Font (required for Tide prompt icons) ─────────
+# ── 2. Meslo Nerd Font (required for Powerlevel10k / Tide) ────────
 
 echo ">>> Installing Meslo Nerd Font..."
 mkdir -p /usr/local/share/fonts/truetype/meslo
-cd /usr/local/share/fonts/truetype/meslo
 
 FONT_BASE="https://github.com/IlanCosman/tide/raw/assets/fonts/mesloLGS_NF"
-for variant in regular bold italic bold_italic; do
-    case "$variant" in
-        regular)     file="MesloLGS_NF_Regular.ttf";     url="$FONT_BASE/${file}" ;;
-        bold)        file="MesloLGS_NF_Bold.ttf";        url="$FONT_BASE/${file}" ;;
-        italic)      file="MesloLGS_NF_Italic.ttf";      url="$FONT_BASE/${file}" ;;
-        bold_italic) file="MesloLGS_NF_Bold_Italic.ttf"; url="$FONT_BASE/${file}" ;;
-    esac
-    if [ ! -f "$file" ]; then
-        wget -q "$url" -O "$file"
+for pair in "regular:Regular" "bold:Bold" "italic:Italic" "bold_italic:Bold_Italic"; do
+    variant="${pair%%:*}"
+    suffix="${pair##*:}"
+    file="MesloLGS_NF_${suffix}.ttf"
+    dest="/usr/local/share/fonts/truetype/meslo/$file"
+    if [ ! -f "$dest" ]; then
+        wget -q "$FONT_BASE/$file" -O "$dest"
     fi
 done
 
@@ -89,58 +104,90 @@ echo ">>> Meslo fonts installed. Verify: fc-list | grep -i meslo"
 echo ">>> Setting up fish shell..."
 fish_path=$(which fish)
 
-# Register fish in /etc/shells
 if ! grep -qx "$fish_path" /etc/shells; then
     echo "$fish_path" >> /etc/shells
 fi
 
-# Install Fisher and Tide regardless (fish is always available for admin use)
+# Fisher — download, source, install with verification
 echo ">>> Installing Fisher plugin manager..."
-fish -c "
-    curl -sL https://git.io/fisher | source
-    fisher install jorgebucaran/fisher
-" 2>/dev/null || true
+FISHER_URL="https://git.io/fisher"
+FISHER_SCRIPT=$(curl -fsSL "$FISHER_URL" 2>/dev/null || true)
+if [ -n "$FISHER_SCRIPT" ]; then
+    echo "$FISHER_SCRIPT" | fish -c "source - && fisher install jorgebucaran/fisher" 2>/dev/null || true
+else
+    echo "    WARNING: could not fetch Fisher from $FISHER_URL"
+fi
 
-echo ">>> Installing Tide prompt..."
-fish -c "
-    fisher install IlanCosman/tide@v6
-" 2>/dev/null || true
+# Tide — pinned to v6
+echo ">>> Installing Tide prompt @v6..."
+fish -c "fisher install IlanCosman/tide@v6" 2>/dev/null || true
 
 echo ">>> Tide installed. Run 'tide configure' interactively to customize."
 echo "    Typical: Lean → 2 lines → Rounded → 16 colors → Many → Compact → Contextual → Yes"
 
-# ── 4b. Zsh + Oh My Zsh + Powerlevel10k ───────────────────────────
+# ── 4. Zsh + Oh My Zsh + Powerlevel10k ────────────────────────────
 
 if [ "$DEFAULT_SHELL" = "zsh" ]; then
+    ZDOTDIR="$TARGET_HOME"
+    ZSH_DIR="$ZDOTDIR/.oh-my-zsh"
+    ZSHRC="$ZDOTDIR/.zshrc"
+
     echo ">>> Installing Oh My Zsh..."
-    ZSH="$HOME/.oh-my-zsh"
-    if [ ! -d "$ZSH" ]; then
+    if [ ! -d "$ZSH_DIR" ]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     fi
 
     echo ">>> Installing Powerlevel10k theme..."
-    P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    P10K_DIR="${ZSH_CUSTOM:-$ZSH_DIR/custom}/themes/powerlevel10k"
     if [ ! -d "$P10K_DIR" ]; then
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
     fi
 
-    echo ">>> Enabling Powerlevel10k in .zshrc..."
-    sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
+    # Set ZSH_THEME — only if not already set to powerlevel10k
+    if [ -f "$ZSHRC" ]; then
+        if grep -q '^ZSH_THEME="powerlevel10k/powerlevel10k"' "$ZSHRC"; then
+            echo "    Powerlevel10k already enabled in .zshrc"
+        elif grep -q '^ZSH_THEME=' "$ZSHRC"; then
+            sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC"
+        else
+            echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$ZSHRC"
+        fi
+    fi
 
     echo ">>> Installing zsh-autosuggestions..."
-    ZSH_AUTOSUGGEST="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+    ZSH_AUTOSUGGEST="${ZSH_CUSTOM:-$ZSH_DIR/custom}/plugins/zsh-autosuggestions"
     if [ ! -d "$ZSH_AUTOSUGGEST" ]; then
         git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_AUTOSUGGEST"
     fi
 
     echo ">>> Installing zsh-syntax-highlighting..."
-    ZSH_SYNTAX="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+    ZSH_SYNTAX="${ZSH_CUSTOM:-$ZSH_DIR/custom}/plugins/zsh-syntax-highlighting"
     if [ ! -d "$ZSH_SYNTAX" ]; then
         git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_SYNTAX"
     fi
 
-    echo ">>> Enabling plugins in .zshrc..."
-    sed -i 's/^plugins=(git)/plugins=(git sudo history extract colored-man-pages zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+    # Append missing plugins without clobbering existing ones
+    DESIRED_PLUGINS="git sudo history extract colored-man-pages zsh-autosuggestions zsh-syntax-highlighting"
+    if [ -f "$ZSHRC" ]; then
+        current_plugins=$(grep -oP '^plugins=\(\K[^)]*' "$ZSHRC" || true)
+        if [ -n "$current_plugins" ]; then
+            missing=""
+            for p in $DESIRED_PLUGINS; do
+                case " $current_plugins " in
+                    *" $p "*) ;;
+                    *) missing="$missing $p" ;;
+                esac
+            done
+            if [ -n "$missing" ]; then
+                sed -i "s/^plugins=($current_plugins)/plugins=($current_plugins$missing)/" "$ZSHRC"
+                echo "    Appended missing plugins:$missing"
+            else
+                echo "    All desired plugins already present"
+            fi
+        else
+            echo "plugins=($DESIRED_PLUGINS)" >> "$ZSHRC"
+        fi
+    fi
 fi
 
 # ── 5. Set default shell ─────────────────────────────────────────
@@ -152,15 +199,15 @@ if ! grep -qx "$SHELL_PATH" /etc/shells; then
     echo "$SHELL_PATH" >> /etc/shells
 fi
 
-if [ "$SHELL" != "$SHELL_PATH" ]; then
-    chsh -s "$SHELL_PATH" root
+if [ "$TARGET_SHELL_CURRENT" != "$SHELL_PATH" ]; then
+    chsh -s "$SHELL_PATH" "$TARGET_USER"
     echo ">>> Default shell changed to $DEFAULT_SHELL. Re-login or type '$DEFAULT_SHELL' to activate."
 fi
 
 # ── 6. Shell aliases ────────────────────────────────────────────
 
+# Fish — overwrite is safe (single source of truth)
 mkdir -p /etc/fish/conf.d
-
 cat > /etc/fish/conf.d/ken-aliases.fish <<'EOF'
 # Ken Base Environment aliases
 alias cat="batcat"
@@ -169,15 +216,17 @@ alias ll="lsd -lah"
 alias lt="lsd --tree"
 EOF
 
-if [ "$DEFAULT_SHELL" = "zsh" ] && [ -f "$HOME/.zshrc" ]; then
-    cat >> "$HOME/.zshrc" <<'EOF'
-
-# Ken Base Environment aliases
-alias cat=batcat
-alias find=fdfind
-alias ll='lsd -lah'
-alias lt='lsd --tree'
-EOF
+# Zsh — append only if not already present
+if [ "$DEFAULT_SHELL" = "zsh" ] && [ -f "$ZSHRC" ]; then
+    for alias_line in \
+        'alias cat=batcat' \
+        'alias find=fdfind' \
+        "alias ll='lsd -lah'" \
+        "alias lt='lsd --tree'"; do
+        if ! grep -qF "$alias_line" "$ZSHRC"; then
+            echo "$alias_line" >> "$ZSHRC"
+        fi
+    done
 fi
 
 # ── 7. Verification ─────────────────────────────────────────────
@@ -185,7 +234,8 @@ fi
 echo ""
 echo "===== Ken Base Environment installed ====="
 echo ""
-echo "  Default shell: $DEFAULT_SHELL"
+echo "  Target:  $TARGET_USER @ $TARGET_HOME"
+echo "  Shell:   $DEFAULT_SHELL -> $SHELL_PATH"
 echo ""
 echo "  Tools:"
 echo "    lsd  ........... $(lsd --version 2>&1 | head -1)"
