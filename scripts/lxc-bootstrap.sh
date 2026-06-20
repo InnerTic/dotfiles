@@ -2,17 +2,33 @@
 #
 # lxc-bootstrap.sh — Ken Base Environment for Proxmox LXCs
 #
-# Usage:  curl -fsSL https://raw.githubusercontent.com/InnerTic/dotfiles/main/scripts/lxc-bootstrap.sh | bash
-# Or:     bash <(curl -fsSL ...)
+# Usage:
+#   bash <(curl -fsSL https://raw.githubusercontent.com/InnerTic/dotfiles/deb/scripts/lxc-bootstrap.sh)
+#
+# Options:
+#   --shell <fish|zsh>   Set default shell (default: fish)
+#   --zsh                Short for --shell zsh
 #
 # What it installs:
-#   - lsd (modern ls), Meslo Nerd Fonts, fish shell, Tide prompt
-#   - bat (cat replacement), fd-find, ripgrep, tree, btop, git, curl, nano
+#   - Core: lsd, Meslo Nerd Fonts, bat, fd-find, ripgrep, tree, btop, git
+#   - Shell (fish): fish, Fisher plugin manager, Tide prompt
+#   - Shell (zsh):   zsh, Oh My Zsh, Powerlevel10k theme, autosuggestions, syntax highlighting
 #
 # Designed for Debian-based LXC containers. Run as root.
 # ───────────────────────────────────────────────────────────────
 
 set -euo pipefail
+
+# ── Parse options ─────────────────────────────────────────────────
+
+DEFAULT_SHELL="fish"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --shell) DEFAULT_SHELL="$2"; shift 2 ;;
+        --zsh)   DEFAULT_SHELL="zsh"; shift ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+done
 
 # ── 1. System packages ──────────────────────────────────────────
 
@@ -32,7 +48,8 @@ apt install -y -qq \
     ripgrep \
     sudo \
     tree \
-    wget
+    wget \
+    zsh
 
 # lsd is not in Debian repos by default — grab the .deb directly
 if ! command -v lsd &>/dev/null; then
@@ -67,40 +84,80 @@ done
 fc-cache -fv 2>/dev/null
 echo ">>> Meslo fonts installed. Verify: fc-list | grep -i meslo"
 
-# ── 3. Fish shell setup ─────────────────────────────────────────
+# ── 3. Fish shell + Fisher + Tide prompt ─────────────────────────
 
-echo ">>> Configuring fish as default shell..."
+echo ">>> Setting up fish shell..."
+fish_path=$(which fish)
 
-FISH_PATH=$(which fish)
-
-# Add fish to /etc/shells if missing
-if ! grep -qx "$FISH_PATH" /etc/shells; then
-    echo "$FISH_PATH" >> /etc/shells
+# Register fish in /etc/shells
+if ! grep -qx "$fish_path" /etc/shells; then
+    echo "$fish_path" >> /etc/shells
 fi
 
-# Change root shell to fish
-if [ "$SHELL" != "$FISH_PATH" ]; then
-    chsh -s "$FISH_PATH" root
-    echo ">>> Root shell changed to fish. Re-login or run 'fish' to activate."
-fi
-
-# ── 4. Fisher + Tide prompt ─────────────────────────────────────
-
+# Install Fisher and Tide regardless (fish is always available for admin use)
 echo ">>> Installing Fisher plugin manager..."
 fish -c "
     curl -sL https://git.io/fisher | source
     fisher install jorgebucaran/fisher
-" 2>/dev/null
+" 2>/dev/null || true
 
 echo ">>> Installing Tide prompt..."
 fish -c "
     fisher install IlanCosman/tide@v6
-" 2>/dev/null
+" 2>/dev/null || true
 
 echo ">>> Tide installed. Run 'tide configure' interactively to customize."
 echo "    Typical: Lean → 2 lines → Rounded → 16 colors → Many → Compact → Contextual → Yes"
 
-# ── 5. Shell aliases ────────────────────────────────────────────
+# ── 4b. Zsh + Oh My Zsh + Powerlevel10k ───────────────────────────
+
+if [ "$DEFAULT_SHELL" = "zsh" ]; then
+    echo ">>> Installing Oh My Zsh..."
+    ZSH="$HOME/.oh-my-zsh"
+    if [ ! -d "$ZSH" ]; then
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    fi
+
+    echo ">>> Installing Powerlevel10k theme..."
+    P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    if [ ! -d "$P10K_DIR" ]; then
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
+    fi
+
+    echo ">>> Enabling Powerlevel10k in .zshrc..."
+    sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
+
+    echo ">>> Installing zsh-autosuggestions..."
+    ZSH_AUTOSUGGEST="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+    if [ ! -d "$ZSH_AUTOSUGGEST" ]; then
+        git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_AUTOSUGGEST"
+    fi
+
+    echo ">>> Installing zsh-syntax-highlighting..."
+    ZSH_SYNTAX="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+    if [ ! -d "$ZSH_SYNTAX" ]; then
+        git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_SYNTAX"
+    fi
+
+    echo ">>> Enabling plugins in .zshrc..."
+    sed -i 's/^plugins=(git)/plugins=(git sudo history extract colored-man-pages zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+fi
+
+# ── 5. Set default shell ─────────────────────────────────────────
+
+echo ">>> Setting $DEFAULT_SHELL as default shell..."
+SHELL_PATH="$(which "$DEFAULT_SHELL")"
+
+if ! grep -qx "$SHELL_PATH" /etc/shells; then
+    echo "$SHELL_PATH" >> /etc/shells
+fi
+
+if [ "$SHELL" != "$SHELL_PATH" ]; then
+    chsh -s "$SHELL_PATH" root
+    echo ">>> Default shell changed to $DEFAULT_SHELL. Re-login or type '$DEFAULT_SHELL' to activate."
+fi
+
+# ── 6. Shell aliases ────────────────────────────────────────────
 
 mkdir -p /etc/fish/conf.d
 
@@ -112,10 +169,23 @@ alias ll="lsd -lah"
 alias lt="lsd --tree"
 EOF
 
-# ── 6. Verification ─────────────────────────────────────────────
+if [ "$DEFAULT_SHELL" = "zsh" ] && [ -f "$HOME/.zshrc" ]; then
+    cat >> "$HOME/.zshrc" <<'EOF'
+
+# Ken Base Environment aliases
+alias cat=batcat
+alias find=fdfind
+alias ll='lsd -lah'
+alias lt='lsd --tree'
+EOF
+fi
+
+# ── 7. Verification ─────────────────────────────────────────────
 
 echo ""
 echo "===== Ken Base Environment installed ====="
+echo ""
+echo "  Default shell: $DEFAULT_SHELL"
 echo ""
 echo "  Tools:"
 echo "    lsd  ........... $(lsd --version 2>&1 | head -1)"
@@ -124,12 +194,14 @@ echo "    fd  ............ $(fdfind --version 2>&1 | head -1)"
 echo "    rg  ............ $(rg --version 2>&1 | head -1)"
 echo "    btop ........... $(btop --version 2>&1 | head -1)"
 echo "    fish .......... $(fish --version 2>&1)"
-echo "    tide .......... fisher list 2>/dev/null | grep tide || echo '(run tide configure)'"
+echo "    zsh ............ $(zsh --version 2>&1 | head -1)"
+echo "    tide .......... $(fish -c 'fisher list | grep tide' 2>/dev/null || echo 'installed')"
 echo ""
 echo "  Fonts: $(fc-list | grep -ci meslo) Meslo NF face(s) installed"
 echo ""
 echo "  Next steps:"
-echo "    1. Type 'fish' or re-login"
-echo "    2. Run 'tide configure' to pick your prompt style"
-echo "    3. Install any LXC-specific packages you need"
+echo "    1. Re-login or run '$DEFAULT_SHELL'"
+echo "    2. Fish:   run 'tide configure' for prompt setup"
+echo "    3. Zsh:    p10k wizard starts on first launch, or run 'p10k configure'"
+echo "    4. Install any LXC-specific packages you need"
 echo ""
