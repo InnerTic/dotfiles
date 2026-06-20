@@ -30,11 +30,10 @@ set -euo pipefail
 
 # Detect script directory — handles both direct execution and pipe (curl | bash)
 BASE_URL="https://raw.githubusercontent.com/InnerTic/dotfiles/deb/scripts/lxc"
-if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
-    SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+if [ -f "${BASH_SOURCE[0]%/*}/lxc/core.sh" ] 2>/dev/null; then
+    SCRIPT_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
     LXC_DIR="$SCRIPT_DIR/lxc"
 else
-    # Piped from stdin — fetch components from GitHub raw
     echo ">>> (pipe mode: fetching components from GitHub raw)"
     LXC_DIR="$BASE_URL"
 fi
