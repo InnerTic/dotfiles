@@ -1,0 +1,144 @@
+#!/bin/bash
+# Dual-GPU GGUF launcher (RTX 3060 + P40)
+# llama.cpp CUDA multi-GPU aware selector
+
+MODELS_DIR="$HOME/Downloads/llm_models"
+MODEL_STORAGE="$MODELS_DIR/model_storage"
+LLAMA_SERVER="$HOME/dotfiles/scripts/llama-server.sh"
+
+shopt -s nullglob
+MODELS=( "$MODELS_DIR"/*.gguf "$MODEL_STORAGE"/*.gguf )
+
+if [ ${#MODELS[@]} -eq 0 ]; then
+  echo "No .gguf models found"
+  exit 1
+fi
+
+echo "Available models:"
+for i in "${!MODELS[@]}"; do
+  NAME=$(basename "${MODELS[$i]}")
+  SIZE=$(du -h "${MODELS[$i]}" | cut -f1)
+  echo "  $((i+1))) $NAME  ($SIZE)"
+done
+
+echo
+read -p "Select model [1-${#MODELS[@]}]: " CHOICE
+
+if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || [ "$CHOICE" -lt 1 ] || [ "$CHOICE" -gt "${#MODELS[@]}" ]; then
+  echo "Invalid selection"
+  exit 1
+fi
+
+SELECTED="${MODELS[$((CHOICE-1))]}"
+MODEL_NAME=$(basename "$SELECTED")
+
+echo "Selected: $MODEL_NAME"
+echo
+
+read -p "Parallel sequences [-np] (1-8, default 1, a=auto): " NP
+case "$NP" in
+  a|A|auto) NP_ARG="-np auto" ;;
+  [2-8]) NP_ARG="-np $NP" ;;
+  *) NP_ARG="-np 1" ;;
+esac
+
+
+# -----------------------------
+# GPU MODE SELECTION
+# -----------------------------
+echo
+echo "GPU modes:"
+echo "  1) RTX 3060 only (fast compute)"
+echo "  2) P40 only (large VRAM)"
+echo "  3) Dual GPU split (recommended)"
+echo "  4) Auto heuristic"
+
+read -p "Select GPU mode [1-4]: " GPU_MODE
+
+
+# Defaults
+GPU_ARG="--main-gpu 0"
+TENSOR_SPLIT=""
+NGL=60
+CTX_SIZE=65536
+
+
+case "$GPU_MODE" in
+
+  1)
+    echo "Mode: RTX 3060 only"
+    GPU_ARG="--main-gpu 0"
+    TENSOR_SPLIT=""
+
+    ;;
+
+  2)
+    echo "Mode: P40 only"
+    GPU_ARG="--main-gpu 1"
+    TENSOR_SPLIT=""
+
+    ;;
+
+  3)
+    echo "Mode: Dual GPU split"
+
+    # Heuristic split:
+    # P40 gets bulk VRAM (layers), 3060 handles compute-heavy front layers
+
+    GPU_ARG="--main-gpu 0"
+
+    # tensor split format: GPU0:GPU1
+    # tune ratio depending on VRAM (3060 ~12GB, P40 ~24GB)
+    TENSOR_SPLIT="0.25,0.75"
+
+    ;;
+
+  *)
+    echo "Mode: Auto heuristic"
+
+    # Simple auto strategy:
+    # - favor P40 for layers
+    # - keep 3060 for active compute
+
+    GPU_ARG="--main-gpu 0"
+    TENSOR_SPLIT="2,8"
+
+    ;;
+esac
+
+
+# -----------------------------
+# OPTIONAL: GPU LAYERS
+# -----------------------------
+read -p "GPU layers (-ngl, default 60): " NGL_IN
+NGL=${NGL_IN:-60}
+
+
+# -----------------------------
+# LAUNCH
+# -----------------------------
+
+echo
+echo "Launching model:"
+echo "  $MODEL_NAME"
+echo "GPU split: ${TENSOR_SPLIT:-none}"
+echo
+
+
+CMD=(
+  "$LLAMA_SERVER"
+  -m "$SELECTED"
+  --host 0.0.0.0
+  --port "${1:-8080}"
+  -ngl "$NGL"
+  --ctx-size "$CTX_SIZE"
+  --main-gpu 0
+  $NP_ARG
+)
+
+# Inject tensor split only if supported
+if [ -n "$TENSOR_SPLIT" ]; then
+  CMD+=( --tensor-split "$TENSOR_SPLIT" )
+fi
+
+exec "${CMD[@]}"

@@ -18,7 +18,9 @@ docs/                          ← Vault root (.obsidian/ lives here)
 │   │   ├── ai-tools/
 │   │   │   └── commands.md    ← AI command reference (llm, sdxl, textgen, oc)
 │   │   ├── dev-setup.md       ← Python venv, git, shell, bootstrap
-│   │   └── kvm-bridge-networking.md ← KVM/libvirt bridge setup (LAN DHCP for VMs)
+│   │   ├── kvm-bridge-networking.md ← KVM/libvirt bridge setup (LAN DHCP for VMs)
+│   │   └── prompt-hats/
+│   │       └── INDEX.md       ← 22 hats: core + system + engineering + communication + thinking + practical
 │   ├── reference/
 │   │   ├── glossary.md         ← Term definitions (llama.cpp, VFIO, CUDA, etc.)
 │   │   ├── faq.md              ← Common questions

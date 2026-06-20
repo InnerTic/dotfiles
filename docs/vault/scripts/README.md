@@ -53,3 +53,7 @@ After subjects, run per-distro AI tool guides at `docs/reinstall-guides/{cachyos
 - All scripts are idempotent — safe to re-run.
 - Edit the CONFIG block at the top of each script to match your system.
 - Scripts assume a fresh OS install (no existing configs).
+
+## Roadmap
+
+- [[projects/meta-scripts|Meta Script Project]] — modular orchestrator: split scripts into composable modules with a meta entry point.

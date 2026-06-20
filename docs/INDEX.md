@@ -37,6 +37,12 @@ Start here to navigate the vault.
 | `reference/quick-commands.txt` | Condensed cheat sheet — AI commands, model paths, network IPs |
 | [[reference/lspci-reference]] | PCI device listing — all flags, examples, this system's devices |
 
+## Prompt Hats
+
+| Page | Description |
+|------|-------------|
+| [[vault/software/prompt-hats/INDEX\|prompt-hats/]] | Role-switching prompt stack — 6 hats + baseline for llama.cpp webchat |
+
 ## GPU Configuration
 
 | Page | Description |
