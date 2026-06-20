@@ -83,3 +83,4 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |
 | `/mnt/workspace/memory/` | OpenCode memory wiki — session state, learned patterns |
 | [[gaming/gw2-multibox-wine-setup]] | GW2 multi-boxing setup on Wine |
+| [[vault/reference/proxmox-ssh-infrastructure]] | Proxmox SSH infrastructure — key injection, LXC bootstrap, AI agent access |
