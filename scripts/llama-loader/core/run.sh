@@ -1,48 +1,32 @@
 #!/usr/bin/env bash
 # ============================================================
 # llama-loader — EXECUTION CORE
-# Sources the IR contract, compiles CLI via dialect,
-# asserts no flag leaks, saves state, launches.
+# Builds cmd, saves state, launches llama-server.
+# Receives config via environment: SELECTED, CTX_SIZE, etc.
 # ============================================================
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-
 source "$SCRIPT_DIR/lib/common.sh"
-source "$SCRIPT_DIR/core/execution_plan.sh"
 
 ensure_state_dirs
+
 migrate_legacy_state
 assert_clean_state
 
-# Populate MODEL_PATH from SELECTED (set by mode script)
-MODEL_PATH="$SELECTED"
+SPLIT_ARG=""
+[ -n "$TENSOR_SPLIT" ] && SPLIT_ARG="--split $TENSOR_SPLIT"
 
-# ------------------------------------------------------------
-# SAFETY ASSERTION — prevents IR→CLI flag leaks
-# ------------------------------------------------------------
-assert_no_cli_leak() {
-  local ir_vars="NP_VAL NGL CTX_SIZE TENSOR_SPLIT MAIN_GPU PORT"
-  for var in $ir_vars; do
-    local val="${!var}"
-    if echo "$val" | grep -qE '^-{1,2}[a-z]'; then
-      echo "ERROR: IR leak detected in $var='$val' — contains CLI flag syntax" >&2
-      exit 1
-    fi
-  done
-}
-
-assert_no_cli_leak
-
-# Compile CLI from IR
-source "$SCRIPT_DIR/core/dialects/llama.cpp.sh"
-CLI_ARGS=$(compile_cli)
-
-# Final safety: reject any --np in compiled output
-if echo "$CLI_ARGS" | grep -q -- '--np'; then
-  echo "ERROR: dialect compiler emitted --np (should be -np)" >&2
-  exit 1
-fi
+CMD=(
+  "$LLAMA_SERVER"
+  -m "$SELECTED"
+  --host 0.0.0.0
+  --port "$PORT"
+  -ngl "$NGL"
+  --ctx-size "$CTX_SIZE"
+  $GPU_ARG
+  $NP_ARG
+  $SPLIT_ARG
+)
 
 save_state
-
-eval "exec \"\$LLAMA_SERVER\" $CLI_ARGS"
+exec "${CMD[@]}"

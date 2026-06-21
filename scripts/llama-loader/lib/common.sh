@@ -267,10 +267,9 @@ show_snapshot() {
   fi
   echo
   echo "CONTEXT: $CTX_SIZE  |  NP: $NP_VAL  |  NGL: $NGL  |  PORT: $PORT"
-  local ir_line="IR:  NP=$NP_VAL  |  NGL=$NGL  |  CTX=$CTX_SIZE  |  PORT=$PORT"
-  [ -n "$TENSOR_SPLIT" ] && ir_line+="  |  SPLIT=$TENSOR_SPLIT"
-  ir_line+="  |  MAIN_GPU=${MAIN_GPU:-0}"
-  echo "$ir_line"
+  local cli_line="CLI:  --np $NP_VAL  |  --ngl $NGL  |  --port $PORT"
+  [ -n "$TENSOR_SPLIT" ] && cli_line+="  |  --split $TENSOR_SPLIT"
+  echo "$cli_line"
   echo
   echo "INTERPRETATION:"
   if [ "$CTX_SIZE" -ge 131072 ]; then
@@ -344,8 +343,7 @@ save_state() {
   "np": "$(validate_int "$np_store")",
   "port": "$(validate_int "$PORT")",
   "gpu_mode": "${GPU_MODE:-3}",
-  "np_mode": "${NP_MODE:-manual}",
-  "main_gpu": "$(validate_int "${MAIN_GPU:-0}")"
+  "np_mode": "${NP_MODE:-manual}"
 }
 EOF
   cat > "$STATE_FILE" <<EOF
@@ -359,8 +357,7 @@ EOF
   "last_port": "$(validate_int "$PORT")",
   "last_location": "$MODEL_LOCATION",
   "last_gpu_mode": "${GPU_MODE:-3}",
-  "last_np_mode": "${NP_MODE:-manual}",
-  "last_main_gpu": "$(validate_int "${MAIN_GPU:-0}")"
+  "last_np_mode": "${NP_MODE:-manual}"
 }
 EOF
 }

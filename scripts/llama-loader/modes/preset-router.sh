@@ -43,9 +43,10 @@ source "${PRESETS[$((pchoice-1))]}"
 [ -z "$TENSOR_SPLIT" ] && TENSOR_SPLIT="20,80"
 [ -z "$NGL" ] && NGL=60
 [ -z "${NP_VAL:-}" ] && NP_VAL=2
+NP_ARG="--np $NP_VAL"
 NP_MODE=manual
 [ -z "$PORT" ] && PORT=8080
-MAIN_GPU=0
+GPU_ARG="--main-gpu 0"
 
 show_snapshot "PRESET"
 decision_gate

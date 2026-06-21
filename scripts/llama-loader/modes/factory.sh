@@ -18,9 +18,10 @@ CTX_SIZE=8192
 TENSOR_SPLIT="30,70"
 NGL=60
 NP_VAL=1
+NP_ARG="--np $NP_VAL"
 NP_MODE=manual
 PORT=8080
-MAIN_GPU=0
+GPU_ARG="--main-gpu 0"
 
 show_snapshot "FACTORY DEFAULT"
 decision_gate

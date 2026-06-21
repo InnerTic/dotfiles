@@ -70,7 +70,44 @@ F24 simply bypasses conflict at the KDE layer.
 - F1–F12 = user + app space
 - F13–F24 = control plane space
 
-## 8. Mental model upgrade
+## 8. Known failure: Caps→Hyper→F24 on KDE Wayland
+
+The approach documented above (`capslock = hyper` + `[hyper] space = f24`) **does not work reliably** on KDE Wayland.
+
+### Observed behavior
+
+On both CachyOS and Debian 13 (KDE Plasma 6, Wayland):
+- `keyd monitor` shows the virtual keyboard emitting raw `capslock` and `space` — no remapping
+- The application receives `Meta+Space`, not F24
+- Config file is syntactically valid and loaded correctly
+
+### Why the above theory breaks
+
+The earlier pipeline diagram assumed keyd's layer system would inject F24 into the Wayland event stream. In practice:
+
+```
+Caps Lock (held)
+   ↓
+keyd layer (hyper) ← layer NOT activating
+   ↓
+maps → F24 ← Not reached — space passes through raw
+   ↓
+KDE sees Meta+Space ← fallthrough behavior
+```
+
+### Suspected causes
+
+- KWin grabs the keyboard device exclusively on Wayland, preventing keyd from intercepting
+- The `hyper` layer name is not treated as a modifier by keyd on this build/platform
+- Wayland's security model restricts synthetic input from virtual keyboards
+
+### Bottom line
+
+F13–F24 being "control plane space" is correct in theory, but **keyd cannot reliably inject them into KDE Wayland** using layer-based remapping. Alternative approaches needed.
+
+---
+
+## 9. Mental model upgrade
 
 ```
 F1–F12   = human/UI interaction layer

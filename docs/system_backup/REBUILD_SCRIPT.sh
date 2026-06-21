@@ -54,8 +54,10 @@ else
 
 # ssd_storage (sdb)
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
-# Data-HDD (sdc)
+# Data-HDD (sdc) — ntfs-3g must be installed first
 UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail,uid=1000,gid=1000,umask=000 0 2
+# VM-Disks (sde3) — xfs, VM disk storage
+UUID=81132c1e-5ca5-419f-8967-61284c27dadd /mnt/vm-disks xfs defaults,nofail 0 2
 # nvme-workspace (nvme0n1p1)
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
 # m2_storage (sdd)

@@ -32,7 +32,9 @@ docs/                          ← Vault root (.obsidian/ lives here)
 │   │   ├── architecture-snapshot.md ← 🧭 Full architecture — network, Proxmox, LXC, auth, ops
 │   │   ├── lxc-build-log.md         ← 🧱 LXC 300 quartz-test — full build sequence + gold image pipeline
 │   │   ├── proxmox-ssh-infrastructure.md ← SSH key injection, LXC bootstrap, agent access
-│   │   └── ai-ssh-architecture.md       ← 🧩 Restricted ai-user, command wrapper, no root
+│   │   ├── ai-ssh-architecture.md       ← 🧩 Restricted ai-user, command wrapper, no root
+│   │   ├── boot-diagnostics.md ← Boot timing debug — systemd-analyze, dmesg, journalctl
+│   │   └── keyd-stack.md      ← keyd upstream install, permissions, remap debug
 │   ├── scripts/
 │   │   └── README.md           ← Script index — reinstall order + GPU/AI + system scripts
 │   └── changelog.md            ← Vault structure changes

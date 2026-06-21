@@ -11,6 +11,7 @@ export OPENCODE_ZEN_API_KEY="sk-n3bmHkk1I235qfPj2XVnT03i59KAycRUqL9VVFZMV8HYVKMI
 
 # ── AI Aliases ──────────────────────────────────────────────
 alias llm='~/.local/bin/llama-loader'
+alias test-llm='~/.local/bin/test-llma-loader'
 alias llmcheck='curl -s http://127.0.0.1:8080/v1/models | jq -r .data[].id'
 alias llmk='pkill -f llama-server'
 alias llmstart='~/.openclaw/workspace/scripts/llama-start.sh'

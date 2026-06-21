@@ -16,8 +16,9 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | **sdb** | 465G | ext4 | `/mnt/ssd_storage` | Bulk data — documents, downloads, media |
 | **sdc** | 3.6T | ntfs | `/mnt/data` | Long-term backup, large files |
 | **sdd** | 112G | btrfs | `/home` | User home dir (ephemeral — wiped on reinstall) |
-| **sde1** | 238G | ext4 | — | Future OS (Limine bootloader) |
-| **sde2** | 238G | xfs | `/mnt/vm-disks` | VM disk storage |
+| **sde1** | 10.7G | vfat | — | MX Linux EFI (EFI-SYSTEM) |
+| **sde2** | 222.7G | ext4 | — | MX Linux root (rootMX25) |
+| **sde3** | 243.5G | xfs | `/mnt/vm-disks` | VM disk storage |
 | **nvme0n1** | 465G | ext4 | `/mnt/workspace` | AI tools, models, projects, dotfiles (persistent) |
 
 ## UUIDs (for /etc/fstab)
@@ -29,8 +30,9 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | sdd /home | `4365b1fa-735e-455d-9645-e65be9903454` |
 | sdb /mnt/ssd_storage | `51b4243d-ea88-4a02-b02f-c286d52b6e0d` |
 | sdc /mnt/data | `7E303CAF303C6FEF` |
-| sde1 /mnt/new-os | `9e04d3b5-745c-49b9-bdec-e865672eb2a0` (ext4, noauto) |
-| sde2 /mnt/vm-disks | `9e63ef79-7b4a-4511-a4d5-d411a59af195` (xfs) |
+| sde1 /boot (MX EFI) | `3F33-0777` (vfat) |
+| sde2 / (MX root) | `34bdf920-237c-4392-835f-0416be09ada5` (ext4) |
+| sde3 /mnt/vm-disks | `81132c1e-5ca5-419f-8967-61284c27dadd` (xfs) |
 | nvme /mnt/workspace | `9a1cdd8a-3d81-468f-be70-aa00a01d7301` |
 
 ## Drive Selection Guide
@@ -40,8 +42,8 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | OS, packages, temp | sda (/) | Btrfs snapshots for rollback |
 | AI models, projects | nvme (workspace) | Fast NVMe, persists reinstalls |
 | Documents, media | sdb (ssd_storage) | Large SSD, bind-mounted to ~/ |
-| VMs, disk images | sde2 (VM-Disks) | Dedicated xfs partition |
-| Future OS install | sde1 (new-os) | ext4, noauto in fstab — mount when needed |
+| VMs, disk images | sde3 (VM-Disks) | Dedicated xfs partition |
+| MX Linux (secondary OS) | sde2 (rootMX25) | ext4, MX Linux root |
 | Backups, archives | sdc (Data-HDD) | 3.6T NTFS, slow but huge |
 | User configs | sdd (/home) | Small btrfs, gets wiped |
 
@@ -81,7 +83,7 @@ It holds:
 - `textgen/` — TextGen WebUI
 - `searxng/` — search engine
 - Model files
-- VM disk images (on sde2)
+- VM disk images (on sde3)
 
 ## Related
 

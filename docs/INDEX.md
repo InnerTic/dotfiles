@@ -94,6 +94,8 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |
 | [[vault/reference/glossary]] | Term definitions — llama.cpp, VFIO, CUDA, GGUF, etc. |
 | [[vault/reference/bugs-and-workarounds]] | Active upstream bugs and their workarounds |
+| [[vault/reference/boot-diagnostics]] | Boot timing debug — systemd-analyze, dmesg, journalctl, mental model |
+| [[vault/reference/keyd-stack]] | keyd upstream install, input group fix, Caps→Hyper→F24 remapping, KDE intercept debug |
 | [[vault/changelog]] | Vault structure changes |
 
 ## External References
@@ -107,3 +109,12 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | [[vault/reference/architecture-snapshot]] | 🧭 Homelab architecture snapshot — network, Proxmox, LXC, auth, ops rules |
 | [[vault/reference/lxc-build-log]] | 🧱 LXC 300 build log — full quartz-test build sequence, step-by-step |
 | [[vault/reference/ai-ssh-architecture]] | 🧩 AI SSH architecture — restricted ai-user, command wrapper, no root |
+| [[reference/agent-hallucination-techniques]] | Stop AI Agent Hallucinations — 4 techniques (Graph-RAG, semantic tool selection, neurosymbolic guardrails, multi-agent validation) |
+| [[reference/llama-loader-architecture]] | llama-loader modular architecture — layered pipeline, modes, state system, GPU config |
+| [[llama-loader-integrity-contract]] | llama-loader integrity contract — state typing, layer separation, CLI derivation rules |
+| [[quartz-setup]] | Quartz v5 digital garden setup — install, config, plugins, build, known issues |
+| [[vault/reference/quartz-constitution]] | AI project constitution — design philosophy, pipeline, task blocks for the homelab wiki |
+| [[vault/reference/chat-ingestion-architecture]] | Vault memory architecture — episodes, knowledge, decisions, artifacts, indexes, retrieval model |
+| [[vault/reference/index-retrieval-system]] | Index format + retrieval pipeline — scoring, tiers, agent prompt, full memory loop |
+| [[vault/reference/vault-query-scripts]] | Vault query scripts — fish frontend, bash backend, ranking, upgrade path |
+| [[vault/reference/memory-reasoning-execution-pipeline]] | Memory → reasoning → execution — how vault-query pipes into llama-loader as context injection |
