@@ -8,7 +8,10 @@ updated: 2026-06-17
 
 ```
 docs/                          ← Vault root (.obsidian/ lives here)
-├── INDEX.md                   ← START HERE — root index (this file)
+├── INDEX.md                   ← START HERE — root index
+├── conky-system-cockpit.md    ← Unified Conky telemetry HUD (CPU/GPU/RAM/NET)
+├── heat-aware-cockpit.md      ← Thermal-reactive Conky cockpit design
+├── heat-aware-dropin.md       ← Merged heat-aware Conky config reference
 ├── vault/
 │   ├── QUICK-START.md         ← 🚨 Emergency recovery (system died, 5-min restore)
 │   ├── system/
@@ -20,11 +23,18 @@ docs/                          ← Vault root (.obsidian/ lives here)
 │   │   ├── dev-setup.md       ← Python venv, git, shell, bootstrap
 │   │   ├── kvm-bridge-networking.md ← KVM/libvirt bridge setup (LAN DHCP for VMs)
 │   │   └── prompt-hats/
-│   │       └── INDEX.md       ← 22 hats: core + system + engineering + communication + thinking + practical
+│   │       └── INDEX.md       ← 22 stable hats + E1–E8 experimental
 │   ├── reference/
 │   │   ├── glossary.md         ← Term definitions (llama.cpp, VFIO, CUDA, etc.)
 │   │   ├── faq.md              ← Common questions
-│   │   └── bugs-and-workarounds.md ← Active workarounds for upstream bugs
+│   │   ├── bugs-and-workarounds.md ← Active workarounds for upstream bugs
+│   │   ├── libvirt-bridge-setup.md ← Zero-touch br0 bridge for KVM VMs
+│   │   ├── architecture-snapshot.md ← 🧭 Full architecture — network, Proxmox, LXC, auth, ops
+│   │   ├── lxc-build-log.md         ← 🧱 LXC 300 quartz-test — full build sequence + gold image pipeline
+│   │   ├── proxmox-ssh-infrastructure.md ← SSH key injection, LXC bootstrap, agent access
+│   │   └── ai-ssh-architecture.md       ← 🧩 Restricted ai-user, command wrapper, no root
+│   ├── scripts/
+│   │   └── README.md           ← Script index — reinstall order + GPU/AI + system scripts
 │   └── changelog.md            ← Vault structure changes
 │
 ├── context/                    ← Detailed AI reference docs

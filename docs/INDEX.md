@@ -41,7 +41,21 @@ Start here to navigate the vault.
 
 | Page | Description |
 |------|-------------|
-| [[vault/software/prompt-hats/INDEX\|prompt-hats/]] | Role-switching prompt stack — 6 hats + baseline for llama.cpp webchat |
+| [[vault/software/prompt-hats/INDEX\|prompt-hats/]] | 22 stable hats + 8 experimental — role-switching prompt stack for llama.cpp webchat |
+
+## Conky Telemetry
+
+| Page | Description |
+|------|-------------|
+| [[conky-system-cockpit]] | Unified Conky HUD — CPU/GPU/RAM/NET visual grammar |
+| [[heat-aware-cockpit]] | Thermal-reactive cockpit design — green/yellow/red bands |
+| [[heat-aware-dropin]] | Merged heat-aware drop-in config reference |
+
+## VM / Networking
+
+| Page | Description |
+|------|-------------|
+| [[vault/reference/libvirt-bridge-setup\|libvirt-bridge-setup]] | Zero-touch br0 bridge for KVM VMs (CachyOS/Arch) |
 
 ## GPU Configuration
 
@@ -90,3 +104,6 @@ The [[context/INDEX|context/ directory]] contains the detailed AI reference docs
 | `/mnt/workspace/memory/` | OpenCode memory wiki — session state, learned patterns |
 | [[gaming/gw2-multibox-wine-setup]] | GW2 multi-boxing setup on Wine |
 | [[vault/reference/proxmox-ssh-infrastructure]] | Proxmox SSH infrastructure — key injection, LXC bootstrap, AI agent access |
+| [[vault/reference/architecture-snapshot]] | 🧭 Homelab architecture snapshot — network, Proxmox, LXC, auth, ops rules |
+| [[vault/reference/lxc-build-log]] | 🧱 LXC 300 build log — full quartz-test build sequence, step-by-step |
+| [[vault/reference/ai-ssh-architecture]] | 🧩 AI SSH architecture — restricted ai-user, command wrapper, no root |

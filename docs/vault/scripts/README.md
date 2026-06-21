@@ -23,6 +23,9 @@ After subjects, run per-distro AI tool guides at `docs/reinstall-guides/{cachyos
 | [[live-env-setup\|live-env-setup.sh]] | CachyOS live ISO post-install — clones dotfiles, adds drives, symlinks, bootstrap |
 | [[REBUILD_SCRIPT\|REBUILD_SCRIPT.sh]] | Master 8-step rebuild — full system recovery from backup |
 | [[healthcheck\|healthcheck.sh]] | System health check — GPUs, mounts, services |
+| [[lxc-provision\|lxc-provision.sh]] | Proxmox host-side LXC creation — pct create, user, SSH keys, /srv, snapshot |
+| [[lxc-bootstrap\|lxc-bootstrap.sh]] | In-container shell setup — fish/zsh/fonts/aliases (Debian LXC) |
+| [[build-gold-lxc\|build-gold-lxc.sh]] | Proxmox host — builds gold LXC template (VMID 9000) for instant cloning |
 
 ## GPU & AI
 
