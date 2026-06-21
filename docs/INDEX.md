@@ -1,120 +1,76 @@
-n# Docs Vault — Debian
+# Docs Vault
 
 System documentation, rebuild references, GPU config, cheat sheets, and AI context.
-Start here to navigate the vault.
 
-> **On the `deb` branch.** Switch to `main` for Arch/CachyOS docs.
-> `cd ~/dotfiles && git checkout main`
+> **On `deb` branch.** Switch to `main` for Arch/CachyOS docs: `git checkout main`
 
 ## Quick Navigation
 
 | Page | Description |
 |------|-------------|
-| [[context/system-memory]] | **START HERE for rebuild.** Drives, mounts, UUIDs, aliases, network, GW2. Updated 2026-05-10. |
-| [[context/INDEX]] | Full context docs index — system profile, packages, KDE settings, model lists, providers |
-| [[gpu/gpu-config-notes]] | GPU stack — driver 580.159.04, CUDA 12.9, dual-GPU (RTX 3060 + Tesla P40) |
-| [[gpu/llama-setup]] | Building llama.cpp with dual-GPU CUDA support (sm_61 + sm_86) |
-| [[reference/workspace-symlink-strategy]] | Workspace symlink setup — persist .ssh, .librewolf, dotfiles, openclaw, opencode across reinstalls |
-| [[reference/lspci-reference]] | lspci cheat sheet — flags, combos, filtering, PCI topology |
-| [[reference/lspci-akuma-output]] | Live lspci output for this system — slot map, drivers, bus topology |
+| [[vault/system/system-memory\|system-memory]] | **START HERE for rebuild.** Drives, mounts, UUIDs, aliases, network |
+| [[vault/map]] | Full vault sitemap — navigation paths for every scenario |
+| [[vault/QUICK-START]] | 🚨 Emergency recovery — 5-minute restore after reinstall |
+| [[vault/hardware/gpu/config-notes\|gpu/config-notes]] | GPU stack — driver, CUDA, dual-GPU (RTX 3060 + Tesla P40) |
+| [[vault/software/ai-tools/llama-setup\|ai-tools/llama-setup]] | Building llama.cpp with dual-GPU CUDA support (sm_61 + sm_86) |
+| [[vault/software/ai-tools/commands\|commands]] | AI command reference — llm, sdxl, textgen, oc |
+| [[vault/reference/quick-commands\|quick-commands]] | Condensed cheat sheet — AI commands, model paths, network IPs |
+| [[vault/software/prompt-hats/INDEX\|prompt-hats]] | 22 stable hats + 8 experimental |
 
 ## Rebuild & Recovery
 
 | Page | Description |
 |------|-------------|
-| `reinstall-guides/` | **Step-by-step install guides** for llama.cpp, forge-neo, textgen — separated by distro (cachyos/ debian) with CUDA version, python version, and gotcha notes |
-| [[vault/scripts/README\|vault/scripts/]] | **All scripts in one place** — reinstall sequence, GPU/AI tools, system helpers |
-| [[rebuild/rebuild-notes]] | Latest rebuild notes — step-by-step OS reinstall |
-| [[context/implementation-workflow]] | Original migration workflow (historical, some paths stale) |
-| `system_backup/` | Full backup/restore reference — REBUILD_SCRIPT.sh, KEY_LOCATIONS.txt |
-| [[gpu/tesla-p40-vfio-passthrough]] | VFIO passthrough config for Tesla P40 |
+| [[vault/scripts/README\|vault/scripts]] | All scripts — reinstall sequence, GPU/AI tools, system helpers |
+| [[vault/system/rebuild-notes\|rebuild-notes]] | Latest rebuild session notes |
+| [[vault/system/debian-setup-hoops\|debian-setup-hoops]] | Debian 13 workarounds (when on `deb` branch) |
+| [[vault/system/rebuild-script.sh\|REBUILD_SCRIPT.sh]] | Full system recovery script |
 
-## Cheat Sheets
+## Software
 
 | Page | Description |
 |------|-------------|
-| `reference/commands.txt` | Full command reference — aliases, network, git, backups |
-| `reference/quick-commands.txt` | Condensed cheat sheet — AI commands, model paths, network IPs |
-| [[reference/lspci-reference]] | PCI device listing — all flags, examples, this system's devices |
+| [[vault/software/ai-tools/forge-neo\|forge-neo]] | SD WebUI Forge Neo install (Debian + CachyOS) |
+| [[vault/software/ai-tools/llama-setup\|llama-setup]] | llama.cpp install — build, GPU layout, P40 considerations |
+| [[vault/software/ai-tools/textgen-webui\|textgen-webui]] | TextGen WebUI (oobabooga) install |
+| [[vault/software/quartz/container-plan\|quartz/container-plan]] | LXC container deploy plan |
+| [[vault/software/quartz/setup\|quartz/setup]] | Quartz v5 digital garden setup |
 
-## Prompt Hats
+## System & Hardware
 
 | Page | Description |
 |------|-------------|
-| [[vault/software/prompt-hats/INDEX\|prompt-hats/]] | 22 stable hats + 8 experimental — role-switching prompt stack for llama.cpp webchat |
+| [[vault/system/drives-and-mounts\|drives-and-mounts]] | Drive UUIDs, fstab, bind mounts |
+| [[vault/system/dual-boot-recovery\|dual-boot-recovery]] | Limine/MX Linux recovery, boot entry repair |
+| [[vault/system/workspace-symlink-strategy\|workspace-symlink-strategy]] | Symlink setup for reinstall persistence |
+| [[vault/hardware/gpu/config-notes\|gpu/config-notes]] | GPU driver + CUDA config |
+| [[vault/hardware/gpu/tesla-p40-vfio\|tesla-p40-vfio]] | P40 VFIO passthrough |
 
 ## Conky Telemetry
 
 | Page | Description |
 |------|-------------|
-| [[conky-system-cockpit]] | Unified Conky HUD — CPU/GPU/RAM/NET visual grammar |
-| [[heat-aware-cockpit]] | Thermal-reactive cockpit design — green/yellow/red bands |
-| [[heat-aware-dropin]] | Merged heat-aware drop-in config reference |
+| [[vault/software/conky/system-cockpit\|conky/system-cockpit]] | Unified Conky HUD — CPU/GPU/RAM/NET |
+| [[vault/software/conky/heat-aware-cockpit\|conky/heat-aware-cockpit]] | Thermal-reactive cockpit design |
 
-## VM / Networking
-
-| Page | Description |
-|------|-------------|
-| [[vault/reference/libvirt-bridge-setup\|libvirt-bridge-setup]] | Zero-touch br0 bridge for KVM VMs (CachyOS/Arch) |
-
-## GPU Configuration
+## Vault Reference
 
 | Page | Description |
 |------|-------------|
-| [[gpu/gpu-config-notes]] | Working combo: 580.159.04 + CUDA 12.9 + llama.cpp |
-| [[gpu/llama-setup]] | Building with CMAKE_CUDA_ARCHITECTURES="61;86" |
-| [[gpu/tesla-p40-vfio-passthrough]] | P40 passthrough details |
-| [[context/kde-workarounds]] | KDE bugs affecting GPU setup (temporary hacks) |
-
-## Known Issues
-
-| Page | Description |
-|------|-------------|
-| [[known-issues/temporary-hacks]] | Active workarounds for upstream KDE bugs |
-| [[context/kde-workarounds]] | Tracked KDE bugs with review-by dates |
-
-## Context Vault
-
-The [[context/INDEX|context/ directory]] contains the detailed AI reference docs — organized by CURRENT and HISTORICAL:
-
-- **Current:** system-memory, quick-commands, free-models, free-providers, package-list, KDE settings, KDE workarounds
-- **Historical:** storage-layout-plan, implementation-workflow, system-profile, ollama-notes, opencode-plugins, serena-mcp
-
-## Vault Docs (Structured)
-
-| Page | Description |
-|------|-------------|
-| [[vault/QUICK-START]] | 🚨 Emergency recovery — 5-minute restore after reinstall |
-| [[vault/map]] | Full vault sitemap — navigation paths for every scenario |
-| [[vault/system/drives-and-mounts]] | Drive UUIDs, fstab, bind mounts, drive selection guide |
-| [[vault/system/dual-boot-recovery]] | Limine/MX Linux recovery — boot entry repair, UEFI fallbacks |
-| [[vault/software/dev-setup]] | Python venv, git config, shell aliases, bootstrap process, fastfetch greeting |
-| [[vault/software/kvm-bridge-networking]] | KVM/libvirt bridge setup — LAN DHCP for VMs, no NAT |
-| [[vault/software/ai-tools/commands]] | AI command reference — llm, sdxl, textgen, oc |
-| [[vault/reference/faq]] | Common questions — models, GPUs, system, gaming, network |
-| [[vault/reference/glossary]] | Term definitions — llama.cpp, VFIO, CUDA, GGUF, etc. |
-| [[vault/reference/bugs-and-workarounds]] | Active upstream bugs and their workarounds |
-| [[vault/reference/boot-diagnostics]] | Boot timing debug — systemd-analyze, dmesg, journalctl, mental model |
-| [[vault/reference/keyd-stack]] | keyd upstream install, input group fix, Caps→Hyper→F24 remapping, KDE intercept debug |
-| [[vault/changelog]] | Vault structure changes |
+| [[vault/reference/architecture-snapshot\|architecture-snapshot]] | 🧭 Homelab architecture — network, Proxmox, LXC, auth |
+| [[vault/reference/ai-ssh-architecture\|ai-ssh-architecture]] | 🧩 Restricted ai-user SSH pattern |
+| [[vault/reference/lxc-build-log\|lxc-build-log]] | 🧱 LXC 300 build log + gold pipeline |
+| [[vault/reference/proxmox-ssh-infrastructure\|proxmox-ssh-infrastructure]] | SSH key injection, LXC bootstrap, agent access |
+| [[vault/reference/faq\|faq]] | Common questions |
+| [[vault/reference/glossary\|glossary]] | Term definitions |
+| [[vault/reference/bugs-and-workarounds\|bugs-and-workarounds]] | Active upstream bugs and workarounds |
+| [[vault/reference/commands\|commands]] | Full command reference |
+| [[vault/reference/key-locations\|key-locations]] | Key file locations |
+| [[vault/reference/knowledge-audit\|knowledge-audit]] | Documentation knowledge audit |
 
 ## External References
 
 | Location | Content |
 |----------|---------|
-| `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log (5269 lines, 300KB) — GW2 debugging |
+| `/mnt/workspace/fixbot.ifixit.comchatc4c528.txt` | Full FixBot chat log — GW2 debugging |
 | `/mnt/workspace/memory/` | OpenCode memory wiki — session state, learned patterns |
-| [[gaming/gw2-multibox-wine-setup]] | GW2 multi-boxing setup on Wine |
-| [[vault/reference/proxmox-ssh-infrastructure]] | Proxmox SSH infrastructure — key injection, LXC bootstrap, AI agent access |
-| [[vault/reference/architecture-snapshot]] | 🧭 Homelab architecture snapshot — network, Proxmox, LXC, auth, ops rules |
-| [[vault/reference/lxc-build-log]] | 🧱 LXC 300 build log — full quartz-test build sequence, step-by-step |
-| [[vault/reference/ai-ssh-architecture]] | 🧩 AI SSH architecture — restricted ai-user, command wrapper, no root |
-| [[reference/agent-hallucination-techniques]] | Stop AI Agent Hallucinations — 4 techniques (Graph-RAG, semantic tool selection, neurosymbolic guardrails, multi-agent validation) |
-| [[reference/llama-loader-architecture]] | llama-loader modular architecture — layered pipeline, modes, state system, GPU config |
-| [[llama-loader-integrity-contract]] | llama-loader integrity contract — state typing, layer separation, CLI derivation rules |
-| [[quartz-setup]] | Quartz v5 digital garden setup — install, config, plugins, build, known issues |
-| [[vault/reference/quartz-constitution]] | AI project constitution — design philosophy, pipeline, task blocks for the homelab wiki |
-| [[vault/reference/chat-ingestion-architecture]] | Vault memory architecture — episodes, knowledge, decisions, artifacts, indexes, retrieval model |
-| [[vault/reference/index-retrieval-system]] | Index format + retrieval pipeline — scoring, tiers, agent prompt, full memory loop |
-| [[vault/reference/vault-query-scripts]] | Vault query scripts — fish frontend, bash backend, ranking, upgrade path |
-| [[vault/reference/memory-reasoning-execution-pipeline]] | Memory → reasoning → execution — how vault-query pipes into llama-loader as context injection |

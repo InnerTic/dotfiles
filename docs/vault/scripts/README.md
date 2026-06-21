@@ -59,4 +59,4 @@ After subjects, run per-distro AI tool guides at `docs/reinstall-guides/{cachyos
 
 ## Roadmap
 
-- [[projects/meta-scripts|Meta Script Project]] — modular orchestrator: split scripts into composable modules with a meta entry point.
+- ~~[[projects/meta-scripts|Meta Script Project]]~~ — abandoned. Goals achieved ad-hoc by individual scripts (lxc-bootstrap flags, llama-loader IR/dialect separation).

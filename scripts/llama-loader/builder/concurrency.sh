@@ -13,7 +13,7 @@ case "${NP_IN:-$LAST_NP}" in
     ;;
   [2-8])
     NP_MODE="manual"
-    NP_VAL="$NP_IN"
+    NP_VAL="${NP_IN:-$LAST_NP}"
     validate_int "$NP_VAL" >/dev/null
     NP_ARG="--np $NP_VAL"
     ;;
