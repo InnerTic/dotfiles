@@ -43,7 +43,7 @@ These were already done when this session started:
 
 ### Phase 8–11: nginx + status endpoint (this session, ~30m)
 
-The plan called for Caddy. The LXC already had nginx installed on port 80 — we adapted.
+LXC already had nginx on port 80. We reconfigured it.
 
 **Problems encountered:**
 1. nginx root path was wrong: `/home/quartz/apps/quartz/public` instead of `/home/ken/apps/quartz/public` — 500 error on every request
@@ -74,7 +74,7 @@ No `pct snapshot 301 <phase>` was executed at any boundary. Rollback would requi
 
 ## Key Lessons
 
-1. **Plan vs reality — paths drift.** The plan said `/srv/quartz`; the user put it in `~/apps/quartz`. Plan for this: either enforce the path in provisioning or make the update script configurable.
+1. **Plan vs reality — paths drift.** The plan said `/srv/quartz` + Caddy; deployment ended up at `~/apps/quartz` + nginx. Updated the plan to match reality.
 
 2. **nix-status pattern works.** The `/status` endpoint returned useful JSON on first request after config fix — zero debugging needed. Worth the upfront script cost.
 
