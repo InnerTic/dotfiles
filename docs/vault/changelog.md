@@ -6,6 +6,15 @@ updated: 2026-06-24
 
 # Vault Changelog
 
+## 2026-06-24 — AI Watchtower project, vault research, script consolidation
+
+- AI Watchtower project: gold-template constraint, bootstrap scripts (LXC + stack)
+- Research files: [[research/ai-bubble-reality-check]], [[research/ai-coding-drill-ladder]]
+- Drift annotations: commands.md, [[system-memory]].md fully annotated
+- `migrate-home-data.sh` archived (one-time seed, reference only)
+- Script consolidation flagged: AI scripts → `~/.local/bin/`
+- Hyalo auto-link applied (34 wiki-links)
+
 ## 2026-06-23 — Quartz LXC, vault restore, wiki index
 
 - Quartz LXC deployment: two-stage bootstrap (host + container), nginx, /status endpoint

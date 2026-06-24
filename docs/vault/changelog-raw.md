@@ -1,12 +1,23 @@
 ---
 tags: [meta, changelog, raw]
 aliases: [raw-changelog, full-changelog, changelog-raw]
-updated: 2026-06-23
+updated: 2026-06-24
 ---
 
 # Vault Changelog (Raw)
 
 Complete chronological history for AI reference. Each entry covers a session's work.
+
+## 2026-06-24 — AI Watchtower, vault research, script archive
+
+- **AI Watchtower project**: [[projects/ai-watchtower]] updated with gold-template deployment constraint and explicit Quartz/[[projects/ai-watchtower|Watchtower]] role split table
+- **Watchtower bootstrap scripts**: `scripts/bootstrap-watchtower-lxc.sh` (Proxmox host level) + `scripts/bootstrap-watchtower-stack.sh` (container stack: Python venv, SQLite schema, directory layout, systemd timer placeholders)
+- **Research**: [[research/ai-bubble-reality-check]] — market scenarios, tripwires, evidence log
+- **Research**: [[research/ai-coding-drill-ladder]] — 15-level progressive AI coding skill evaluation framework
+- **Archive**: [[scripts/archive/migrate-home-data]].sh + .md moved from active `scripts/` to `scripts/archive/` — one-time seed-data script, kept for historical reference
+- **Drift annotations completed**: commands.md model list/script paths marked STALE; [[system-memory]].md AI Tool Aliases section annotated; script consolidation needed flagged
+- **Hyalo auto-link**: 34 wiki-links applied across changelog-raw.md, [[VAULT-TODO]].md, index.md, projects/[[ai-bubble-watchboard]].md, projects/[[ai-watchtower]].md, projects/[[ai-watchtower]].md, projects/[[local-ai-control-tower]].md, scripts/README.md
+- **Vault synced + Quartz rebuilt** (826 files emitted)
 
 ## 2026-06-23 (late) — Vault drift audit
 
