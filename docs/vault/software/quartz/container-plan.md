@@ -1,32 +1,43 @@
-# Quartz Container Plan — v2
+# Quartz Container Plan — v3
 
 Move Quartz from host into a dedicated LXC container.
 
 ## Target Architecture
 
-Obsidian Vault (desktop)
-        │
-        ▼
-Git Repository (Akuma: ~/dotfiles)
-        │
-        ▼ ssh rsync
-Quartz Container (301)
-    /home/ken/apps/quartz    ← Quartz site (config + content/ → public/)
-        │
-        ▼ nginx
-        │
-        ▼
-http://172.16.12.17
+```
+SOURCE OF TRUTH
+Obsidian → Git repo (~/dotfiles/docs)
+
+        ↓
+
+BUILD LAYER (LXC 301)
+/srv/vault          ← git clone (source)
+/srv/quartz         ← working instance, content/ + public/
+
+        ↓
+
+DELIVERY LAYER (same LXC)
+nginx — serves /srv/quartz/public
+
+        ↓
+
+http://wiki.home.arpa
+```
+
+A **3-layer publishing system**: Git (truth) → Quartz build (pure function) → static output → nginx (dumb server).
+
+The container is **never** a source of truth.
 
 ## Container
 
 | Property | Value |
 |----------|-------|
 | LXC ID | 301 |
-| Hostname | quartz-base (existing, running) |
+| Hostname | quartz-base |
 | IP | `172.16.12.17` |
-| User | `ken` (present, sudo) |
+| User | `ken` (present, NOPASSWD sudo) |
 | Shell | bash |
+| Base | Ubuntu 24.04 LTS |
 
 ## Phase 0: Snapshot First
 
@@ -41,32 +52,36 @@ pct listsnapshot 301
 ssh ken@172.16.12.17
 ```
 
-## Phase 2: Verify Versions (before any install)
+## Phase 2: Verify Versions
 
 ```bash
 cat /etc/os-release
 node -v || true
 npm -v || true
-python3 --version || true
-pip --version || true
 ```
 
-Compare against application requirements. See `docs/reference/software-version-requirements.md`.
+Compare against `docs/reference/software-version-requirements.md`.
 
 ## Phase 3: Base Packages
 
 ```bash
-sudo apt update
+sudo apt update && sudo apt upgrade -y
 sudo apt install -y git curl wget rsync ca-certificates unzip build-essential
 ```
 
-## Phase 4: NOPASSWD sudo (skip if already done)
+## Phase 4: NOPASSWD Sudo
 
 ```bash
 echo "ken ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ken
 ```
 
-## Phase 5: Install Node.js
+Log out and back in, then verify:
+
+```bash
+sudo -n true && echo "ok"
+```
+
+## Phase 5: Install Node.js 22 LTS
 
 ```bash
 sudo apt remove -y nodejs npm 2>/dev/null || true
@@ -75,58 +90,67 @@ sudo apt install -y nodejs
 node -v && npm -v
 ```
 
-## Phase 6: Install pnpm
+**npm only** — no pnpm. Quartz v5 is npm-first.
+
+## Phase 6: Directory Layout
 
 ```bash
-sudo npm install -g pnpm
-pnpm -v
+sudo mkdir -p /srv/{vault,quartz,backups}
+sudo chown -R ken:ken /srv/{vault,quartz,backups}
 ```
 
-## Phase 7: Clone Quartz
+## Phase 7: Clone Quartz (Single Instance)
 
 ```bash
-mkdir -p ~/apps
-cd ~/apps
+cd /srv
 git clone https://github.com/jackyzha0/quartz.git quartz
 cd quartz
-pnpm install
-pnpm quartz --help
+npm install
 ```
 
-## Phase 8: Configure Quartz
+**No `cp -a` duplication.** `/srv/quartz` is the single working instance.
 
-Edit `~/apps/quartz/quartz.config.yaml` — set base URL, theme colors, enable/disable plugins as desired.
-
-## Phase 9: Populate Content
-
-Either rsync from the host or copy existing vault content:
+## Phase 8: Create Content Directory
 
 ```bash
-# from host:
-rsync -avz ~/dotfiles/docs/ ken@172.16.12.17:~/apps/quartz/content/
-
-# or from within the LXC if content was placed previously:
-ls ~/apps/quartz/content/
+mkdir -p /srv/quartz/content
 ```
 
-## Phase 10: Build
+## Phase 9: Connect Vault
 
 ```bash
-cd ~/apps/quartz
-pnpm quartz build
+cd /srv/vault
+git clone https://github.com/InnerTic/dotfiles.git .
+```
+
+Content lives at `/srv/vault/docs/` — the `docs/` subdirectory is the content source unit.
+
+## Phase 10: Sync Vault → Quartz Content
+
+```bash
+rsync -av --delete /srv/vault/docs/ /srv/quartz/content/
+```
+
+**Note:** rsync `docs/` not `vault/` — avoids pulling `.git/`, config files, and unrelated repo artefacts.
+
+## Phase 11: Build
+
+```bash
+cd /srv/quartz
+npx quartz build
 ls public/index.html
 ```
 
-## Phase 11: Test Locally
+## Phase 12: Test Locally
 
 ```bash
-cd ~/apps/quartz
-pnpm quartz serve
+cd /srv/quartz
+npx quartz serve
 ```
 
 Visit `http://172.16.12.17:8080` from desktop. Ctrl+C to stop.
 
-## Phase 12: Install & Configure nginx
+## Phase 13: Install & Configure nginx
 
 ```bash
 sudo apt install -y nginx
@@ -139,7 +163,7 @@ server {
     listen 80;
     server_name _;
 
-    root /home/ken/apps/quartz/public;
+    root /srv/quartz/public;
     index index.html;
 
     location / {
@@ -147,14 +171,14 @@ server {
     }
 
     location /status {
-        alias /home/ken/apps/quartz/public/status.json;
+        alias /srv/quartz/public/status.json;
         default_type application/json;
         add_header Access-Control-Allow-Origin *;
     }
 }
 ```
 
-## Phase 13: Enable Site
+## Phase 14: Enable Site
 
 ```bash
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -162,11 +186,16 @@ sudo ln -sf /etc/nginx/sites-available/quartz /etc/nginx/sites-enabled/quartz
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## Phase 14: Verify
+## Phase 15: Verify
+
+```bash
+curl http://localhost/            # should return 200
+curl http://localhost/status      # should return JSON
+```
 
 Visit `http://172.16.12.17` from desktop.
 
-## Phase 15: DNS
+## Phase 16: DNS
 
 ```
 wiki.home.arpa → 172.16.12.17
@@ -178,38 +207,52 @@ In `/etc/hosts` on Akuma as fallback:
 172.16.12.17 wiki.home.arpa quartz
 ```
 
-## Phase 16: Update Pipeline
+## Phase 17: Update Pipeline
 
-From the host (Akuma), push vault content and trigger rebuild:
+`/srv/quartz/update-wiki.sh` (created by bootstrap):
 
 ```bash
-rsync -avz --delete ~/dotfiles/docs/ ken@172.16.12.17:~/apps/quartz/content/
-ssh ken@172.16.12.17 "cd ~/apps/quartz && pnpm quartz build"
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /srv/vault
+git pull
+
+rsync -av --delete /srv/vault/docs/ /srv/quartz/content/
+
+cd /srv/quartz
+npx quartz build
 ```
 
-The host-side script at `~/dotfiles/scripts/update-quartz.sh` wraps this + status generation.
+Run from the LXC:
 
-## Phase 17: Status Endpoint (built-in)
+```bash
+./update-wiki.sh
+```
+
+Or run from the host via SSH:
+
+```bash
+ssh ken@172.16.12.17 /srv/quartz/update-wiki.sh
+```
+
+The host-side wrapper at `~/dotfiles/scripts/update-quartz.sh` does the same.
+
+## Phase 18: Status Endpoint
 
 The nginx config above already serves `/status` from `public/status.json`.
-Regenerated after every build by `scripts/quartz/generate-status.sh` (run inside the LXC):
+Regenerated after every build by `scripts/quartz/generate-status.sh`:
 
 ```json
 {
   "status": "ok",
-  "service": "quartz",
-  "version": "5.x",
-  "build_time": "2026-06-24T00:15:49Z",
-  "vault_source": "dotfiles",
-  "content_files": 152,
-  "index_size_bytes": 31965
+  "time": "2026-06-24T00:15:49+00:00",
+  "files": 152,
+  "build": { "timestamp": "...", "files": 152 },
+  "git": { "commit": "a1b2c3d", "branch": "v5" },
+  "vault": { "commit": "e4f5g6h", "branch": "deb" },
+  "runtime": { "node": "v22.14.0", "npm": "10.9.2" }
 }
-```
-
-Test:
-
-```bash
-curl http://localhost/status
 ```
 
 ## Snapshot Points
@@ -222,16 +265,46 @@ pct snapshot 301 first-sync-working
 pct snapshot 301 status-endpoint
 ```
 
+## Directory Layout (final)
+
+```
+/srv/
+├── vault/           ← git clone, docs/ is the content unit
+│   └── docs/
+├── quartz/          ← single working instance
+│   ├── content/     ← rsync snapshot from vault/docs/
+│   ├── public/      ← build output
+│   │   ├── index.html
+│   │   └── status.json
+│   └── update-wiki.sh
+└── backups/
+```
+
+## Two-Stage Bootstrap
+
+The system is built in two independent stages:
+
+1. **Host level** — `scripts/bootstrap-quartz-lxc.sh`: creates LXC on Proxmox
+2. **Container level** — `scripts/bootstrap-quartz-stack.sh`: installs Node, Quartz, nginx, update script
+
+This separation keeps the system reproducible from bare Proxmox.
+
 ## Key Constraints
 
-- Canonical docs: `~/dotfiles/docs` (on Akuma) — never edit generated files
-- Quartz content dir is a disposable copy (rsync --delete from host)
+- Canonical docs: `~/dotfiles/docs` (on Akuma, in Git) — never edit generated files
+- Quartz content directory is a disposable copy (rsync `--delete` from vault)
 - No hardcoded IPs in markdown content
 - Container serves wiki, does not initiate connections to host
 - Status endpoint makes the container self-observable — AI tooling can check `/status` before triggering rebuilds
 
 ## Open Questions
 
-1. **Trigger method** — Manual rsync+ssh from Akuma, or automate via git hook / systemd path unit?
+1. **Trigger method** — Manual SSH, git hook auto-publish, or systemd path unit?
 2. **DNS** — OPNsense reservation (`172.16.12.17` → `wiki.home.arpa`) or just `/etc/hosts` on Akuma?
-3. **Push deploy** — Host-side script to rsync content + SSH trigger build (current), or let the container pull from git?
+3. **Auto-deploy** — Git hook in vault that SSHs into the LXC and runs `update-wiki.sh`?
+
+## Next Evolution
+
+Current: manual `update-wiki.sh` invocation.
+
+Next: **event-driven publishing** — `post-receive` hook auto-syncs + auto-builds + instantly publishes.

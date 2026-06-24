@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# bootstrap-quartz-lxc.sh — Creates a Quartz LXC on Proxmox (host level)
+set -euo pipefail
+
+CTID=301
+HOSTNAME="quartz-base"
+TEMPLATE="local:vztmpl/ubuntu-24.04-standard_24.04-1_amd64.tar.zst"
+BRIDGE="vmbr0"
+STORAGE="local-lvm"
+DISK="20"
+MEMORY="4096"
+SWAP="512"
+CORES="2"
+IP="dhcp"
+
+echo "[+] Creating LXC $CTID ($HOSTNAME)"
+
+pct create $CTID $TEMPLATE \
+  --hostname $HOSTNAME \
+  --cores $CORES \
+  --memory $MEMORY \
+  --swap $SWAP \
+  --rootfs ${STORAGE}:${DISK} \
+  --net0 name=eth0,bridge=$BRIDGE,ip=$IP \
+  --unprivileged 1 \
+  --features nesting=1
+
+echo "[+] Starting container"
+pct start $CTID
+
+echo "[+] Done"
+echo "Enter with:  pct enter $CTID"
+echo "Or via SSH:  ssh ken@<ip-from-dhcp>"

@@ -185,6 +185,8 @@
   },
   "active": "08fd27d5bac4da7e",
   "lastOpenFiles": [
+    "scripts/bootstrap-quartz-stack.sh",
+    "scripts/bootstrap-quartz-lxc.sh",
     "docs/vault/software/quartz/container-plan.md",
     "README.md",
     "AGENTS.md"

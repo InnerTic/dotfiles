@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$VAULT_DIR"
 git pull
 
-rsync -av --delete "$VAULT_DIR/" "$QUARTZ_DIR/content/"
+rsync -av --delete "$VAULT_DIR/docs/" "$QUARTZ_DIR/content/"
 
 cd "$QUARTZ_DIR"
 npx quartz build

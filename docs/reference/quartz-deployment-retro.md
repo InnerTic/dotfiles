@@ -19,6 +19,20 @@ Per the plan:
 
 Estimated effort on paper: ~2–3 hours of sequential shell commands.
 
+### Corrections Applied (v3)
+
+The iterative process (v1 plan → v2 nginx/nginx-status.conf → v3 corrections) converged on:
+
+| Issue | Correction |
+|-------|-----------|
+| Both npm + pnpm | **npm-only** — Quartz v5 is npm-first, pnpm adds drift |
+| `cp -a` duplication | **Single clone** at `/srv/quartz` — no `/srv/quartz-src` |
+| rsync from vault root | **rsync `docs/` only** — avoids `.git/` and config bleed |
+| Caddy + nginx duality | **nginx-only** — LXC already had it, no reason to add Caddy |
+| `~/apps/` layout | **`/srv/` layout** — standard for container services |
+| No NOPASSWD sudo | **Added Phase 4** — `sudoers.d/ken` in provisioning |
+| Missing snapshots | **Phase 0 restored** — snapshot before each working phase |
+
 ## What It Really Took
 
 ### Phase 0: Bootstrap infrastructure (4–5 hours of earlier sessions)
@@ -64,17 +78,26 @@ The status endpoint was not in the original container-plan.md — it was added a
 - `scripts/quartz/nginx-status.conf` — nginx location snippet
 - `scripts/update-quartz.sh` — vault pull → rsync → rebuild → status
 
-### Update pipeline: NOT YET INTEGRATED
+### Bootstrap scripts created
 
-The `update-quartz.sh` script assumes `/srv/vault` and `/srv/quartz`. The LXC has `/home/ken/apps/quartz`. The vault content was either copied or synced manually — no git clone of the dotfiles repo exists on the LXC. A remote-exec wrapper is still needed to run the update from the host (Akuma).
+Two-stage bootstrap system written to match the v3 corrections:
 
-### Snapshots: NOT TAKEN
+- `scripts/bootstrap-quartz-lxc.sh` — Proxmox host level: creates LXC from template
+- `scripts/bootstrap-quartz-stack.sh` — Inside container: Node, Quartz, nginx, update script
 
-No `pct snapshot 301 <phase>` was executed at any boundary. Rollback would require a fresh snapshot or recreation from gold template.
+These make the deployment **reproducible from bare Proxmox** — destroy and rebuild from scratch.
+
+### Update pipeline corrected
+
+`scripts/update-quartz.sh` now uses `$VAULT_DIR/docs/` as the rsync source (not `$VAULT_DIR/`), matching the v3 layout.
+
+### Snapshots: NOT TAKEN (on the active LXC)
+
+No `pct snapshot 301 <phase>` was executed during deployment. The bootstrap scripts assume this is done as Phase 0 on future deployments.
 
 ## Key Lessons
 
-1. **Plan vs reality — paths drift.** The plan said `/srv/quartz` + Caddy; deployment ended up at `~/apps/quartz` + nginx. Updated the plan to match reality.
+1. **Plan vs reality — paths drift.** The plan said `/srv/quartz` + Caddy; deployment ended up at `~/apps/quartz` + nginx. v3 corrections reconcile the plan to `/srv/` + nginx — what the bootstrap scripts actually produce.
 
 2. **nix-status pattern works.** The `/status` endpoint returned useful JSON on first request after config fix — zero debugging needed. Worth the upfront script cost.
 
