@@ -34,7 +34,7 @@ The container is **never** a source of truth.
 |----------|-------|
 | LXC ID | 301 (auto-increments if taken) |
 | Hostname | quartz-base |
-| IP | `172.16.12.17` |
+| IP | DHCP (current lease: `172.16.12.17`) |
 | User | `ken` (present, NOPASSWD sudo) |
 | Shell | bash |
 | Base | Ubuntu 24.04 LTS |
@@ -48,8 +48,23 @@ pct listsnapshot 301
 
 ## Phase 1: Enter Container
 
+Find the DHCP lease:
+
 ```bash
-ssh ken@172.16.12.17
+pct list
+```
+
+Or get the IP directly:
+
+```bash
+pct enter 301
+hostname -I
+```
+
+Then SSH in:
+
+```bash
+ssh ken@<container-ip>
 ```
 
 ## Phase 2: Verify Versions
@@ -148,7 +163,7 @@ cd /srv/quartz
 npx quartz serve
 ```
 
-Visit `http://172.16.12.17:8080` from desktop. Ctrl+C to stop.
+Visit `http://<container-ip>:8080` from desktop. Ctrl+C to stop.
 
 ## Phase 13: Install & Configure nginx
 
@@ -193,7 +208,7 @@ curl http://localhost/            # should return 200
 curl http://localhost/status      # should return JSON
 ```
 
-Visit `http://172.16.12.17` from desktop.
+Visit `http://<container-ip>` from desktop.
 
 ## Phase 16: DNS
 

@@ -11,7 +11,7 @@ while pct status "$CTID" &>/dev/null; do
 done
 
 HOSTNAME="quartz-base"
-TEMPLATE="local:vztmpl/ubuntu-24.04-standard_24.04-1_amd64.tar.zst"
+TEMPLATE="local/ubuntu-24.04-standard_24.04-1_amd64.tar.zst"
 BRIDGE="vmbr0"
 STORAGE="local-lvm"
 DISK="20"
@@ -35,7 +35,5 @@ pct create "$CTID" "$TEMPLATE" \
 echo "[+] Starting container"
 pct start "$CTID"
 
-echo "[+] Done"
-echo "Container: $CTID ($HOSTNAME)"
+echo "[+] Done — Container $CTID ($HOSTNAME)"
 echo "Enter with:  pct enter $CTID"
-echo "Or via SSH:  ssh ken@<ip-from-dhcp>"
