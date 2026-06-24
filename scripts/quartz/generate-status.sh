@@ -11,8 +11,8 @@ cd "$QUARTZ_DIR"
 GIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 
-NODE_VER=$(node -v)
-NPM_VER=$(npm -v)
+NODE_VER=$(node -v 2>/dev/null || echo "missing")
+NPM_VER=$(npm -v 2>/dev/null || echo "missing")
 
 if [ -f "$QUARTZ_DIR/public/index.html" ]; then
   BUILD_STATUS="ok"
@@ -23,17 +23,17 @@ fi
 VAULT_HASH=$(git -C "$VAULT_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")
 VAULT_BRANCH=$(git -C "$VAULT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 
-TIMESTAMP=$(date -Is)
-N_FILES=$(find "$QUARTZ_DIR/public" -type f 2>/dev/null | wc -l)
+BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+FILE_COUNT=$(find "$QUARTZ_DIR/content" -name '*.md' -type f 2>/dev/null | wc -l)
 
 cat > "$OUTPUT" <<EOF
 {
   "status": "$BUILD_STATUS",
-  "time": "$TIMESTAMP",
-  "files": $N_FILES,
+  "build_time": "$BUILD_TIME",
+  "file_count": $FILE_COUNT,
   "build": {
-    "timestamp": "$TIMESTAMP",
-    "files": $N_FILES
+    "timestamp": "$BUILD_TIME",
+    "files": $FILE_COUNT
   },
   "git": {
     "commit": "$GIT_HASH",

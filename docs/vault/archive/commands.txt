@@ -1,0 +1,95 @@
+# =============================================================================
+# QUICK REFERENCE COMMANDS
+# Last updated: 2026-05-13 — refreshed to match current system state
+# =============================================================================
+
+# =============================================================================
+# LLAMA.CPP MODEL SELECTOR (INTERACTIVE)
+# =============================================================================
+llm                     # Launch interactive model selector (lists all .gguf in
+                        # ~/Downloads/llm_models/, pick by number, starts llama-server)
+                        # Alias: llm → llama-loader → ~/.local/bin/llama-loader
+                        # Uses llama-server from text-gen venv (not standalone build)
+llmstart                # Same as llm (alternative alias)
+llm list                # List models without starting server
+
+# =============================================================================
+# LLAMA.CPP QUICK CONTROLS
+# =============================================================================
+llmcheck                # Check which model is running:
+                        #   curl http://127.0.0.1:8080/v1/models
+llmk                    # Kill llama-server (alias: llmk → does nothing currently)
+                        # Manual: pkill -f llama-server
+
+# API endpoint (once server is running):
+#   http://127.0.0.1:8080/v1                  — OpenAI-compatible API base
+#   http://127.0.0.1:8080/v1/chat/completions — Chat endpoint
+#   http://127.0.0.1:8080/v1/models           — List loaded model
+
+# =============================================================================
+# LLAMA.SWAP (ALTERNATIVE — not yet installed)
+# =============================================================================
+# llama-swap is a Go proxy that lets you hot-swap models without restarting
+# the server. Install if you need to switch models frequently.
+#   https://github.com/mostlygeek/llama-swap
+# Ulauncher extension available: ulauncher-llama-swap
+
+# =============================================================================
+# FORGE (SD WebUI) — Image Generation
+# =============================================================================
+sdxl                    # Start Forge WebUI on port 7860
+                        # Alias → ~/.openclaw/workspace/scripts/forge-start.sh
+                        # Path: /workspace/sd-webui-forge-neo
+sdxlkill                # Kill Forge: pkill -f "launch.py\|webui.py"
+URL: http://172.16.5.1:7860
+
+# =============================================================================
+# TEXT GENERATION WEBUI
+# =============================================================================
+textgen                 # Start TextGen WebUI on port 7861
+                        # Alias → ~/.openclaw/workspace/scripts/textgen-start.sh
+                        # Path: /workspace/textgen
+textkill                # Kill TextGen: pkill -f "server.py"
+URL: http://172.16.5.1:7861 (Web) / :5000 (API)
+
+# =============================================================================
+# OPENCODE
+# =============================================================================
+oc                      # OpenCode TUI (alias for 'opencode')
+ocl                     # OpenCode with local models (auto-starts llama-server)
+                        # Alias → ~/.openclaw/workspace/scripts/opencode-local.sh tui
+oclw                    # OpenCode Web with local models
+                        # Alias → ~/.openclaw/workspace/scripts/opencode-local.sh web
+
+# Models configured in opencode:
+#   llama.cpp/Qwen3-VL-8B-Instruct-abliterated-v2.Q5_K_M.gguf (primary)
+#   + 5 other models in ~/Downloads/llm_models/
+
+# =============================================================================
+# MODEL SWITCHING IN OPENCODE
+# =============================================================================
+# In TUI, use: /model <provider>/<model>
+#   /model Favorites/big-pickle          — cloud (OpenRouter)
+#   /model llama.cpp/<model-filename>    — local (requires llama-server running)
+
+# =============================================================================
+# QUICK HELP
+# =============================================================================
+quickhelp               # Show all AI-related aliases
+
+# =============================================================================
+# FASTFETCH
+# =============================================================================
+# Runs automatically on terminal open (configured in ~/.zshrc)
+# Config: ~/.config/fastfetch/config.jsonc
+# Note: Powerlevel10k instant prompt disabled to preserve fastfetch colors
+# See: github.com/romkatv/powerlevel10k/issues/1834
+
+# =============================================================================
+# HISTORICAL — REMOVED / CHANGED
+# =============================================================================
+# openclaw                  → Not currently installed (venv exists but needs reinstall)
+# ~/Documents/select_llama_model.sh → Deleted, replaced by llama-loader (~/.local/bin/)
+# alias llma='/home/ken/llama.cpp/build/bin/llama-server' → llama.cpp not built standalone
+# llmakill (old alias)      → Not set, use pkill manually
+# tmux commands             → tmux not installed

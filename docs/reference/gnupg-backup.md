@@ -14,7 +14,7 @@ Creates `~/Vault/Infrastructure/Identity/GPG/` with:
 | `gpg-private.asc.gpg` | Yes (AES) | Private key — **never store without encryption** |
 | `revoke-cert.asc` | No | Revocation certificate |
 | `ownertrust.txt` | No | Ownertrust database |
-| `README.md` | No | Recovery instructions |
+| `README.md` | No | [[QUICK-START]] instructions |
 
 The decryption passphrase is **not** stored in the vault — keep it in your password manager.
 

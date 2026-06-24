@@ -25,7 +25,7 @@ Scripts at `scripts/` are mirrored from `vault/dotfiles/scripts/` — also deplo
 
 ## OS Sync (Dual-Boot: Debian 13 ↔ CachyOS)
 
-After editing aliases, SSH configs, or quick-commands in vault:
+After editing aliases, SSH configs, or [[quick-commands]] in vault:
 ```bash
 cd ~/vault && git pull                    # get latest on THIS OS
 ~/vault/dotfiles/dotfiles-sync.sh --force # push vault → dotfiles mirror
@@ -39,9 +39,9 @@ Symlinks take care of the rest — no manual file copying needed.
 |------|---------|--------|
 | Start TextGen | `textgen` | `vault/dotfiles/scripts/textgen-start.sh` |
 | Start Forge | `sdxl` | `vault/dotfiles/scripts/forge-start.sh` |
-| Start llama-server | `llmstart` | `vault/dotfiles/scripts/llama-server.sh` |
+| Start [[llama-server]] | `llmstart` | `vault/dotfiles/scripts/llama-server.sh` |
 | Forge LLM (port 8081) | `llsd` | `vault/dotfiles/scripts/forge-llm.sh` |
-| Kill llama-server | `llmk` | `.bashrc`/`.zshrc`/`config.fish` |
+| Kill [[llama-server]] | `llmk` | `.bashrc`/`.zshrc`/`config.fish` |
 | Model picker | `llama-loader` | `vault/dotfiles/scripts/llama-loader/llama-loader.sh` |
 | Health check | `healthcheck` | `vault/dotfiles/scripts/healthcheck.sh` |
 

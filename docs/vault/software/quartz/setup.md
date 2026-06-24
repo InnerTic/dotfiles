@@ -58,5 +58,5 @@ Deploy to LXC container (see [container-plan.md](./container-plan.md)) with Cadd
 ## Known Issues
 
 - **ELOOP on build:** Content symlink was circular — restore from git and re-link
-- **Plugins not found:** Run `npx quartz plugin install` before building
+- **[[plugins]] not found:** Run `npx quartz plugin install` before building
 - **npm ci vs npm install:** Use `npm ci` for reproducible builds from lockfile

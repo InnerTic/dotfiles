@@ -1,0 +1,30 @@
+# SSH configuration file
+
+Host proxmox
+    HostName 172.16.7.1
+    User root
+    IdentityFile ~/.ssh/id_ed25519
+    PubkeyAuthentication yes
+    PreferredAuthentications publickey
+
+Host quartz
+    HostName 172.16.12.17
+    User ken
+    IdentityFile ~/.ssh/id_ed25519
+
+Host quartz-ai
+    HostName 172.16.12.17
+    User ai
+    IdentityFile ~/.ssh/id_ed25519
+
+Host pihole
+    HostName 172.16.12.1
+    User ken
+
+Host openclawVM
+    HostName 172.16.12.12
+    User ken
+
+Host pihole/clawVM
+    HostName 172.16.12.3
+    User ken

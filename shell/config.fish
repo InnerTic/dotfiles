@@ -17,3 +17,6 @@ alias oclw='opencode web --provider llama.cpp'
 function fish_greeting
     fastfetch
 end
+
+# uv
+fish_add_path "/home/ken/.local/bin"

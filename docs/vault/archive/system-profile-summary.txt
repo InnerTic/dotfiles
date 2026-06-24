@@ -1,0 +1,76 @@
+# System Profile Summary - Akuma
+# Last updated: 2026-05-13 — kernel, driver, DE versions refreshed
+# Source of truth: /mnt/workspace/docs/system_profile_summary.txt
+# =============================================================================
+
+## System Overview
+- **OS**: CachyOS Linux
+- **Kernel**: 7.0.5-2-cachyos
+- **Desktop Environment**: KDE Plasma 6.6.4
+- **KDE Frameworks**: 6.26.0
+- **Qt**: 6.11.0
+- **Manufacturer**: ASUS
+- **CPU**: 16 × AMD Ryzen 7 5700G
+- **RAM**: 48 GiB (46.3 GiB usable)
+
+## Graphics Configuration
+- **Primary GPU**: NVIDIA GeForce RTX 3060
+  - **Driver**: 580.159.03 (580xx DKMS — CachyOS repo)
+  - **CUDA**: 13.0
+- **Secondary GPU**: AMD Radeon Graphics (integrated)
+
+> **NVIDIA Driver Notes (May 2026):**
+> NVIDIA reorganized driver naming in early April 2026. The 580xx series (proprietary DKMS) was only available via AUR/yay until ~April 30, when CachyOS added `nvidia-580xx-dkms` + matching utils to their own repo. If reinstalling fresh, use:
+>   `sudo pacman -S nvidia-580xx-dkms nvidia-580xx-utils nvidia-580xx-settings lib32-nvidia-580xx-utils opencl-nvidia-580xx lib32-opencl-nvidia-580xx`
+> The open module (`nvidia-open-dkms`) is the default in extra repo (595 branch).
+
+## Storage Layout (Current)
+*Note: UUIDs will vary by hardware*
+- **Root Partition**: btrfs (subvol=/@, defaults,noatime,compress=zstd)
+- **Boot Partition**: vfat (defaults,umask=0077)
+- **Home Partition**: btrfs (defaults,noatime,compress=zstd)
+- **ssd_storage**: ext4 (defaults,noatime) — sdb1, bind mounts for user dirs
+- **Data-HDD**: ntfs-3g (defaults,uid=1000,gid=1000,umask=000,noatime,nofail) — sdc2
+- **VM-Disks**: xfs (defaults,noatime) — sde1, mounted at /var/lib/libvirt/images
+- **Workspace**: ext4 (defaults,noatime) — nvme0n1p1
+
+**Bind mounts** (8 total):
+  Documents, Downloads, Pictures, Videos, Desktop, Music, go, MEGA
+  Source: /mnt/ssd_storage/ken/ → /home/ken/
+  Uses x-gvfs-hide to suppress KDE volume icons
+
+**Symlinks**:
+  /workspace → /mnt/workspace  (Steam Proton Z: drive compat)
+  ~/workspace → /mnt/workspace
+  ~/ssd_storage → /mnt/ssd_storage
+  # ~/m2_storage → /mnt/m2_storage (DEPRECATED — now /var/lib/libvirt/images)
+  ~/Models → ~/Downloads/llm_models
+
+## Installed Package Categories
+- AI/Development: opencode, cuda, cudnn, python, git, cmake, go, etc.
+- Terminal/Shell: alacritty, tmux, micro, nano, zsh, etc.
+- Monitoring: btop, bottom, nvtop, glances, conky, fastfetch
+- Fonts: Noto fonts, cantarell, ttf-bitstream-vera, etc.
+- Media: vlc, gstreamer plugins, ffmpeg, etc.
+- Storage: btrfs, xfs, rsync, exfat, ntfs, etc.
+- Networking: bind, nfs, netctl, xl2tpd, etc.
+- Utilities: meld, pcmanfm, unrar, filelight, kio-admin, etc.
+- NVIDIA Driver: nvidia-580xx-dkms + utils (CachyOS repo)
+- KDE/Plasma: kdialog, kwalletmanager, phonon-qt6-vlc, poppler-glib, xsettingsd
+- System/Hardware: flatpak, fwupd, smartmontools, hdparm, mesa-utils, nvtop
+
+## Shell Configuration
+- **Shell**: Zsh with Oh My Zsh + Powerlevel10k
+- **Dotfiles**: ~/dotfiles/ (git@github.com:InnerTic/dotfiles.git)
+- **Git user**: InnerTic / innertic@users.noreply.github.com
+- **Key aliases**: llm, llmcheck, sdxl, sdxlkill, textgen, textkill, oc, ocl, oclw, quickhelp
+- **Fastfetch**: runs on terminal open (via ~/.zshrc)
+- **P10k instant prompt**: DISABLED — it strips colors from fastfetch output (known issue #1834)
+
+## Configuration Philosophy
+- CachyOS (Arch-based) with bleeding-edge but stable packages
+- AI/development workflow with terminal-first approach
+- KDE Plasma desktop with customizations
+- Hybrid GPU setup (NVIDIA primary + AMD integrated)
+- Extensive bind mounts for flexible storage organization
+- All configs in dotfiles repo for fresh-rebuild pull
