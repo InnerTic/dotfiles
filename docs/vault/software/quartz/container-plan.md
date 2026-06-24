@@ -32,7 +32,7 @@ The container is **never** a source of truth.
 
 | Property | Value |
 |----------|-------|
-| LXC ID | 301 |
+| LXC ID | 301 (auto-increments if taken) |
 | Hostname | quartz-base |
 | IP | `172.16.12.17` |
 | User | `ken` (present, NOPASSWD sudo) |
