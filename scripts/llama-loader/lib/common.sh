@@ -20,7 +20,7 @@ MODELS_DIR="$HOME/Downloads/llm_models"
 MODEL_STORAGE="$MODELS_DIR/model_storage"
 SSD_DIR="$MODELS_DIR"
 HDD_DIR="$MODEL_STORAGE"
-LLAMA_SERVER="$HOME/dotfiles/scripts/llama-server.sh"
+LLAMA_SERVER="$HOME/infra/llama-server.sh"
 STATE_DIR="$HOME/.config/llama-loader"
 STATE_FILE="$STATE_DIR/state.json"
 MODEL_STATE_DIR="$STATE_DIR/models"
@@ -267,8 +267,8 @@ show_snapshot() {
   fi
   echo
   echo "CONTEXT: $CTX_SIZE  |  NP: $NP_VAL  |  NGL: $NGL  |  PORT: $PORT"
-  local cli_line="CLI:  --np $NP_VAL  |  --ngl $NGL  |  --port $PORT"
-  [ -n "$TENSOR_SPLIT" ] && cli_line+="  |  --split $TENSOR_SPLIT"
+  local cli_line="CLI:  -np $NP_VAL  |  -ngl $NGL  |  --port $PORT"
+  [ -n "$TENSOR_SPLIT" ] && cli_line+="  |  --tensor-split $TENSOR_SPLIT"
   echo "$cli_line"
   echo
   echo "INTERPRETATION:"

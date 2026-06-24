@@ -1,0 +1,66 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         QUICK START COMMANDS                                 ║
+║                     Last updated: 2026-06-22                                 ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  ── LLAMA.CPP (local AI models) ──                                          ║
+║                                                                              ║
+║    llm           Interactive model selector (lists & picks by number)        ║
+║    llmcheck      Check which model is running (curl :8080/v1/models)         ║
+║    llmk          Kill llama-server (pkill -f llama-server)                   ║
+║    llmstart      Start llama-server (~/infra/llama-server.sh)                ║
+║    test-llm      Test model loader (~/.local/bin/test-llma-loader)           ║
+║                                                                              ║
+║  ── FORGE (SD WebUI) - Image Generation ──                                   ║
+║                                                                              ║
+║    sdxl          Start Forge WebUI (port 7860)                               ║
+║    sdxlkill      Kill Forge (pkill -f "launch.py\|webui.py")                 ║
+║    llsd          Forge LLM (port 8081, P40)                                  ║
+║    URL: http://172.16.5.1:7860                                               ║
+║                                                                              ║
+║  ── TEXT GENERATION WEBUI ──                                                 ║
+║                                                                              ║
+║    textgen       Start TextGen WebUI (port 7861)                            ║
+║    textkill      Kill TextGen (pkill -f "server.py")                         ║
+║    URL: http://172.16.5.1:7861 (Web) / :5000 (API)                         ║
+║                                                                              ║
+║  ── OPENCODE ──                                                             ║
+║                                                                              ║
+║    oc            OpenCode TUI                                                ║
+║    ocl           OpenCode with local llama.cpp model                         ║
+║    oclw          OpenCode Web UI with local model                           ║
+║    opencode -c   OpenCode with -c (chat from stdin)                          ║
+║                                                                              ║
+║  ── QUICK HELP ──                                                            ║
+║                                                                              ║
+║    quickhelp     Print this file                                              ║
+║                                                                              ║
+║  ── SSH HOSTS (from ~/.ssh/config) ──                                       ║
+║                                                                              ║
+║    ssh proxmox       Proxmox VE host (172.16.7.1)                            ║
+║    ssh quartz        Quartz wiki LXC (172.16.12.17)                          ║
+║    ssh pihole        Pi-hole DNS LXC (172.16.12.1)                           ║
+║    ssh openclawVM    OpenClaw VM (172.16.12.12)                              ║
+║                                                                              ║
+║  ── FREQUENTLY USED (from shell history) ──                                 ║
+║                                                                              ║
+║    tmux              Terminal multiplexer (tmux 3.5a)                        ║
+║    lsd               Modern ls replacement (lsd -lah, lsd --tree)             ║
+║    fastfetch         System info (runs on terminal open)                     ║
+║    fish              Default interactive shell                                ║
+║    cat (batcat)      Cat with syntax highlighting (batcat)                   ║
+║    find (fdfind)     Fast file search (fdfind)                               ║
+║                                                                              ║
+║  ── MODEL FILES ──                                                          ║
+║                                                                              ║
+║    Local models: ~/Downloads/llm_models/                                     ║
+║    SSD models:   ~/Downloads/llm_models/                                     ║
+║    HDD models:   /mnt/data/model_storage/                                   ║
+║                                                                              ║
+║  ── NETWORK ──                                                               ║
+║                                                                              ║
+║    Akuma: 172.16.5.1    Proxmox: 172.16.7.1                                  ║
+║    pihole: 172.16.12.1  MikroTik: 172.16.88.1                               ║
+║    Quartz: 172.16.12.17 ZimaBoard: 172.16.1.1                               ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝

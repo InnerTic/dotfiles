@@ -8,12 +8,12 @@ Host proxmox
     PreferredAuthentications publickey
 
 Host quartz
-    HostName 172.16.1.44
+    HostName 172.16.12.17
     User ken
-    IdentityFile ~/.ssh/id_rsa
+    IdentityFile ~/.ssh/id_ed25519
 
 Host quartz-ai
-    HostName 172.16.1.44
+    HostName 172.16.12.17
     User ai
     IdentityFile ~/.ssh/id_ed25519
 

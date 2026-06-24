@@ -71,9 +71,8 @@ fi
 # Strict integer validation (hard gate)
 NP_VAL="$(sanitize_np "$NP_RAW" 2>/dev/null || echo "1")"
 
-# CLI derivation (runtime only)
-NP_ARG="--np $NP_VAL"
-GPU_ARG="--main-gpu 0"
+# CLI derivation (runtime only — used by dialect compiler)
+MAIN_GPU="${MAIN_GPU:-0}"
 
 show_snapshot "LAST USED"
 decision_gate

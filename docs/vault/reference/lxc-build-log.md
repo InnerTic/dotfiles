@@ -254,6 +254,7 @@ Expected: key-based login (password fallback initially before key fix).
 | `scripts/build-gold-lxc.sh` | Proxmox host | Builds gold template (VMID 9000) — `pct create` + install + `pct template` |
 | `scripts/lxc-provision.sh` | Proxmox host | Creates+configures a single container from template (includes SSH key, /srv, snapshot) |
 | `scripts/lxc-bootstrap.sh` | Inside container | Shell environment setup — fish/zsh/fonts/aliases |
+| `docs/vault/software/quartz/container-plan.md` | Reference | Full Quartz deployment plan — Node 22, pnpm, Caddy, DNS |
 
 ### Gold image pipeline (recommended)
 
@@ -273,6 +274,22 @@ pct start 301
 
 The gold image (`pct template 9000`) becomes read-only. Every clone is identical — no install-time drift, no runtime differences.
 
+> ⚠️ **MAC address preservation:** Replacing a container (destroy + clone) assigns a new random MAC to `eth0`. OPNsense maps IPs to MACs via static DHCP — new MAC means new IP, which breaks SSH configs and DNS. Before destroying the old container, note its MAC:
+>
+> ```bash
+> pct config <VMID> | grep net0
+> # → net0: name=eth0,bridge=vmbr0,hwaddr=AA:BB:CC:DD:EE:FF,ip=dhcp
+> ```
+>
+> Then set the same MAC on the replacement:
+>
+> ```bash
+> pct clone 9000 301 --hostname quartz-base --full
+> pct set 301 -net0 name=eth0,bridge=vmbr0,hwaddr=AA:BB:CC:DD:EE:FF,ip=dhcp
+> ```
+>
+> OPNsense sees the same MAC, hands out the same lease, and all SSH aliases keep working.
+
 ---
 
 ## 🧠 Key Lessons
@@ -283,5 +300,11 @@ The gold image (`pct template 9000`) becomes read-only. Every clone is identical
 ### 2. Proxmox LXC networking rule
 All containers attach to `vmbr0`. IP comes from OPNsense DHCP unless overridden.
 
-### 3. Agent-safe design pattern
+### 3. MAC address drives IP stability
+OPNsense assigns static DHCP leases by MAC. Recreating a container gives it a new random MAC → new IP → all SSH aliases break. Always copy the old `hwaddr` when replacing a container (see gold image pipeline note above).
+
+### 4. Always verify runtime versions before installing
+Distro packages are often too old (Debian 12 ships Node 18, but Quartz v5 needs >=22). Remove distro packages, use upstream vendor repos. See `docs/reference/software-version-requirements.md`.
+
+### 5. Agent-safe design pattern
 Create → configure → snapshot → then allow agent access.

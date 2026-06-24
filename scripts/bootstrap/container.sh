@@ -7,5 +7,5 @@ PROFILE_LABEL="container"
 
 . "$SCRIPT_DIR/lib/common.sh"
 
-MODULES="12-containers.sh 20-shell.sh 30-git.sh 60-ssh.sh"
+MODULES="12-containers.sh 20-shell.sh 30-git.sh 60-ssh.sh 70-gnupg.sh"
 . "$SCRIPT_DIR/lib/runner.sh"

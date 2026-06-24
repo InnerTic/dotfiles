@@ -1,7 +1,0 @@
-Key files:
-- `~/.local/bin/llama-loader` — interactive GGUF model selector
-- `~/.openclaw/workspace/scripts/textgen-start.sh` — TextGen WebUI (port 7861)
-- `~/.openclaw/workspace/scripts/llama-start.sh` — llama-server launcher
-- `/workspace/textgen` — TextGen WebUI installation
-- `/mnt/workspace/llama.cpp/build/bin/llama-server` — CUDA 12.9 build (sm_61 + sm_86)
-- `/mnt/workspace/sd-webui-forge-neo` — SD WebUI Forge Neo

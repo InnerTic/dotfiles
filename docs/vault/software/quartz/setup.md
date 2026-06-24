@@ -2,73 +2,61 @@
 
 Quartz v5.0.0 — static site generator for the Obsidian vault.
 
+**Requires:** Node >=22, npm >=10.9.2. Debian 12 ships Node 18 — must use NodeSource.
+
+## Verify First
+
+```bash
+node -v
+npm -v
+```
+
+If Node <22, remove distro packages and install from NodeSource:
+
+```bash
+sudo apt remove -y nodejs npm
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+node -v && npm -v
+```
+
 ## Installation
 
 ```bash
-cd ~
-git clone https://github.com/jackyzha0/quartz.git
-cd ~/quartz
-npm install
+cd /srv
+git clone https://github.com/jackyzha0/quartz.git quartz-src
+cd quartz-src
+npm ci
 ```
 
 ## Configuration
 
 ```bash
-# Create config from default
 cp quartz.config.default.yaml quartz.config.yaml
 # Edit baseUrl, theme, plugins as needed
 ```
 
-## Content Symlink
+## Content
 
 ```bash
-# Link your Obsidian vault
-ln -sf ~/dotfiles/docs ~/quartz/content
-```
-
-## Plugin Installation
-
-```bash
-# Install all plugins from lockfile
-npx quartz plugin install
+ln -sf /srv/vault/docs/ /srv/quartz/content
+# or rsync for isolated copy:
+# rsync -av --delete /srv/vault/ /srv/quartz/content/
 ```
 
 ## Build
 
 ```bash
 npx quartz build
-# Output goes to public/
+npx quartz build --serve    # dev server with live reload
 ```
 
-Serve locally:
+## Production
 
-```bash
-npx quartz build --serve
-```
-
-## Maintenance Commands
-
-| Command | Purpose |
-|---------|---------|
-| `npx quartz build` | Build static site |
-| `npx quartz build --serve` | Build + dev server with live reload |
-| `npx quartz plugin install` | Install/update plugins from lockfile |
-| `npx quartz plugin list` | List installed plugins |
-| `npx quartz upgrade` | Upgrade Quartz to latest version |
+Deploy to LXC container (see [container-plan.md](./container-plan.md)) with Caddy reverse proxy at `wiki.home.arpa`.
 
 ## Known Issues
 
-**ELOOP on build:** Content symlink was circular. Fix:
-
-```bash
-# Check if docs is a symlink to itself
-ls -la ~/dotfiles/docs
-# If broken, restore from git and re-link
-rm ~/dotfiles/docs && git checkout HEAD -- docs
-```
-
-**Plugins not found on build:** Run plugin install first:
-
-```bash
-npx quartz plugin install
-```
+- **ELOOP on build:** Content symlink was circular — restore from git and re-link
+- **Plugins not found:** Run `npx quartz plugin install` before building
+- **npm ci vs npm install:** Use `npm ci` for reproducible builds from lockfile

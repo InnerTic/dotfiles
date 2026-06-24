@@ -31,7 +31,7 @@ LAST_GPU_MODE=$(resolve_default "gpu_mode" "3")
 read -p "Select GPU mode [1-6, default: $LAST_GPU_MODE]: " GPU_MODE
 GPU_MODE=${GPU_MODE:-$LAST_GPU_MODE}
 
-GPU_ARG="--main-gpu 0"
+MAIN_GPU=0
 TENSOR_SPLIT=""
 
 case "$GPU_MODE" in
@@ -40,7 +40,7 @@ case "$GPU_MODE" in
   # 1. Single GPU (3060)
   # ------------------------------------------------------------
   1)
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     TENSOR_SPLIT=""
     GPU_MODE_LABEL="RTX_3060_FAST_PATH"
     ;;
@@ -49,16 +49,16 @@ case "$GPU_MODE" in
   # 2. Single GPU (P40)
   # ------------------------------------------------------------
   2)
-    GPU_ARG="--main-gpu 1"
+    MAIN_GPU=1
     TENSOR_SPLIT=""
     GPU_MODE_LABEL="P40_VRAM_MAX"
     ;;
 
   # ------------------------------------------------------------
-  # 3. Capacity-balanced dual (IMPORTANT SPECIAL CASE)
+  # 3. Capacity-balanced dual
   # ------------------------------------------------------------
   3)
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     TENSOR_SPLIT="50,50"
     GPU_MODE_LABEL="DUAL_CAPACITY_BALANCED"
     ;;
@@ -67,7 +67,7 @@ case "$GPU_MODE" in
   # 4. P40-heavy dual
   # ------------------------------------------------------------
   4)
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     TENSOR_SPLIT="10,90"
     GPU_MODE_LABEL="DUAL_P40_HEAVY"
     ;;
@@ -76,7 +76,7 @@ case "$GPU_MODE" in
   # 5. 3060-heavy dual
   # ------------------------------------------------------------
   5)
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     TENSOR_SPLIT="90,10"
     GPU_MODE_LABEL="DUAL_3060_HEAVY"
     ;;
@@ -87,7 +87,7 @@ case "$GPU_MODE" in
   6)
     echo "Enter custom tensor split (e.g. 25,75):"
     read -p "> " TENSOR_SPLIT
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     GPU_MODE_LABEL="DUAL_MANUAL"
     ;;
 
@@ -95,7 +95,7 @@ case "$GPU_MODE" in
   # fallback
   # ------------------------------------------------------------
   *)
-    GPU_ARG="--main-gpu 0"
+    MAIN_GPU=0
     TENSOR_SPLIT="50,50"
     GPU_MODE_LABEL="DUAL_CAPACITY_BALANCED_DEFAULT"
     ;;

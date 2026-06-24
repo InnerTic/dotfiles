@@ -36,6 +36,6 @@ compile_cli() {
   # port
   ARGS+=(--port "$PORT")
 
-  # output safe-quoted string
-  printf '%q ' "${ARGS[@]}"
+  # populate global CMD array
+  CMD=("$LLAMA_SERVER" "${ARGS[@]}")
 }

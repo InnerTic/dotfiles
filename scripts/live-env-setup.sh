@@ -63,12 +63,12 @@ echo "  ✓ dotfiles ready"
 # =============================================================================
 echo ""
 echo "=== STEP 2: Installing packages..."
-PKGLIST="$HOME_DIR/dotfiles/docs/system_backup/pkglist-apps.txt"
+PKGLIST="$HOME_DIR/dotfiles/pkglist/debian.txt"
 if [[ -f "$PKGLIST" ]]; then
-  cp "$PKGLIST" "$TARGET/tmp/pkglist-apps.txt"
+  cp "$PKGLIST" "$TARGET/tmp/pkglist.txt"
   chroot "$TARGET" bash -c '
     apt update
-    grep -v "^#" /tmp/pkglist-apps.txt | grep -v "^$" | xargs apt install -y 2>/dev/null || true
+    grep -v "^#" /tmp/pkglist.txt | grep -v "^$" | xargs apt install -y 2>/dev/null || true
   '
   echo "  ✓ packages installed"
 else

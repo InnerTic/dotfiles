@@ -2,3 +2,13 @@
 	defaultBranch = main
 [safe]
 	directory = /mnt/data/_books_raws/asuka-translation
+[user]
+	signingkey = 448AE0C2AB209842
+	email = ken.isley@gmail.com
+	name = Ken Isley
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[gpg]
+	program = gpg
