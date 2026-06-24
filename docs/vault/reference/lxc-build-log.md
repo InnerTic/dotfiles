@@ -253,7 +253,7 @@ Expected: key-based login (password fallback initially before key fix).
 |--------|----------|-------------|
 | `scripts/build-gold-lxc.sh` | Proxmox host | Builds gold template (VMID 9000) — `pct create` + install + `pct template` |
 | `scripts/lxc-provision.sh` | Proxmox host | Creates+configures a single container from template (includes SSH key, /srv, snapshot) |
-| `scripts/lxc-bootstrap.sh` | Inside container | Shell environment setup — fish/zsh/fonts/aliases |
+| `scripts/lxc-bootstrap.sh` | Inside container | Shell environment [[setup]] — fish/zsh/fonts/aliases |
 | `docs/vault/software/quartz/container-plan.md` | Reference | Full Quartz deployment plan — Node 22, pnpm, Caddy, DNS |
 
 ### Gold image pipeline (recommended)

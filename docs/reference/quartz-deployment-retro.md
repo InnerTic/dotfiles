@@ -4,7 +4,7 @@
 
 Deploy Quartz v5 digital garden on a Proxmox LXC container (CT 301, `quartz-base`, `172.16.12.17`) to serve the Obsidian vault as a static site with a self-observable `/status` endpoint.
 
-The canonical plan lived in `docs/vault/software/quartz/container-plan.md` — 18 phases covering Node 22 install, Quartz setup, web server config, DNS, update script, and status endpoint.
+The canonical plan lived in `docs/vault/software/quartz/container-plan.md` — 18 phases covering Node 22 install, Quartz [[setup]], web server config, DNS, update script, and status endpoint.
 
 The LXC was cloned from a gold template (CT 300) built with `scripts/build-gold-lxc.sh` and provisioned with `scripts/lxc-provision.sh`.
 
@@ -73,7 +73,7 @@ LXC already had nginx on port 80. We reconfigured it.
 
 ### Status endpoint: built proactively (~20m script creation + removal of `+` symlink)
 
-The status endpoint was not in the original container-plan.md — it was added as Phase 18 during this work. Three files were created:
+The status endpoint was not in the original [[container-plan]].md — it was added as Phase 18 during this work. Three files were created:
 - `scripts/quartz/generate-status.sh` — emits `status.json` with build metadata
 - `scripts/quartz/nginx-status.conf` — nginx location snippet
 - `scripts/update-quartz.sh` — vault pull → rsync → rebuild → status
