@@ -89,6 +89,8 @@ else
   tag_rollback
   echo "Syncing dotfiles mirror..."
   rsync $RSYNC_OPTS "$VAULT_SRC/" "$DOTFILES_MIRROR/"
+  echo "Committing and pushing dotfiles mirror..."
+  (cd "$DOTFILES_MIRROR" && git add -A && git commit -m "sync from vault $(date +%Y-%m-%d)" && git push) || echo "  (git commit/push skipped — nothing to commit or remote unavailable)"
   echo "Done."
 fi
 
