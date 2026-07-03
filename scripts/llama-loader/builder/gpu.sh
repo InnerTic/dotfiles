@@ -41,7 +41,7 @@ case "$GPU_MODE" in
   # ------------------------------------------------------------
   1)
     MAIN_GPU=0
-    TENSOR_SPLIT=""
+    TENSOR_SPLIT="100,0"
     GPU_MODE_LABEL="RTX_3060_FAST_PATH"
     ;;
 
@@ -50,7 +50,7 @@ case "$GPU_MODE" in
   # ------------------------------------------------------------
   2)
     MAIN_GPU=1
-    TENSOR_SPLIT=""
+    TENSOR_SPLIT="0,100"
     GPU_MODE_LABEL="P40_VRAM_MAX"
     ;;
 
