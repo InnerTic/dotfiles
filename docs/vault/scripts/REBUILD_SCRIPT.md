@@ -36,7 +36,6 @@ echo "=== STEP 1: Installing system packages..."
 
 sudo apt update
 sudo apt install -y \
-  ntfs-3g btrfs-progs xfsprogs \
   build-essential cmake git
 
 if [[ -f ~/dotfiles/docs/system_backup/pkglist-apps.txt ]]; then
@@ -58,7 +57,7 @@ else
 # ssd_storage (sdb)
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
 # Data-HDD (sdc)
-UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail,uid=1000,gid=1000,umask=000 0 2
+UUID=f0b1d710-a0a6-4ef1-83ce-fc9e55d577d8 /media/HDD_Data btrfs defaults,x-gvfs-show,nofail 0 2
 # nvme-workspace (nvme0n1p1)
 UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301 /mnt/workspace ext4 defaults,nofail 0 2
 # m2_storage (sdd)

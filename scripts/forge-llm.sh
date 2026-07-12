@@ -7,7 +7,7 @@ C="\033[1;36m" N="\033[0m" G="\033[32m" Y="\033[33m" R="\033[31m"
 
 STATE_DIR="$HOME/.config/forge-llm"
 STATE_FILE="$STATE_DIR/state.json"
-MODEL_DIRS=("$HOME/Downloads/llm_models" "/mnt/data/model_storage")
+MODEL_DIRS=("$HOME/Downloads/llm_models" "/media/HDD_Data/model_storage")
 
 mkdir -p "$STATE_DIR"
 

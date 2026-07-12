@@ -37,7 +37,7 @@ Plus:
 
 `gemma-4-26B-A4B-APEX-Compact.gguf` — 14G (MoE 4/26 experts, ~7B active)
 
-**Path:** `/mnt/data/model_storage/gemma-4-26B-A4B-APEX-Compact.gguf`
+**Path:** `/media/HDD_Data/model_storage/gemma-4-26B-A4B-APEX-Compact.gguf`
 
 **Research wiki:** [`gemma-4-26B-APEX-Compact` →](../../../../../../ai-model-research/individual-models/gemma-4-26b-apex-compact.md)
 

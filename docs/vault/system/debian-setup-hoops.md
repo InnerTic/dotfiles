@@ -17,17 +17,14 @@ In `/etc/fstab`, mount [[drives-and-mounts]] by UUID (not `/dev/sdX` — those c
 Find UUIDs with: `blkid`
 
 [[drives-and-mounts]]:
-- `/dev/disk/by-uuid/930A20DB0A20BB6D` → `/mnt/ssd_storage` (ntfs-3g)
-- `/dev/disk/by-uuid/B8763EAB763E6A15` → `/mnt/data` (ntfs-3g)
-- `/dev/disk/by-uuid/D4B048DFB048C733` → `/mnt/m2_storage` (ntfs-3g)
 - `/dev/disk/by-uuid/45CD93E2614CE44B` → `/mnt/workspace` (ext4)
 
 Bind [[drives-and-mounts]]:
 - `/mnt/ssd_storage/Models` → `/mnt/workspace/models`
 - `/mnt/ssd_storage/stable_diffusion` → `/mnt/workspace/stable_diffusion`
 - `/mnt/ssd_storage/datasets` → `/mnt/workspace/datasets`
-- `/mnt/data/Documents` → `/mnt/workspace/docs`
-- `/mnt/data/Github` → `/mnt/workspace/github`
+- `/media/HDD_Data/Documents` → `/mnt/workspace/docs`
+- `/media/HDD_Data/Github` → `/mnt/workspace/github`
 - `/mnt/m2_storage/Downloads` → `/mnt/workspace/downloads`
 - `/mnt/m2_storage/backups` → `/mnt/workspace/backups`
 - `/mnt/ssd_storage` → `/mnt/workspace/ssd_storage`

@@ -55,7 +55,7 @@
 ║                                                                              ║
 ║    Local models: ~/Downloads/llm_models/                                     ║
 ║    SSD models:   ~/Downloads/llm_models/                                     ║
-║    HDD models:   /mnt/data/model_storage/                                   ║
+║    HDD models:   /media/HDD_Data/model_storage/                                   ║
 ║                                                                              ║
 ║  ── NETWORK ──                                                               ║
 ║                                                                              ║

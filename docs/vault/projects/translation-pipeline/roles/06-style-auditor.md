@@ -28,7 +28,7 @@ Issue report with severity (HIGH/MEDIUM/LOW). No rewriting.
 
 `QiMing-Gemma-3-4b.f16.gguf` — 7.3G, 4B params (dense, f16)
 
-**Path:** `/mnt/data/model_storage/QiMing-Gemma-3-4b.f16.gguf`
+**Path:** `/media/HDD_Data/model_storage/QiMing-Gemma-3-4b.f16.gguf`
 
 **Research wiki:** [`QiMing-Gemma-3-4B` →](../../../../../../ai-model-research/individual-models/qiming-gemma-3-4b.md)
 

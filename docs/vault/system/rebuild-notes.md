@@ -65,7 +65,6 @@ CUDA_VISIBLE_DEVICES=1 /mnt/workspace/llama.cpp/build/bin/llama-server \
 
 ## Storage Layout
 - `/mnt/ssd_storage` — sdb1 (ssd_storage, ext4, 465G) [[drives-and-mounts]] UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d
-- `/mnt/data` — sdc2 (Data-HDD, ntfs-3g, 3.6T) [[drives-and-mounts]] UUID=7E303CAF303C6FEF
 - `/mnt/m2_storage` — sde1 (m2_storage, btrfs, 476G) [[drives-and-mounts]] UUID=6befefdd-f232-4757-9eea-9f7051da3c0b
 - `/mnt/workspace` — nvme0n1p1 (nvme-workspace, ext4, 465G) [[drives-and-mounts]] UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301
 

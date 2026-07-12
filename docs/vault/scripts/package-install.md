@@ -15,7 +15,6 @@ set -euo pipefail
 PKGLIST="${1:-$HOME/dotfiles/docs/system_backup/pkglist-apps.txt}"
 PKG_MANAGER="apt"         # <-- swap: apt (Debian) or pacman (CachyOS)
 DISTRO_PKGS=(             # <-- swap: base packages for your distro
-  ntfs-3g btrfs-progs xfsprogs
   build-essential cmake git
 )
 # For CachyOS, use instead:

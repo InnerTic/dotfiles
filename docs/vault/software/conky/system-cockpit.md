@@ -125,7 +125,7 @@ DISK
 ROOT ${fs_used /}/${fs_size /} ${fs_bar /}
 SSD  ${fs_used /mnt/ssd_storage}/${fs_size /mnt/ssd_storage}
 NVME ${fs_used /mnt/workspace}/${fs_size /mnt/workspace}
-DATA ${fs_used /mnt/data}/${fs_size /mnt/data}
+DATA ${fs_used /media/HDD_Data}/${fs_size /media/HDD_Data}
 M2   ${fs_used /mnt/m2_storage}/${fs_size /mnt/m2_storage}
 ```
 

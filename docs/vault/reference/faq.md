@@ -57,7 +57,7 @@ See [[reference/workspace-symlink-strategy]] for the full rationale.
 |------|-------|-------|
 | AI models, projects | nvme (fastest) | `/mnt/workspace` |
 | Documents, media | SSD | `/mnt/ssd_storage` |
-| Long-term backup | HDD (largest) | `/mnt/data` |
+| Long-term backup | HDD (largest) | `/media/HDD_Data` |
 | VMs | sde3 | `/mnt/vm-disks` |
 | MX Linux (secondary OS) | sde2 | rootMX25 (ext4) |
 | Configs, caches | sdd | `/home` (ephemeral) |

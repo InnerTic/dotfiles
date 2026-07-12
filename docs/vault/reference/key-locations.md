@@ -71,7 +71,6 @@ SSD_STORAGE:
   Mount: /mnt/ssd_storage (sdb1, ext4)
   Bind [[drives-and-mounts]]: Documents, Downloads, Pictures, Videos, Desktop, Music, go, MEGA
 DATA_HDD:
-  Mount: /mnt/data (sdc2, ntfs-3g)
 VM_DISKS:
   Mount: /var/lib/libvirt/images (sde1, xfs) — VM storage
 WORKSPACE_DRIVE:

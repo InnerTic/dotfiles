@@ -37,7 +37,7 @@ Takes literal translation and improves readability / natural English prose.
 
 `gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf` — 12G, 12B params (dense, Q8_0)
 
-**Path:** `/mnt/data/model_storage/gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf`
+**Path:** `/media/HDD_Data/model_storage/gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-q8_0.gguf`
 
 **Research wiki:** [`gemma-3-12B-polaris-heretic` →](../../../../../../ai-model-research/individual-models/gemma-3-12b-polaris-heretic.md)
 

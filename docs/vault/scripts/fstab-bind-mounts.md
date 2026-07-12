@@ -30,7 +30,7 @@ else
 # ssd_storage
 UUID=51b4243d-ea88-4a02-b02f-c286d52b6e0d /mnt/ssd_storage ext4 defaults,nofail 0 2
 # Data-HDD
-UUID=7E303CAF303C6FEF /mnt/data ntfs-3g defaults,nofail,uid=1000,gid=1000,umask=000 0 2
+UUID=f0b1d710-a0a6-4ef1-83ce-fc9e55d577d8 /media/HDD_Data btrfs defaults,x-gvfs-show,nofail 0 2
 # m2_storage
 UUID=e070aea8-a128-4e6d-9e3f-da38a6604dbe /mnt/m2_storage btrfs defaults,nofail 0 2
 # nvme-workspace

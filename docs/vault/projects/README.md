@@ -10,7 +10,7 @@
 
 | Project | Source | Description |
 |---------|--------|-------------|
-| [[translation-pipeline\|Translation Pipeline v2.0]] | `/mnt/data/_translation-pipeline/translation-pipeline/` | Multi-stage LLM pipeline — 10 stages (parser→continuity) with per-role model docs in [[translation-pipeline/roles/INDEX\|roles/INDEX]] |
+| [[translation-pipeline\|Translation Pipeline v2.0]] | `/media/HDD_Data/_translation-pipeline/translation-pipeline/` | Multi-stage LLM pipeline — 10 stages (parser→continuity) with per-role model docs in [[translation-pipeline/roles/INDEX\|roles/INDEX]] |
 | [[sd-webui-forge-neo\|SD WebUI Forge Neo]] | `/mnt/workspace/sd-webui-forge-neo/` | Stable Diffusion Forge — 3060 (primary) + P40 (VAE/upscale) |
 | [[ai-bubble-watchboard\|AI Bubble Watchboard]] | — | Monthly monitoring — infra, enterprise adoption, open models, wrapper death watch |
 | [[local-ai-strategy\|Local AI Strategy]] | — | Three-layer architecture + 90-day build plan for local AI |

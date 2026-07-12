@@ -26,7 +26,7 @@ Literal Japanese or Chinese → English translation. Nothing else.
 
 `Qwen3.6-27B-Q4_K_M.gguf` — 16G, 27B params (dense)
 
-**Path:** `/mnt/data/model_storage/Qwen3.6-27B-Q4_K_M.gguf`
+**Path:** `/media/HDD_Data/model_storage/Qwen3.6-27B-Q4_K_M.gguf`
 
 **Research wiki:** [`Qwen3.6-27B` →](../../../../../../ai-model-research/individual-models/qwen3.6-27b.md)
 

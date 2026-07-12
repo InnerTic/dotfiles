@@ -159,7 +159,7 @@ Likely same story — different distros ship different CUDA toolkit versions. Th
 
 | File | Score | Notes |
 |------|-------|-------|
-| `docs/vault/projects/translation-pipeline.md` | **75** | Elaborate 10-role pipeline. Source path `/mnt/data/_translation-pipeline/` unverifiable. |
+| `docs/vault/projects/translation-pipeline.md` | **75** | Elaborate 10-role pipeline. Source path moved to `/media/HDD_Data/_translation-pipeline/`. |
 | `docs/vault/projects/translation-pipeline/model-index.md` | **75** | Model capabilities for pipeline. |
 | `docs/vault/projects/sd-webui-forge-neo.md` | **25** | Forge reference. Source `/mnt/workspace/sd-webui-forge-neo/` does **not exist** on disk. P40 VAE offload spec unverifiable. |
 | `docs/vault/projects/meta-scripts.md` | **25** | Status "planned" — no implementation exists. Likely abandoned. |
