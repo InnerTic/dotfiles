@@ -37,7 +37,7 @@ vault/conversations/
 
 ### knowledge/
 
-Generalized facts extracted from chats. What agents should actually read first.
+Generalized facts extracted from chats. What [[AGENTS]] should actually read first.
 
 ```
 vault/knowledge/
@@ -59,7 +59,7 @@ confidence:
 
 ### decisions/
 
-Every "why did we do this" — saves you from re-solving old bugs.
+Every "why did we do this" — saves you from re-solving old [[bugs-and-workarounds]].
 
 ```
 vault/decisions/
@@ -167,13 +167,13 @@ Do NOT store "chat logs as history."
 
 Store "chat logs as transformations into structured memory."
 
-That shift is what makes this usable by agents.
+That shift is what makes this usable by [[AGENTS]].
 
 ---
 
 ## What This Builds Toward
 
-A personal retrieval OS for AI agents — not just notes, docs, or logs, but a structured cognitive external memory system that supports:
+A personal retrieval OS for AI [[AGENTS]] — not just notes, docs, or logs, but a structured cognitive external memory system that supports:
 
 - Debugging old decisions
 - Continuing long-running projects

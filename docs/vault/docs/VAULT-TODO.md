@@ -1,27 +1,70 @@
-# Vault Restructure — To-Do List
+# Vault & Quartz — To-Do List
 
-**Branch:** `vault-restructure`  
-**Status:** Core structure complete. Remaining tasks:
+**Status:** Vault content restored (149 files), Quartz LXC deployed, wiki live at 172.16.12.17.  
+**Branch:** `deb` (mirror), `main` (CachyOS docs)
 
 ---
 
-## High Priority (Do Next Session)
+## Phase 1 — Make it Work (In Progress)
 
-- [ ] **`docs/vault/system/drives-and-mounts.md`**  
-  Extract storage layout from rebuild-notes.md
-  - UUID table for all 5 drives
-  - fstab entries + explanations
+- [x] Get Quartz running on LXC (nginx, /status, try_files $uri $uri.html)
+- [x] Restore old vault content (149 files from 8bd2b5f)
+- [x] Create proper root index at content/index.md
+- [x] Disable blank Graph View
+- [x] Add both regular + raw [[changelog]] with wiki-links
+- [ ] Fix broken wiki-links across vault (use hyalo auto --apply)
+- [ ] Add `title` frontmatter to all .md files (kb-lint flagged 7)
+- [ ] Create hub pages (systems.md, projects.md, runbooks.md)
+- [ ] Choose theme/customizations
+- [ ] Verify rebuild from update-quartz.sh end-to-end
+
+## Phase 2 — Make it Reproducible
+
+- [ ] Destroy and rebuild LXC from scratch at least once
+- [ ] Pipeline: `new LXC → bootstrap → restore vault → quartz build → site works`
+- [ ] No manual fixes required after rebuild
+
+## Phase 3 — Freeze a Template
+
+- [ ] Create `templates/quartz-lxc/` with:
+  - Container settings (CTID, template, resources)
+  - Packages list
+  - Node version spec
+  - Quartz version pin
+  - nginx config (sites-available)
+  - systemd service units
+  - Deployment scripts
+  - Backup/restore procedure
+- [ ] Template describes **infrastructure only**, not vault data
+- [ ] Vault remains the source of truth
+
+## Phase 4 — End State
+
+- [ ] Losing the container = minor inconvenience
+- [ ] One-command rebuild from bare Proxmox
+- [ ] Container is cattle, vault is the asset
+
+---
+
+## Stretch (When Phases 1-4 Are Solid)
+
+- [ ] OPNsense DNS reservation (172.16.12.17 → wiki.home.arpa)
+- [ ] Snapshot LXC 301 at working state
+- [ ] `docs/vault/system/drives-and-mounts.md`  
+  Extract storage layout from [[rebuild-notes]]
+  - UUID table for all 5 [[drives-and-mounts]]
+  - [[drives-and-mounts]] entries + explanations
   - When to use which drive
   - Bind mount strategy
 
-- [ ] **`docs/vault/software/dev-setup.md`**  
+- [ ] `docs/vault/software/dev-setup.md`  
   Consolidate Python/Git/Shell setup
   - Python venv best practices
-  - Git config (from dotfiles)
+  - Git config
   - Shell config inheritance
   - Reference bootstrap.sh
 
-- [ ] **`docs/vault/reference/faq.md`**  
+- [ ] `docs/vault/reference/faq.md`  
   Common questions:
   - "Where do my models go?"
   - "How do I switch models?"
@@ -29,8 +72,6 @@
   - "What persists after OS wipe?"
 
 ---
-
-## High Priority — Vault Query System (Next Session)
 
 - [ ] **Create `vault-query.fish`** — front CLI  
   `~/.local/bin/vault-query.fish`  
@@ -55,7 +96,7 @@
   - `reference/faq.md` (permanent questions)
 
 - [ ] **`docs/vault/map.md`**  
-  Visual sitemap showing folder structure and navigation paths
+  Visual [[map]] showing folder structure and navigation paths
 
 - [ ] **Add front matter tags to ALL files:**
   ```markdown
@@ -67,7 +108,7 @@
   ```
 
 - [ ] **`docs/vault/changelog.md`**  
-  Track vault structure changes:
+  Track vault structure [[changelog]]:
   - What moved where
   - Why (organization rationale)
   - When
@@ -104,7 +145,7 @@
 - [ ] Review & update commands when aliases change
 - [ ] Add new issues to [[reference/bugs-and-workarounds]] as you find them
 - [ ] Archive resolved workarounds (move to permanent sections)
-- [ ] Update glossary with new terms
+- [ ] Update [[glossary]] with new [[glossary]]
 
 ---
 
@@ -113,24 +154,42 @@
 - [ ] Open vault in Obsidian
 - [ ] Verify graph view shows connections
 - [ ] Test all wikilinks resolve
-- [ ] Search for 3 random terms (should find them)
-- [ ] Check that QUICK-START links work
-- [ ] Verify glossary is comprehensive
+- [ ] Search for 3 random [[glossary]] (should find them)
+- [ ] Check that [[QUICK-START]] links work
+- [ ] Verify [[glossary]] is comprehensive
 
 ---
 
 ## Files Created This Session
 
-✅ `docs/vault/QUICK-START.md` — Emergency recovery guide  
-✅ `docs/vault/reference/glossary.md` — Definitions & abbreviations  
+✅ `docs/vault/QUICK-START.md` — [[QUICK-START]] [[QUICK-START]] guide  
+✅ `docs/vault/reference/glossary.md` — [[glossary]] & [[glossary]]  
 ✅ `docs/vault/software/ai-tools/commands.md` — AI command reference  
 ✅ `docs/vault/docs/VAULT-TODO.md` — This file
+
+## Completed
+
+✅ Quartz LXC deployed (two-stage bootstrap, nginx, /status endpoint)  
+✅ Vault content restored (149 files recovered from git history)  
+✅ Wiki-links auto-linked via hyalo  
+✅ Modular bootstrap system (lib/, modules/, 6 wrappers)  
+✅ Container-aware shell module  
+✅ GnuPG backup system  
+✅ Version requirements policy document  
+✅ Merge main → deb (13 conflicts resolved)  
+✅ Root index created at content/index.md  
+✅ Graph view disabled  
+✅ [[changelog]] split into regular + raw (with wiki-links)  
+✅ Flat docs/reference added alongside restored vault  
+✅ **`docs/vault/scripts/`** — All scripts migrated into vault  
+✅ **`docs/vault/scripts/fastfetch.md`** — [[fastfetch]] config in vault  
+✅ **`docs/vault/scripts/README.md`** — Script index with wikilinks
 
 ---
 
 ## Notes for Next Session
 
-- **Rebuild-notes.md still in `/docs/`** — It should stay there (original reference), but content gets redistributed:
+- **[[rebuild-notes]].md still in `/docs/`** — It should stay there (original reference), but content gets redistributed:
   - Storage layout → `system/drives-and-mounts.md`
   - Rebuild steps → `getting-started/os-rebuild-checklist.md`
   - System patches → `reference/bugs-and-workarounds.md`

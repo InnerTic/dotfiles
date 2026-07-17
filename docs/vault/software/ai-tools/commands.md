@@ -6,9 +6,11 @@ updated: 2026-06-15
 
 # AI Tools — Command Reference
 
+**Drift assessment (2026-06-23):** Debian-leaning. `/workspace` symlink and `~/.openclaw/` paths may not exist on CachyOS. Model listings are stale. Actual aliases defined in AGENTS.md use `~/dotfiles/scripts/` and `~/.local/bin/`.
+
 Quick reference for all AI-related aliases and commands. See [[software/ai-tools/index]] for setup details.
 
-## llama.cpp (Local Inference)
+## llama.cpp (Local Inference) — commands CURRENT, but models listed below are stale
 
 ```bash
 llm                    # Interactive model selector
@@ -37,7 +39,7 @@ http://127.0.0.1:8080/v1/models             — List loaded models
 
 ---
 
-## Forge (Stable Diffusion WebUI)
+## Forge (Stable Diffusion WebUI) — `/workspace` symlink may not exist on CachyOS
 
 ```bash
 sdxl                   # Start Forge WebUI (port 7860)
@@ -51,7 +53,7 @@ URL: http://172.16.5.1:7860
 
 ---
 
-## TextGen WebUI
+## TextGen WebUI — `/workspace` symlink may not exist on CachyOS
 
 ```bash
 textgen                # Start TextGen WebUI (port 7861)
@@ -66,7 +68,7 @@ API:      http://172.16.5.1:5000
 
 ---
 
-## OpenCode (AI Code Assistant)
+## OpenCode (AI Code Assistant) — ocl/oclw paths may differ on CachyOS
 
 ```bash
 oc                     # OpenCode TUI
@@ -91,7 +93,7 @@ oclw                   # OpenCode Web UI with local models
 
 ---
 
-## Model Files
+## Model Files — STALE (model list doesn't match actual disk contents)
 
 ```bash
 # Model directory
@@ -120,13 +122,15 @@ quickhelp              # Show all AI aliases + network info
 
 ---
 
-## Architecture
+## Architecture — STALE (P40 VFIO means dual-GPU layout may be inactive)
 
 **GPU Assignment:**
 | GPU | Model | Port | CUDA_VISIBLE_DEVICES |
 |-----|-------|------|----------------------|
 | RTX 3060 (12GB) | Small/medium LLMs, SD | 8080 | 0 |
 | Tesla P40 (24GB) | Large LLMs (30B-70B Q4) | 8081 | 1 |
+
+**Scripts scattered** — start scripts referenced in multiple locations (`~/.openclaw/workspace/scripts/`, `~/workspace/`, `~/dotfiles/scripts/`). Should consolidate to `~/.local/bin/` (already on PATH).
 
 **Startup (manual):**
 ```bash

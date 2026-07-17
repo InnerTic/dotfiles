@@ -12,7 +12,7 @@ updated: 2026-06-15
 
 **NVME-workspace** — UUID `9a1cdd8a-3d81-468f-be70-aa00a01d7301`, the physical drive mounted at `/mnt/workspace`.
 
-**Bind mount** — A Linux filesystem feature that mounts one location inside another without copying. Example: `/mnt/ssd_storage/ken/Documents` mounted at `~/Documents`. Used for media directories.
+**Bind mount** — A Linux filesystem feature that [[drives-and-mounts]] one location inside another without copying. Example: `/mnt/ssd_storage/ken/Documents` mounted at `~/Documents`. Used for media directories.
 
 **Symlink** — A shortcut pointing from one path to another. Example: `~/.ssh → /mnt/workspace/.ssh`. Used to persist configs from workspace into home.
 
@@ -36,7 +36,7 @@ updated: 2026-06-15
 
 **SDXL** — Stable Diffusion XL, improved image model. Commonly used in Forge.
 
-**ngl** — "number of GPU layers". Flag for llama-server: `-ngl 35` means offload 35 transformer layers to GPU, rest to CPU.
+**ngl** — "number of GPU layers". Flag for [[llama-server]]: `-ngl 35` means offload 35 transformer layers to GPU, rest to CPU.
 
 **KV cache** — "Key-Value cache", intermediate tensors that speed up inference. Usually lives in VRAM; with `--no-kv-offload` it lives in system RAM (saves VRAM).
 
@@ -56,7 +56,7 @@ updated: 2026-06-15
 
 **CUDA_VISIBLE_DEVICES** — Environment variable that selects which GPU to use. `0` = first GPU, `1` = second, etc.
 
-**LD_LIBRARY_PATH** — Linker search path for `.so` files. llama-server needs `/opt/cuda/lib64` on the path to find CUDA libraries at runtime.
+**LD_LIBRARY_PATH** — Linker search path for `.so` files. [[llama-server]] needs `/opt/cuda/lib64` on the path to find CUDA libraries at runtime.
 
 ---
 
@@ -72,7 +72,7 @@ updated: 2026-06-15
 
 **BlishHUD** — Guild Wars 2 addon loader and HUD overlay.
 
-**GW2** — Guild Wars 2, MMORPG. Multibox setup uses 2 Wine prefixes on separate drives.
+**GW2** — Guild Wars 2, MMORPG. Multibox setup uses 2 Wine prefixes on separate [[drives-and-mounts]].
 
 **AppID** — Steam application ID. GW2 is `1284210`. Non-Steam shortcuts get dynamic IDs like `2716098372`.
 
@@ -114,15 +114,15 @@ updated: 2026-06-15
 
 **`Local.dat`** — Guild Wars 2 settings file (Wine prefix). Can corrupt and block launcher; workaround in [[software/gaming/gw2-wine]].
 
-**`fstab`** — Linux filesystem table. Defines bind mounts and drive mounts at boot. See [[system/drives-and-mounts]].
+**`fstab`** — Linux filesystem table. Defines bind [[drives-and-mounts]] and drive [[drives-and-mounts]] at boot. See [[system/drives-and-mounts]].
 
-**UUID** — Universally Unique Identifier for drives. Used in fstab instead of device names (which can change). Example: `UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301`.
+**UUID** — Universally Unique Identifier for [[drives-and-mounts]]. Used in [[drives-and-mounts]] instead of device names (which can change). Example: `UUID=9a1cdd8a-3d81-468f-be70-aa00a01d7301`.
 
 ---
 
 ## Processes & Tools
 
-**pkill** — Kill processes by name. Example: `pkill -f llama-server` kills all processes matching "llama-server".
+**pkill** — Kill processes by name. Example: `pkill -f llama-server` kills all processes matching "[[llama-server]]".
 
 **rsync** — Intelligent file sync. `rsync -a` copies preserving permissions/timestamps. Used in [[scripts/link-workspace.sh]] to merge directories.
 
@@ -134,7 +134,7 @@ updated: 2026-06-15
 
 **nvcc** — Nvidia CUDA compiler. Compiles GPU kernels for specific architectures (sm_61, sm_86).
 
-**mkinitcpio** — Generate Linux initramfs. Used after kernel parameter changes (VFIO, etc.) to rebuild boot.
+**mkinitcpio** — Generate Linux initramfs. Used after kernel parameter [[changelog]] (VFIO, etc.) to rebuild boot.
 
 ---
 

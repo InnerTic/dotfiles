@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # ============================================================
 # llama-loader — EXECUTION CORE
-# Builds cmd, saves state, launches llama-server.
-# Receives config via environment: MODEL_PATH, CTX_SIZE, etc.
+# Builds cmd via IR → CLI dialect compiler, saves state,
+# launches llama-server.
+# Receives config via environment: SELECTED, CTX_SIZE, etc.
 # ============================================================
 set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -13,20 +14,13 @@ ensure_state_dirs
 migrate_legacy_state
 assert_clean_state
 
-SPLIT_ARG=""
-[ -n "$TENSOR_SPLIT" ] && SPLIT_ARG="--split $TENSOR_SPLIT"
+# Map mode variables to IR contract
+MODEL_PATH="$SELECTED"
+MAIN_GPU="${MAIN_GPU:-0}"
 
-CMD=(
-  "$LLAMA_SERVER"
-  -m "$SELECTED"
-  --host 0.0.0.0
-  --port "$PORT"
-  -ngl "$NGL"
-  --ctx-size "$CTX_SIZE"
-  $GPU_ARG
-  $NP_ARG
-  $SPLIT_ARG
-)
+# Compile IR → CLI flags via dialect compiler
+source "$SCRIPT_DIR/core/dialects/llama.cpp.sh"
+compile_cli
 
 save_state
 exec "${CMD[@]}"

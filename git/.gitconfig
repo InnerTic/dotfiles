@@ -2,3 +2,24 @@
 	defaultBranch = main
 [safe]
 	directory = /mnt/data/_books_raws/asuka-translation
+[user]
+	signingkey = 448AE0C2AB209842
+	email = ken.isley@gmail.com
+	name = Ken Isley
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[gpg]
+	program = gpg
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[lfs]
+	concurrenttransfers = 3
+[lfs "customtransfer.xet"]
+	path = git-xet
+	args = transfer
+	concurrent = true

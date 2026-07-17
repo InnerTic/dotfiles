@@ -23,3 +23,9 @@ docs/docs/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Generated/build artifacts
+node_modules/
+.serena/
+quartz-data/
+scripts/archive/

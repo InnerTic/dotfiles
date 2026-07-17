@@ -196,7 +196,7 @@ If `capslock = hyper` + `[hyper] space = f24` doesn't produce F24 on your KDE Wa
 
 ### 6.1 Direct key remap (no layer)
 
-Bypass the hyper layer entirely — map Caps+Space directly to F24:
+Bypass the hyper layer entirely — [[map]] Caps+Space directly to F24:
 
 ```bash
 sudo tee /etc/keyd/default.conf > /dev/null << 'EOF'

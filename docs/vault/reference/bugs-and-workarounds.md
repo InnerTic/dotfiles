@@ -66,4 +66,4 @@ MimeType=application/vnd.microsoft.portable-executable;application/x-ms-dos-exec
 ## Related
 
 - [[reference/faq]] — Common questions
-- [[temporary-hacks]] — Original source file for these entries
+- [[known-issues/temporary-hacks]] — Original source file for these entries

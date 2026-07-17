@@ -48,12 +48,14 @@ ls ~/.ssh               # Should be symlink to workspace
 
 ## If Something Breaks
 
-| Issue | Go To |
-|-------|-------|
-| Symlinks wrong | [[workspace-symlink-strategy]] |
-| GPU not detected | [[gpu-config-notes]] |
-| SSH keys missing | [[system/drives-and-mounts]] + verify workspace mounted |
-| llama.cpp won't run | [[llama-setup]] |
-| Wine/Proton issues | [[gw2-multibox-wine-setup]] |
+| Issue               | Go To                                                   |
+| ------------------- | ------------------------------------------------------- |
+| Symlinks wrong      | [[reference/workspace-symlink-strategy]]                          |
+| GPU not detected    | [[gpu/gpu-config-notes]]                                    |
+| SSH keys missing    | [[system/drives-and-mounts]] + verify workspace mounted |
+| llama.cpp won't run | [[gpu/llama-setup]]                                         |
+| Wine/Proton issues  | [[gaming/gw2-multibox-wine-setup]]                             |
+| Boot entry broken   | [[system/dual-boot-recovery]]                                 |
+| Keyboard not reaching game | [[system_backup/cachyos-steam-nvidia-input-log]] (check libinput) |
 
 Full docs at [[INDEX]].

@@ -1,0 +1,162 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "small",
+        "padding": {
+            "top": 1,
+            "left": 34,
+            "right": 4
+        }
+    },
+    "display": {
+        "separator": "  ",
+        "color": {
+            "separator": "bright_black"
+        },
+        "key": {
+            "width": 14
+        }
+    },
+    "modules": [
+        "title",
+        {
+            "type": "custom",
+            "format": "{#90}──────────────────────────────────────────"
+        },
+        {
+            "type": "custom",
+            "format": "{#cyan}┌─ System ───────────────────────────────┐"
+        },
+        {
+            "type": "os",
+            "key": "│   OS"
+        },
+        {
+            "type": "kernel",
+            "key": "│ ├   Kernel",
+            "format": "{release}"
+        },
+        {
+            "type": "packages",
+            "key": "│ ├   Packages",
+            "combined": true
+        },
+        {
+            "type": "shell",
+            "key": "│ ├   Shell"
+        },
+        {
+            "type": "command",
+            "key": "│ │   Tide",
+            "text": "fish -c 'tide --version' 2>/dev/null | grep -oP 'version \\K[0-9.]+' || true"
+        },
+        {
+            "type": "uptime",
+            "key": "│ └   Uptime"
+        },
+        {
+            "type": "custom",
+            "format": "{#green}├─ Hardware ─────────────────────────────┤"
+        },
+        {
+            "type": "cpu",
+            "key": "│   CPU",
+            "showPeCoreCount": true,
+            "temp": true
+        },
+        {
+            "type": "gpu",
+            "key": "│ ├ 󰍛  GPU"
+        },
+        {
+            "type": "command",
+            "key": "│ │   VRAM",
+            "text": "nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader 2>/dev/null | awk -F', ' '{u=$1; gsub(/ MiB/,\"\",u); t=$2; gsub(/ MiB/,\"\",t); printf \"%s/%s MiB\\n\", u, t}' | paste -sd ' | ' || echo 'N/A'"
+        },
+        {
+            "type": "memory",
+            "key": "│ ├   Memory"
+        },
+        {
+            "type": "swap",
+            "key": "│ ├   Swap"
+        },
+        {
+            "type": "disk",
+            "key": "│ ├   Root",
+            "folders": "/"
+        },
+        {
+            "type": "disk",
+            "key": "│ │   Work",
+            "folders": "/mnt/workspace"
+        },
+        {
+            "type": "disk",
+            "key": "│ └   Store",
+            "folders": "/mnt/ssd_storage"
+        },
+        {
+            "type": "custom",
+            "format": "{#yellow}├─ Display ─────────────────────────────┤"
+        },
+        {
+            "type": "de",
+            "key": "│   DE/WM"
+        },
+        {
+            "type": "wm",
+            "key": "│ ├   WM"
+        },
+        {
+            "type": "terminal",
+            "key": "│ ├   Terminal"
+        },
+        {
+            "type": "display",
+            "key": "│ └ 󰍹  Display",
+            "compactType": "original-with-refresh-rate"
+        },
+        {
+            "type": "custom",
+            "format": "{#magenta}├─ Network ─────────────────────────────┤"
+        },
+        {
+            "type": "localip",
+            "key": "│ 󰩟  IP"
+        },
+        {
+            "type": "sound",
+            "key": "│ └   Audio"
+        },
+        {
+            "type": "custom",
+            "format": "{#red}├─ Dev ─────────────────────────────────┤"
+        },
+        {
+            "type": "command",
+            "key": "│   Python",
+            "text": "python3 --version 2>/dev/null || python --version 2>/dev/null"
+        },
+        {
+            "type": "command",
+            "key": "│   Node",
+            "text": "node --version 2>/dev/null"
+        },
+        {
+            "type": "command",
+            "key": "│   CUDA",
+            "text": "nvidia-smi 2>/dev/null | grep 'CUDA Version' | grep -oP 'CUDA Version: \\K[0-9.]+' || nvcc --version 2>/dev/null | tail -1 | grep -oP 'release \\K[^,]+' || echo 'not installed'"
+        },
+        {
+            "type": "custom",
+            "format": "{#90}└─────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "colors",
+            "paddingLeft": 1,
+            "symbol": "circle"
+        }
+    ]
+}
