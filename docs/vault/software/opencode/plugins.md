@@ -23,6 +23,19 @@
 | `git` | Git repository read/search/manipulate |
 | `pdf` | PDF text extraction |
 | `time` | Time and timezone conversion |
+| `deepl` | DeepL translation API (needs DEEPL_AUTH_KEY) |
+| `xcomet` | Translation quality evaluation |
+| `getlinnk` | Document translation via Linnk |
+| `general-translation` | General Translation MCP server |
+| `filecommander` | 46 tools: OCR, ZIP, encoding fix, duplicate detection |
+| `drawio` | Diagram generation in draw.io editor |
+
+## LSP Servers
+
+| Language | Server | Package |
+|----------|--------|---------|
+| Python | `pylsp` | `python-lsp-server` (pacman) |
+| Bash | `bash-language-server` | `bash-language-server` (npm) |
 
 ## Config
 
