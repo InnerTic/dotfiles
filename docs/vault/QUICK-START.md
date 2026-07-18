@@ -1,7 +1,7 @@
 ---
 tags: [emergency, recovery, quickstart]
 aliases: [emergency, quick-start, recovery, crisis]
-updated: 2026-06-15
+updated: 2026-07-18
 ---
 
 # 🚨 Emergency Recovery — 5 Minute Start
@@ -56,6 +56,8 @@ ls ~/.ssh               # Should be symlink to workspace
 | llama.cpp won't run | [[gpu/llama-setup]]                                         |
 | Wine/Proton issues  | [[gaming/gw2-multibox-wine-setup]]                             |
 | Boot entry broken   | [[system/dual-boot-recovery]]                                 |
-| Keyboard not reaching game | [[system_backup/cachyos-steam-nvidia-input-log]] (check libinput) |
+| Keyboard not reaching game | [[reference/keyd-stack#known-issue-keyd-breaks-keyboard-input-in-winesteamgw2]] (uninstall keyd) |
+| LibreWolf version mismatch | [[software/librewolf#version-mismatch]] |
+| G502 mouse buttons wrong | [[software/g502-hero-setup]] |
 
 Full docs at [[INDEX]].

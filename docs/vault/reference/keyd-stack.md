@@ -269,7 +269,27 @@ Application
 
 ---
 
-## 8. Script-ready health check
+## 8. Known issue: keyd breaks keyboard input in Wine/Steam/GW2
+
+keyd **must not be installed** if running Guild Wars 2 (or other Wine/Proton/Steam games) through Wine. The keyd daemon intercepts evdev at a level that conflicts with Wine's input handling, causing:
+- No keyboard input detected in-game
+- Keys randomly repeating or not registering
+- Steam overlay keyboard shortcuts broken
+
+**Root cause**: keyd creates a virtual keyboard device and remaps events before they reach userspace. Wine/Proton reads from the original evdev devices but keyd's interception creates a race condition — Wine gets raw events while keyd's virtual device sends remapped ones, and the two conflict.
+
+**Fix**: Uninstall keyd or stop the service before launching Wine/Steam games:
+
+```bash
+sudo systemctl stop keyd
+sudo systemctl disable keyd
+```
+
+On a fresh CachyOS install **without** keyd, GW2 keyboard input works normally. Only install keyd if you explicitly need the Caps→Hyper→F24 pipeline for Yakuake or similar — and accept that Wine/Steam gaming will break.
+
+See [[software/gaming/gw2-multibox-wine-setup]] for the full GW2 setup.
+
+## 9. Script-ready health check
 
 ```bash
 echo "=== keyd daemon ===" && systemctl is-active keyd && \
