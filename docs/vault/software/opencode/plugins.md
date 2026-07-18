@@ -1,53 +1,10 @@
-# OpenCode Plugin & MCP Setup
-## Current installation state (2026-07-18)
-
-## Plugins
-
-| Plugin | Purpose |
-|--------|---------|
-| `opencode-plugin-litellm` | Auto-discovers models from running LiteLLM proxy |
-| `opencode-token-tracker` | Real-time token/cost/latency per response |
-| `opencode-telemetry` | Passive SQLite logging of all sessions |
-| `flowdeck` | 25-agent multi-agent orchestration workflow |
-
-## MCP Servers
-
-| Server | Purpose |
-|--------|---------|
-| `searxng` | Local web search via 172.16.12.16:8888 |
-| `opencode` | 80 tools bridging MCP clients to OpenCode headless API |
-| `sequential-thinking` | Step-by-step structured reasoning |
-| `filesystem` | Secure file ops with configurable access |
-| `fetch` | Web content fetching and conversion |
-| `memory` | Knowledge graph persistent memory |
-| `git` | Git repository read/search/manipulate |
-| `pdf` | PDF text extraction |
-| `time` | Time and timezone conversion |
-| `deepl` | DeepL translation API (needs DEEPL_AUTH_KEY) |
-| `xcomet` | Translation quality evaluation (venv: `/mnt/workspace/xcomet-venv`, model: `wmt22-comet-da`) |
-| `getlinnk` | Document translation via Linnk |
-| `general-translation` | General Translation MCP server |
-| `filecommander` | 46 tools: OCR, ZIP, encoding fix, duplicate detection |
-| `drawio` | Diagram generation in draw.io editor |
-
-## LSP Servers — BROKE OpenCode on 2026-07-18
-
-Do NOT add `lsp` block to `opencode.jsonc` — it caused OpenCode to crash on startup. LSP is handled natively by OpenCode, not through config.
-
-| Language | Server | Package | Status |
-|----------|--------|---------|--------|
-| Python | `pylsp` | `python-lsp-server` (pacman) | Installed, but configured via native LSP |
-| Bash | `bash-language-server` | `bash-language-server` (npm) | Installed, but configured via native LSP |
-
-## Config
-
-`~/.config/opencode/opencode.jsonc`
+# OpenCode Plugin & MCP Recommendations
+## Based on Reddit's r/opencodeCLI Thread Analysis
 
 ---
 
-# Research Archive — Original Reddit Thread Analysis
-
-## 1. Dynamic Context Pruning (DCP) - NOT INSTALLED
+## 1. Dynamic Context Pruning (DCP)
+**Status:** ❌ NOT INSTALLED | **Priority:** 🔴 CRITICAL
 
 ### What It Does
 Automatically removes obsolete tool outputs from your conversation context as you work. Instead of your context bloating with past command outputs, DCP intelligently strips what's no longer needed.

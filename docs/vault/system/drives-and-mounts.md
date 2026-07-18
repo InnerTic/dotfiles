@@ -21,30 +21,26 @@ Physical drive layout, UUIDs, fstab entries, bind mounts, and symlinks.
 | **sdf1** | 3.6T | btrfs | `/media/HDD_Data` | Model storage (GGUFs), backups, large files |
 | **nvme0n1p1** | 465G | ext4 | `/mnt/workspace` | AI tools, llama.cpp, forge, projects (persistent) |
 
-## UUIDs (for /etc/fstab) — CachyOS current state
+## UUIDs (for /etc/fstab)
 
-| Mount | UUID | Drive | Notes |
-|-------|------|-------|-------|
-| / | `76c0155f-a646-40b6-8fec-ae64fcc4a037` | sda2 (btrfs) | CachyOS root |
-| /boot | `C3E7-93C2` | sda1 (vfat) | `nofail` |
-| /home | `e070aea8-a128-4e6d-9e3f-da38a6604dbe` | sdd1 (btrfs) | `nofail` |
-| /mnt/ssd_storage | `51b4243d-ea88-4a02-b02f-c286d52b6e0d` | sdb1 (ext4) | Bind-mounted into ~/ |
-| /mnt/data | `f0b1d710-a0a6-4ef1-83ce-fc9e55d577d8` | sdc1 (btrfs) | 3.6T HDD-Data |
-| /mnt/workspace | `9a1cdd8a-3d81-468f-be70-aa00a01d7301` | nvme0n1p1 (ext4) | NVMe, persists reinstalls |
+| Mount | UUID |
+|-------|------|
+| sdd2 / (root) | `34bdf920-237c-4392-835f-0416be09ada5` (ext4) |
+| sdd1 /boot/efi | `3F33-0777` (vfat) |
+| sdb1 /mnt/ssd_storage | `51b4243d-ea88-4a02-b02f-c286d52b6e0d` |
+| sdc1 /mnt/m2_storage | `e070aea8-a128-4e6d-9e3f-da38a6604dbe` |
+| sdf1 /media/HDD_Data | `f0b1d710-a0a6-4ef1-83ce-fc9e55d577d8` |
+| nvme /mnt/workspace | `9a1cdd8a-3d81-468f-be70-aa00a01d7301` |
 
-> **Drift from MX Linux vault doc**: Drive letters differ between CachyOS and MX Linux boots.
-> CachyOS uses sda for boot/root, sdd for /home — MX Linux used different letters.
-> VM storage (sde4) and dual-boot partitions (sde2/3) are on a USB-connected ADATA SSD and are NOT in fstab (auto-mounted by udisks2 when connected).
-
-## Drive Selection Guide (CachyOS)
+## Drive Selection Guide
 
 | Use case | Drive | Why |
 |----------|-------|-----|
-| OS, packages, temp | sda (/) | CachyOS root, btrfs subvolumes |
+| OS, packages, temp | sdd (/) | Debian 13 trixie (MX Linux) |
 | AI models, projects | nvme (workspace) | Fast NVMe, persists reinstalls |
-| Model GGUFs (canonical) | sdc (/mnt/data) | 3.6T HDD-Data |
+| Model GGUFs (canonical) | sdf (/media/HDD_Data) | 3.6T btrfs, all GGUFs stored here |
 | Documents, media | sdb (ssd_storage) | Large SSD, bind-mounted to ~/ |
-| Gaming/VM storage | sde4 (USB SSD) | External ADATA, not in fstab |
+| M.2 storage | sdc (/mnt/m2_storage) | Btrfs, secondary storage |
 
 ## Bind Mounts (/etc/fstab)
 

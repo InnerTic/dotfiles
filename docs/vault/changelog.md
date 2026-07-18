@@ -6,22 +6,6 @@ updated: 2026-06-24
 
 # Vault Changelog
 
-## 2026-07-18 — CachyOS restore point: fstab, LibreWolf, G502, cache cleanup
-
-- **LibreWolf**: profile version mismatch fix (152→151), `librewolf.overrides.cfg` created with vault-standard privacy settings, `policies.json` with SearXNG (172.16.12.16:8888), pacman hook for persistence across updates
-- **Fstab**: fixed UUIDs for sdc1 HDD-Data (was ntfs→btrfs) and sde4 vm-storage, added `nofail` to /boot and /home, removed USB/EFI partitions from fstab
-- **Cache cleanup**: removed `~/.cache/Shelly/` (20G), paru source clones, pip cache (2.7G), go build cache (1.3G), orphaned packages
-- **Packages installed**: `go`, `zip`, `tmux`, `python-virtualenv`, `python-pip`, `meson`, `ninja`, `check`, `swig`
-- **G502 Hero**: `libratbag` + `piper` installed, button mappings reconfigured (back→X11 btn4, C, V, 2/N on scroll), libratbag built from git with PR #1843 fix for stale modifier bug
-- **keyd**: documented known issue — keyd breaks keyboard input in Wine/Steam/GW2 ([[reference/keyd-stack]])
-- **CoolerControl**: vault doc added ([[software/coolercontrol]])
-- **Vault audit**: compared CachyOS against vault docs, noted drift (script paths, git user, drive letters)
-- **OpenCode config**: plugins installed (litellm, token-tracker, telemetry, flowdeck) + MCP servers (sequential-thinking, filesystem, fetch, memory, git, pdf, time, deepl, xcomet, getlinnk, general-translation, filecommander, drawio) + Python/Bash LSPs. Serena removed. Documented in [[software/opencode/plugins]]
-- **MCP inventory**: comprehensive reference doc at [[software/opencode/mcp-inventory]]
-- **Translation pipeline MCP integration**: workflow doc at [[projects/translation-mcp-integration]] — covers pre-processing, QC, parallel processing, pipe.sh role additions
-- **xCOMET**: set up with `wmt22-comet-da` model, Python 3.12 venv at `/mnt/workspace/xcomet-venv`, HF token added
-- [[software/g502-hero-setup]] [[software/librewolf]] [[software/coolercontrol]] [[reference/keyd-stack]] [[software/opencode/plugins]]
-
 ## 2026-06-24 — AI Watchtower project, vault research, script consolidation
 
 - AI Watchtower project: gold-template constraint, bootstrap scripts (LXC + stack)

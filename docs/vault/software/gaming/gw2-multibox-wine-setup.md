@@ -102,7 +102,6 @@ This tells GW2 to use ArenaNet login instead of Steam login. Required for all ac
 
 - GE-Proton10-32 was the working version. Wine 11.7 had regressions.
 - Steam library paths in `libraryfolders.vdf` must point to actual mount points (not auto-mount paths).
-- **keyd breaks keyboard input** in Wine/Proton. If GW2 has no keyboard response, check if keyd is running: `systemctl is-active keyd`. See [[reference/keyd-stack#known-issue-keyd-breaks-keyboard-input-in-winesteamgw2]].
 
 ## Test Build Investigation
 
