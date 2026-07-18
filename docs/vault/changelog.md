@@ -16,7 +16,8 @@ updated: 2026-06-24
 - **keyd**: documented known issue — keyd breaks keyboard input in Wine/Steam/GW2 ([[reference/keyd-stack]])
 - **CoolerControl**: vault doc added ([[software/coolercontrol]])
 - **Vault audit**: compared CachyOS against vault docs, noted drift (script paths, git user, drive letters)
-- [[software/g502-hero-setup]] [[software/librewolf]] [[software/coolercontrol]] [[reference/keyd-stack]]
+- **OpenCode config**: plugins installed (litellm, token-tracker, telemetry, flowdeck) + MCP servers (sequential-thinking, filesystem, fetch, memory, git, pdf, time). Serena removed. Documented in [[software/opencode/plugins]]
+- [[software/g502-hero-setup]] [[software/librewolf]] [[software/coolercontrol]] [[reference/keyd-stack]] [[software/opencode/plugins]]
 
 ## 2026-06-24 — AI Watchtower project, vault research, script consolidation
 
