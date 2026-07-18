@@ -24,7 +24,7 @@
 | `pdf` | PDF text extraction |
 | `time` | Time and timezone conversion |
 | `deepl` | DeepL translation API (needs DEEPL_AUTH_KEY) |
-| `xcomet` | Translation quality evaluation |
+| `xcomet` | Translation quality evaluation (venv: `/mnt/workspace/xcomet-venv`, model: `wmt22-comet-da`) |
 | `getlinnk` | Document translation via Linnk |
 | `general-translation` | General Translation MCP server |
 | `filecommander` | 46 tools: OCR, ZIP, encoding fix, duplicate detection |
