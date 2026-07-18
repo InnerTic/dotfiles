@@ -17,6 +17,9 @@ updated: 2026-06-24
 - **CoolerControl**: vault doc added ([[software/coolercontrol]])
 - **Vault audit**: compared CachyOS against vault docs, noted drift (script paths, git user, drive letters)
 - **OpenCode config**: plugins installed (litellm, token-tracker, telemetry, flowdeck) + MCP servers (sequential-thinking, filesystem, fetch, memory, git, pdf, time, deepl, xcomet, getlinnk, general-translation, filecommander, drawio) + Python/Bash LSPs. Serena removed. Documented in [[software/opencode/plugins]]
+- **MCP inventory**: comprehensive reference doc at [[software/opencode/mcp-inventory]]
+- **Translation pipeline MCP integration**: workflow doc at [[projects/translation-mcp-integration]] — covers pre-processing, QC, parallel processing, pipe.sh role additions
+- **xCOMET**: set up with `wmt22-comet-da` model, Python 3.12 venv at `/mnt/workspace/xcomet-venv`, HF token added
 - [[software/g502-hero-setup]] [[software/librewolf]] [[software/coolercontrol]] [[reference/keyd-stack]] [[software/opencode/plugins]]
 
 ## 2026-06-24 — AI Watchtower project, vault research, script consolidation
