@@ -30,14 +30,16 @@
 | `filecommander` | 46 tools: OCR, ZIP, encoding fix, duplicate detection |
 | `drawio` | Diagram generation in draw.io editor |
 
-## LSP Servers — BROKE OpenCode on 2026-07-18
+## LSP Servers
 
-Do NOT add `lsp` block to `opencode.jsonc` — it caused OpenCode to crash on startup. LSP is handled natively by OpenCode, not through config.
+**Both working, auto-detected by OpenCode — no config needed.**
 
-| Language | Server | Package | Status |
-|----------|--------|---------|--------|
-| Python | `pylsp` | `python-lsp-server` (pacman) | Installed, but configured via native LSP |
-| Bash | `bash-language-server` | `bash-language-server` (npm) | Installed, but configured via native LSP |
+Do NOT add an `lsp` block to `opencode.jsonc` — OpenCode doesn't support that config key and will crash on startup. LSP is handled natively: OpenCode scans PATH for common language servers and uses them automatically.
+
+| Language | Server | Version | Package |
+|----------|--------|---------|---------|
+| Python | `pylsp` | 1.14.0 | `python-lsp-server` (pacman) |
+| Bash | `bash-language-server` | 5.6.0 | `bash-language-server` (npm) |
 
 ## Config
 
