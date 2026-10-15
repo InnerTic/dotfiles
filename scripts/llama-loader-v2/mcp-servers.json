@@ -1,0 +1,39 @@
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "npx",
+      "args": ["-y", "mcp-searxng"],
+      "env": {
+        "SEARXNG_URL": "http://127.0.0.1:8888"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/"]
+    },
+    "git": {
+      "command": "/home/ken/.local/bin/uvx",
+      "args": ["--from", "mcp-server-git", "--with", "mcp>=1,<2", "mcp-server-git"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "time": {
+      "command": "npx",
+      "args": ["-y", "time-mcp"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "pdf": {
+      "command": "npx",
+      "args": ["-y", "@research-copilot/mcp-pdf"]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "mcp-fetch"]
+    }
+  }
+}
