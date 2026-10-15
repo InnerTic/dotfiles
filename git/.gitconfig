@@ -5,9 +5,9 @@
 [user]
 	signingkey = 448AE0C2AB209842
 	email = ken.isley@gmail.com
-	name = Ken Isley
+	name = InnerTic
 [commit]
-	gpgsign = true
+	gpgsign = false
 [tag]
 	gpgsign = true
 [gpg]
@@ -23,3 +23,5 @@
 	path = git-xet
 	args = transfer
 	concurrent = true
+[credential]
+	helper = store

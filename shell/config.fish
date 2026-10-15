@@ -18,5 +18,9 @@ function fish_greeting
     fastfetch
 end
 
+# opencode
+fish_add_path "/home/ken/.opencode/bin"
 # uv
 fish_add_path "/home/ken/.local/bin"
+# cargo
+fish_add_path "/home/ken/.cargo/bin"

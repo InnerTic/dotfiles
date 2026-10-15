@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Bootstrap shared library
-DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 export DOTFILES
 
 header() { echo "==> $1"; }
