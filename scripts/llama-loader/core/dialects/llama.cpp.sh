@@ -36,6 +36,11 @@ compile_cli() {
   # port
   ARGS+=(--port "$PORT")
 
+  # thinking mode (model-aware: Gemma 4 defaults to off, else on)
+  if [[ "$REASONING" == "off" ]]; then
+    ARGS+=(--reasoning off)
+  fi
+
   # populate global CMD array
   CMD=("$LLAMA_SERVER" "${ARGS[@]}")
 }

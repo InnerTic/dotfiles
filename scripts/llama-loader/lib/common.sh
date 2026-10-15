@@ -1,24 +1,15 @@
+#!/usr/bin/env bash
 # ============================================================
 # llama-loader — shared library
 # Sourced by all scripts in the pipeline.
-# ============================================================
-#
-# SYSTEM INTEGRITY CONTRACT
-# RULES:
-# 1. State = raw values only (no CLI syntax ever stored)
-# 2. CLI flags are derived at runtime only
-# 3. NP is integer OR "auto" at runtime only
-# 4. All state writes must pass validation functions
-# 5. Any CLI syntax in state = hard failure
-# 6. No silent normalization allowed
 # ============================================================
 
 shopt -s nullglob
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MODELS_DIR="$HOME/Downloads/llm_models"
-SSD_DIR="$MODELS_DIR"
-HDD_DIR="/mnt/data/model_storage"
+MODEL_STORAGE="/mnt/data/model_storage"
+SSD_DIR="$HOME/Downloads/llm_models"
+HDD_DIR="$MODEL_STORAGE"
 LLAMA_SERVER="$HOME/infra/llama-server.sh"
 STATE_DIR="$HOME/.config/llama-loader"
 STATE_FILE="$STATE_DIR/state.json"
@@ -236,11 +227,40 @@ select_model() {
   if [ ! -f "$PROFILE_FILE" ]; then
     echo "{}" > "$PROFILE_FILE"
   fi
+
+  REASONING=$(resolve_reasoning_default)
+}
+
+# ------------------------------------------------------------
+# Model-aware reasoning default
+# ------------------------------------------------------------
+resolve_reasoning_default() {
+  local model_val
+  model_val=$(get_profile_value "reasoning")
+  if [ -n "$model_val" ]; then
+    echo "$model_val"
+    return
+  fi
+  if [[ "$MODEL_NAME" == *gemma*4* ]]; then
+    echo "off"
+  else
+    echo "on"
+  fi
 }
 
 # --- Preflight snapshot ---
 show_snapshot() {
   local mode_label="${1:-CUSTOM}"
+
+  local reason_display reason_color
+  if [ "$REASONING" = "off" ]; then
+    reason_display="OFF"
+    reason_color="\033[33m"
+  else
+    reason_display="ON"
+    reason_color="\033[32m"
+  fi
+
   echo
   echo "===================================================="
   echo "PRE-FLIGHT SNAPSHOT  [$mode_label]"
@@ -266,8 +286,10 @@ show_snapshot() {
   fi
   echo
   echo "CONTEXT: $CTX_SIZE  |  NP: $NP_VAL  |  NGL: $NGL  |  PORT: $PORT"
+  echo -e "REASONING: ${reason_color}${reason_display}${N}"
   local cli_line="CLI:  -np $NP_VAL  |  -ngl $NGL  |  --port $PORT"
   [ -n "$TENSOR_SPLIT" ] && cli_line+="  |  --tensor-split $TENSOR_SPLIT"
+  [ "$REASONING" = "off" ] && cli_line+="  |  --reasoning off"
   echo "$cli_line"
   echo
   echo "INTERPRETATION:"
@@ -304,13 +326,33 @@ show_snapshot() {
 
 # --- Decision gate ---
 decision_gate() {
+  local reason_display reason_color
+  if [ "$REASONING" = "off" ]; then
+    reason_display="OFF"
+    reason_color="\033[33m"
+  else
+    reason_display="ON"
+    reason_color="\033[32m"
+  fi
+
   echo
-  echo "[Enter] launch | [e] edit | [c] cancel"
+  echo -e "[Enter] launch | [t] toggle thinking (${reason_color}${reason_display}\033[0m) | [e] edit | [c] cancel"
   read -r -t 10 decision || true
   [ -z "$decision" ] && decision="launch"
+
   case "$decision" in
     c) echo "Cancelled"; exit 0 ;;
     e) echo "Edit requested — re-run with custom mode"; exit 0 ;;
+    t)
+      if [ "$REASONING" = "off" ]; then
+        REASONING="on"
+      else
+        REASONING="off"
+      fi
+      show_snapshot "${1:-CUSTOM}"
+      decision_gate "${1:-CUSTOM}"
+      return
+      ;;
     launch|"") echo "Launching..." ;;
   esac
 }
@@ -342,7 +384,8 @@ save_state() {
   "np": "$(validate_int "$np_store")",
   "port": "$(validate_int "$PORT")",
   "gpu_mode": "${GPU_MODE:-3}",
-  "np_mode": "${NP_MODE:-manual}"
+  "np_mode": "${NP_MODE:-manual}",
+  "reasoning": "$REASONING"
 }
 EOF
   cat > "$STATE_FILE" <<EOF
@@ -356,7 +399,8 @@ EOF
   "last_port": "$(validate_int "$PORT")",
   "last_location": "$MODEL_LOCATION",
   "last_gpu_mode": "${GPU_MODE:-3}",
-  "last_np_mode": "${NP_MODE:-manual}"
+  "last_np_mode": "${NP_MODE:-manual}",
+  "last_reasoning": "$REASONING"
 }
 EOF
 }

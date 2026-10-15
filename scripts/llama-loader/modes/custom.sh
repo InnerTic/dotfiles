@@ -21,6 +21,20 @@ source "$SCRIPT_DIR/builder/gpu.sh"
 source "$SCRIPT_DIR/builder/concurrency.sh"
 source "$SCRIPT_DIR/builder/network.sh"
 
+# Reasoning prompt
+echo
+reason_label="ON"
+if [ "$REASONING" = "off" ]; then reason_label="OFF (recommended for Gemma 4)"; fi
+echo -e "Reasoning mode: \033[33m${reason_label}\033[0m"
+read -p "Toggle reasoning? [y/N]: " toggle_reasoning
+if [[ "$toggle_reasoning" =~ ^[Yy]$ ]]; then
+  if [ "$REASONING" = "off" ]; then
+    REASONING="on"
+  else
+    REASONING="off"
+  fi
+fi
+
 # Introspection
 source "$SCRIPT_DIR/introspect/evaluate.sh"
 
