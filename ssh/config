@@ -1,5 +1,11 @@
 # SSH configuration file
 
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
 Host proxmox
     HostName 172.16.7.1
     User root
@@ -28,3 +34,23 @@ Host openclawVM
 Host pihole/clawVM
     HostName 172.16.12.3
     User ken
+
+Host opnsense
+    HostName 172.16.1.1
+    User root
+
+Host sqlite
+    HostName 172.16.12.20
+    User ken
+
+Host opernwrt-zimablade
+    HostName 172.16.12.10
+    User root
+
+Host opencode
+    HostName 172.16.1.48
+    User root
+
+Host kuma
+    HostName 172.16.1.53
+    User root

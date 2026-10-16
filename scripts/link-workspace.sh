@@ -18,7 +18,16 @@
 
 set -euo pipefail
 
-WORKSPACE="/mnt/workspace"
+# Real mount differs per OS (CachyOS: /mnt/workspace, Debian/MX:
+# /media/workspace). Prefer whichever actually holds the repo, so this runs on
+# either OS even if the cross-mount alias (15-workspace-alias.sh) has not run.
+WORKSPACE="${WORKSPACE:-}"
+if [ -z "$WORKSPACE" ]; then
+  for _c in /mnt/workspace /media/workspace "$HOME/workspace"; do
+    if [ -e "$_c/dotfiles" ]; then WORKSPACE="$_c"; break; fi
+  done
+  WORKSPACE="${WORKSPACE:-/mnt/workspace}"
+fi
 DRY_RUN=true
 
 # ONLY these directories are persisted across OS refreshes
@@ -96,7 +105,7 @@ merge_and_link() {
     fi
     mkdir -p "$ws_path"
     info "Merging $home_path/ → $ws_path/ (workspace version wins on conflicts)..."
-    rsync -a --info=progress2 "$home_path/" "$ws_path/"
+    rsync -a --ignore-existing --copy-unsafe-links --info=progress2 "$home_path/" "$ws_path/"
     rm -rf "$home_path"
   fi
 

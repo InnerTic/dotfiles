@@ -124,6 +124,10 @@ chroot "$TARGET" bash -c "
   ln -sfn /home/$USERNAME/Downloads/llm_models /home/$USERNAME/Models
 "
 chroot "$TARGET" ln -sfn /mnt/workspace /workspace
+# Also expose the workspace at /media/workspace so paths written for either
+# mount point resolve regardless of the active OS/mount layout.
+chroot "$TARGET" mkdir -p /media
+chroot "$TARGET" ln -sfn /mnt/workspace /media/workspace
 echo "  ✓ symlinks created"
 
 # =============================================================================
